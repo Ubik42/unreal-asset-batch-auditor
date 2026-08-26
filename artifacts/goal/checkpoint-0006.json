@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0006",
+  "goalId": "unreal-asset-batch-auditor",
+  "stateRevision": 6,
+  "completedSlice": "M3-S1",
+  "summary": "A versioned UE 5.8.1 read-only benchmark now measures repeated C++ batch calls with explicit dataset provenance, timing statistics, stable result counts, limitations, and in-run uasset integrity evidence.",
+  "evidence": [
+    "contracts/benchmark.v1.schema.json defines the benchmark artifact and requires limitations",
+    "artifacts/host-validation/ue-5.8.1-readonly-benchmark.json records 64 sorted Engine Static Meshes, two warmups, and seven timed repetitions",
+    "The measured warm-cache median was 0.5483 ms and nearest-rank P95 was 0.5968 ms for one 64-asset C++ call",
+    "All seven repetitions returned 64 collected assets and zero failures",
+    "SHA-256 before/after comparison inside the host run covered all 64 selected uassets and records unchanged=true",
+    "22 tests, Ruff, and goal-state audit passed before advancement"
+  ],
+  "nextSlice": "M3-S2",
+  "unresolvedRisks": [
+    "The warm-cache Engine-content baseline does not represent cold startup or production assets",
+    "The public orchestration path does not yet bound C++ call size or expose progress/cancellation",
+    "UE 5.4 and UE 5.5 compatibility remains unverified"
+  ]
+}

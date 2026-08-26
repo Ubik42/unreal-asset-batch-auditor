@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0001",
+  "goalId": "unreal-asset-batch-auditor",
+  "stateRevision": 1,
+  "completedSlice": "M0-S1",
+  "summary": "Repository scope fixed to an independent Unreal batch auditor; MVP starts read-only and Profile-driven.",
+  "evidence": ["Existing repository skeleton and requirements brief inspected"],
+  "nextSlice": "M1-S1",
+  "unresolvedRisks": ["Plugin has not yet been compiled or exercised in a real Unreal Editor host"]
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": "unreal-asset-integrity-manifest@1.0.0",
+  "label": "after-final-real-host-and-visible-review",
+  "created_at": "2026-08-25T21:47:12.750445+00:00",
+  "algorithm": "sha256",
+  "assets": [
+    {
+      "relative_path": "BasicShapeMaterial.uasset",
+      "sha256": "e707d63439f5df802115c7c1693e64e47e708fb619e581a2af2e1651466eeaa4"
+    },
+    {
+      "relative_path": "BasicShapeMaterial_Inst.uasset",
+      "sha256": "3930979c10f30f8dd0296f5e06756e5484cd7c574a6d52c8b6697088de379b4a"
+    },
+    {
+      "relative_path": "Cone.uasset",
+      "sha256": "1d8d0a0de68b4e198f74976d6aae28be670bb91dec9e96f7de56781a0d1383dc"
+    },
+    {
+      "relative_path": "Cube.uasset",
+      "sha256": "0647a386495c2a9a187e273a7f040eae635f25371023d4e360d82bffa52077c5"
+    },
+    {
+      "relative_path": "Cube1.uasset",
+      "sha256": "d51b32bd5fa75a573a5410b1341bec75f8001a7f8fc47fd1e184ff09a692f0ae"
+    },
+    {
+      "relative_path": "Cylinder.uasset",
+      "sha256": "0c98cd3b88eed9da47cda6412aadd8a3ded95339d3f90574adf5612c6365516a"
+    },
+    {
+      "relative_path": "M_Cube_WorldGridMaterial_8D67460644F5AEE976EC80B26230FFEB.uasset",
+      "sha256": "44729ba8937123fd74762f12edb49d62c38a74797ab30ee7ba53125cc5cc6298"
+    },
+    {
+      "relative_path": "Plane.uasset",
+      "sha256": "13cb228197acac5b76e8cbfc2d211f8f3ef2907ab17f94039684c58fcd5e26e7"
+    },
+    {
+      "relative_path": "Sphere.uasset",
+      "sha256": "0870a30b75af88e6117261b1ce6138ed90da85c90fde9fc39380705ab1870b61"
+    }
+  ]
+}

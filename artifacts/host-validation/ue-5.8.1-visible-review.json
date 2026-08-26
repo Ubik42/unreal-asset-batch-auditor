@@ -1,0 +1,38 @@
+{
+  "schema_version": "unreal-visible-editor-review@1.0.0",
+  "created_at": "2026-08-25T21:47:21.4039635Z",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "method": "visible Static Mesh Editor review via Computer Use",
+  "read_only": true,
+  "assets": [
+    {
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "editor_observed": {
+        "lod_index": 0,
+        "triangles": 48,
+        "vertices": 54,
+        "material_slot_count": 1,
+        "lod_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_host_report": true
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "editor_observed": {
+        "lod_index": 0,
+        "triangles": 960,
+        "vertices": 559,
+        "material_slot_count": 1,
+        "lod_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_host_report": true
+    }
+  ],
+  "notes": [
+    "No asset setting was changed and no Save command was invoked.",
+    "The Editor showed All Saved before it was closed.",
+    "Post-review SHA-256 comparison is recorded separately and reports unchanged=true."
+  ]
+}

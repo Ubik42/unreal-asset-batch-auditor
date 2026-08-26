@@ -1,0 +1,26 @@
+{
+  "schema_version": "unreal-static-mesh-fixture@1.0.0",
+  "source": "synthetic_offline_fixture",
+  "assets": [
+    {
+      "asset_path": "/Game/Props/SM_Healthy.SM_Healthy",
+      "asset_name": "SM_Healthy",
+      "lods": [
+        { "index": 0, "triangles": 24000, "vertices": 18000 },
+        { "index": 1, "triangles": 12000, "vertices": 9000 },
+        { "index": 2, "triangles": 6000, "vertices": 4500 }
+      ],
+      "material_slot_count": 2,
+      "nanite_enabled": true
+    },
+    {
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "asset_name": "SM_Problem",
+      "lods": [
+        { "index": 0, "triangles": 90000, "vertices": 65000 }
+      ],
+      "material_slot_count": 7,
+      "nanite_enabled": false
+    }
+  ]
+}

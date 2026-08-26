@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0003",
+  "goalId": "unreal-asset-batch-auditor",
+  "stateRevision": 3,
+  "completedSlice": null,
+  "summary": "M2-S1 remains incomplete after three consecutive goal turns confirmed the same external host-build blocker. The repository now records a formal recovery condition instead of remaining falsely active.",
+  "evidence": [
+    "UE 5.4.4 BuildPlugin stopped before plugin compilation because NetFxSDK was absent",
+    "UE 5.5.4 BuildPlugin stopped before plugin compilation on unrelated HoudiniEngine ModuleRules",
+    "UE 5.8.1 BuildPlugin stopped before plugin compilation because NetFxSDK was absent",
+    "Third-turn recheck confirmed no NETFXSDK directory or registry entry",
+    "20 offline tests, Ruff, and goal-state audit passed before blocking"
+  ],
+  "nextSlice": "M2-S1",
+  "unresolvedRisks": [
+    "Plugin source has not reached UHT, compiler, or linker",
+    "No real Unreal Editor asset report exists",
+    "No before/after uasset integrity comparison has been performed in a real project"
+  ],
+  "recoveryCondition": "Repair one installed UE toolchain so BuildPlugin can reach and compile UnrealAssetBatchAuditor, then resume M2-S1."
+}

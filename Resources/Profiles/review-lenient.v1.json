@@ -1,0 +1,13 @@
+{
+  "schema_version": "unreal-static-mesh-profile@1.0.0",
+  "profile_id": "demo-review-lenient",
+  "profile_version": "1.0.0",
+  "description": "演示用宽松复核规则：用于证明审计结论由项目 Profile 决定。数值为模拟项目数据。",
+  "rules": {
+    "triangle_budget": { "enabled": true, "max_lod0": 10000, "severity": "error" },
+    "vertex_budget": { "enabled": true, "max_lod0": 7000, "severity": "error" },
+    "material_slots": { "enabled": true, "max_count": 4, "severity": "warning" },
+    "lod_count": { "enabled": true, "min_count": 1, "severity": "warning" },
+    "nanite": { "enabled": true, "expected": "any", "severity": "warning" }
+  }
+}

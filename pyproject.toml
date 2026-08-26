@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "unreal-asset-batch-auditor"
+version = "0.3.0"
+description = "Profile-driven, read-only Static Mesh auditing for Unreal Editor."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<10", "ruff>=0.11,<1"]
+
+[project.scripts]
+unreal-asset-audit = "unreal_asset_batch_auditor.cli:main"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["Content/Python/unreal_asset_batch_auditor"]
+sources = ["Content/Python"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "scripts/tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

@@ -1,0 +1,13 @@
+{
+  "schema_version": "unreal-static-mesh-profile@1.0.0",
+  "profile_id": "demo-mobile-strict",
+  "profile_version": "1.0.0",
+  "description": "Recording demo: strict mobile-style contrast profile. Values are training data, not studio standards.",
+  "rules": {
+    "triangle_budget": { "enabled": true, "max_lod0": 500, "severity": "error" },
+    "vertex_budget": { "enabled": true, "max_lod0": 400, "severity": "error" },
+    "material_slots": { "enabled": true, "max_count": 1, "severity": "warning" },
+    "lod_count": { "enabled": true, "min_count": 2, "severity": "warning" },
+    "nanite": { "enabled": true, "expected": "enabled", "severity": "warning" }
+  }
+}

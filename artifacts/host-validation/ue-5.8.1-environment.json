@@ -1,0 +1,14 @@
+{
+  "schema_version": "unreal-host-validation-environment@1.0.0",
+  "created_at": "2026-08-25T21:46:59.515711+00:00",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "execution": "UnrealEditor-Cmd ExecutePythonScript",
+  "project_kind": "disposable_non_production_host",
+  "asset_paths": [
+    "/Engine/BasicShapes/Cube.Cube",
+    "/Engine/BasicShapes/Sphere.Sphere",
+    "/Engine/BasicShapes/DoesNotExist.DoesNotExist"
+  ],
+  "report_path": "ue-5.8.1-host-report.json",
+  "claims_visible_editor_review": false
+}

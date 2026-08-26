@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "codex-goal-state@1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "goalId", "stateRevision", "status", "currentMilestone", "milestones", "nextSlice", "lastCheckpoint", "currentBlocker", "manualTracks"],
+  "properties": {
+    "schemaVersion": { "const": "codex-goal-state@1.0.0" },
+    "goalId": { "const": "unreal-asset-batch-auditor" },
+    "stateRevision": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["active", "complete", "blocked"] },
+    "currentMilestone": { "type": ["string", "null"] },
+    "milestones": { "type": "array", "minItems": 1 },
+    "nextSlice": { "type": ["object", "null"] },
+    "lastCheckpoint": { "type": "string", "pattern": "^artifacts/goal/checkpoint-[0-9]{4}\\.json$" },
+    "currentBlocker": { "type": ["object", "null"] },
+    "manualTracks": { "type": "array" }
+  }
+}

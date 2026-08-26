@@ -1,0 +1,67 @@
+{
+  "schema_version": "unreal-asset-auditor-demo-session@1.0.0",
+  "created_at": "2026-08-26T00:41:51.307694+00:00",
+  "profile_id": "demo-desktop-balanced",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "requested_count": 26,
+  "asset_count": 24,
+  "issue_count": 21,
+  "collection_failure_count": 2,
+  "rule_counts": {
+    "static_mesh.material_slots": 3,
+    "static_mesh.triangle_budget.lod0": 9,
+    "static_mesh.vertex_budget.lod0": 9
+  },
+  "severity_counts": {
+    "error": 18,
+    "warning": 3
+  },
+  "progress_events": [
+    {
+      "requested_count": 26,
+      "processed_count": 8,
+      "collected_count": 8,
+      "failed_count": 0,
+      "cancelled_count": 0,
+      "completed_batch_count": 1,
+      "total_batch_count": 4
+    },
+    {
+      "requested_count": 26,
+      "processed_count": 16,
+      "collected_count": 16,
+      "failed_count": 0,
+      "cancelled_count": 0,
+      "completed_batch_count": 2,
+      "total_batch_count": 4
+    },
+    {
+      "requested_count": 26,
+      "processed_count": 24,
+      "collected_count": 24,
+      "failed_count": 0,
+      "cancelled_count": 0,
+      "completed_batch_count": 3,
+      "total_batch_count": 4
+    },
+    {
+      "requested_count": 26,
+      "processed_count": 26,
+      "collected_count": 24,
+      "failed_count": 2,
+      "cancelled_count": 0,
+      "completed_batch_count": 4,
+      "total_batch_count": 4
+    }
+  ],
+  "integrity": {
+    "algorithm": "sha256",
+    "hashed_asset_count": 24,
+    "unchanged": true,
+    "changed": []
+  },
+  "report_paths": [
+    "D:\\3D\\_tools\\unreal-asset-batch-auditor\\Demo\\Saved\\UABAAudit\\demo-desktop-balanced-report.json",
+    "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\demo\\demo-desktop-balanced-report.json"
+  ]
+}

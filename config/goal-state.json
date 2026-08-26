@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "codex-goal-state@1.0.0",
+  "goalId": "unreal-asset-batch-auditor",
+  "stateRevision": 7,
+  "status": "completed",
+  "currentMilestone": "M3",
+  "milestones": [
+    {
+      "id": "M0",
+      "title": "Scope and repository baseline",
+      "status": "completed",
+      "dependsOn": []
+    },
+    {
+      "id": "M1",
+      "title": "Read-only Static Mesh audit MVP",
+      "status": "completed",
+      "dependsOn": ["M0"]
+    },
+    {
+      "id": "M2",
+      "title": "Real Unreal host validation",
+      "status": "completed",
+      "dependsOn": ["M1"]
+    },
+    {
+      "id": "M3",
+      "title": "Measured batch performance and production hardening",
+      "status": "completed",
+      "dependsOn": ["M2"]
+    }
+  ],
+  "nextSlice": null,
+  "lastCheckpoint": "artifacts/goal/checkpoint-0007.json",
+  "currentBlocker": null,
+  "manualTracks": [
+    {
+      "id": "real-unreal-host",
+      "status": "completed",
+      "blocking": false,
+      "reason": "UE 5.8.1 BuildPlugin, command-line host run, visible Static Mesh Editor review, and post-run uasset hash comparison all passed."
+    }
+  ]
+}

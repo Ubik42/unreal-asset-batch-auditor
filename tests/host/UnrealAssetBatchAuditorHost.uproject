@@ -1,0 +1,16 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.8",
+  "Category": "Testing",
+  "Description": "Disposable non-production host for Unreal Asset Batch Auditor validation.",
+  "Plugins": [
+    {
+      "Name": "UnrealAssetBatchAuditor",
+      "Enabled": true
+    },
+    {
+      "Name": "PythonScriptPlugin",
+      "Enabled": true
+    }
+  ]
+}

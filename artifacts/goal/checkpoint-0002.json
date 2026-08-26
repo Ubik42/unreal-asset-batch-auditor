@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0002",
+  "goalId": "unreal-asset-batch-auditor",
+  "stateRevision": 2,
+  "completedSlice": "M1-S1",
+  "summary": "Completed the read-only Static Mesh audit MVP with versioned contracts, five Profile-driven checks, Python orchestration, an Editor-only C++ batch collector, and explicit offline evidence labeling.",
+  "evidence": [
+    "15 offline Python and repository boundary tests passed",
+    "Ruff passed for src, tests, and scripts",
+    "Synthetic two-asset report contains five expected issues and real_unreal_validation=false",
+    "Plugin descriptor is Editor-only and the C++ API exposes no mutation functions"
+  ],
+  "nextSlice": "M2-S1",
+  "unresolvedRisks": [
+    "C++ has not been compiled against a recorded Unreal Engine version",
+    "No real Editor asset metadata has been compared with the report",
+    "Large-batch performance has not been measured"
+  ]
+}

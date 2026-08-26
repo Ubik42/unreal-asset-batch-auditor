@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0004",
+  "goalId": "unreal-asset-batch-auditor",
+  "stateRevision": 4,
+  "completedSlice": null,
+  "summary": "The user installed NetFxSDK 4.8. The M2 host-environment recovery condition was verified on disk and the goal resumed without claiming plugin compilation.",
+  "evidence": [
+    "C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8 exists",
+    "Goal-state semantic audit passed before resume"
+  ],
+  "nextSlice": "M2-S1",
+  "unresolvedRisks": [
+    "Plugin source still needs UHT, compiler, linker, and Editor runtime validation",
+    "No real Unreal asset report or uasset integrity comparison exists yet"
+  ]
+}

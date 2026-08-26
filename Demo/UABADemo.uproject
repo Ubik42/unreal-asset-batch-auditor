@@ -1,0 +1,16 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.8",
+  "Category": "Samples",
+  "Description": "Recording-ready demo project for Unreal Asset Batch Auditor.",
+  "Plugins": [
+    {
+      "Name": "UnrealAssetBatchAuditor",
+      "Enabled": true
+    },
+    {
+      "Name": "PythonScriptPlugin",
+      "Enabled": true
+    }
+  ]
+}

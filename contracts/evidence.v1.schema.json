@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unreal-asset-audit-evidence@1.0.0",
+  "title": "Unreal Asset Audit Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "evidence_id", "asset_path", "metric", "observed", "expected", "profile_pointer", "collector"],
+  "properties": {
+    "schema_version": { "const": "unreal-asset-audit@1.0.0" },
+    "evidence_id": { "type": "string", "minLength": 1 },
+    "asset_path": { "type": "string", "minLength": 1 },
+    "metric": { "type": "string", "minLength": 1 },
+    "observed": { "type": ["integer", "boolean", "string"] },
+    "expected": { "type": ["integer", "boolean", "string"] },
+    "profile_pointer": { "type": "string", "pattern": "^/rules/" },
+    "collector": { "enum": ["offline_fixture", "unreal_editor"] }
+  }
+}

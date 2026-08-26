@@ -1,0 +1,9 @@
+{
+  "schema_version": "unreal-asset-integrity-comparison@1.0.0",
+  "before_label": "before-real-host-audit",
+  "after_label": "after-final-real-host-and-visible-review",
+  "unchanged": true,
+  "changed": [],
+  "added": [],
+  "removed": []
+}

@@ -1,0 +1,551 @@
+{
+  "schema_version": "unreal-asset-auditor-demo-manifest@1.0.0",
+  "created_at": "2026-08-25T23:19:29.329230+00:00",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "project_kind": "recording_demo_non_production",
+  "asset_root": "/Game/UABADemo",
+  "asset_count": 24,
+  "source_inventory_count": 120,
+  "generation_strategy": "24 deterministic triangle-count quantiles plus material-slot-rich coverage from /Engine Static Meshes",
+  "assets": [
+    {
+      "index": 1,
+      "group": "01_Light",
+      "source_asset_path": "/Engine/VREditor/FloatingText/LineSegmentCylinder.LineSegmentCylinder",
+      "demo_asset_path": "/Game/UABADemo/01_Light/SM_UABA_01_LineSegmentCylinder.SM_UABA_01_LineSegmentCylinder",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 40,
+        "lod0_vertices": 67,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 40,
+        "lod0_vertices": 67,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 2,
+      "group": "01_Light",
+      "source_asset_path": "/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/TextureBasedWPO/DemoBoxMesh.DemoBoxMesh",
+      "demo_asset_path": "/Game/UABADemo/01_Light/SM_UABA_02_DemoBoxMesh.SM_UABA_02_DemoBoxMesh",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 48,
+        "lod0_vertices": 54,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 48,
+        "lod0_vertices": 54,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 3,
+      "group": "01_Light",
+      "source_asset_path": "/Engine/InteractiveToolsFramework/Meshes/GizmoCornerHandle.GizmoCornerHandle",
+      "demo_asset_path": "/Game/UABADemo/01_Light/SM_UABA_03_GizmoCornerHandle.SM_UABA_03_GizmoCornerHandle",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 80,
+        "lod0_vertices": 158,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 80,
+        "lod0_vertices": 158,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 4,
+      "group": "01_Light",
+      "source_asset_path": "/Engine/VREditor/TransformGizmo/StretchingHandle.StretchingHandle",
+      "demo_asset_path": "/Game/UABADemo/01_Light/SM_UABA_04_StretchingHandle.SM_UABA_04_StretchingHandle",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 120,
+        "lod0_vertices": 112,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 120,
+        "lod0_vertices": 112,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 5,
+      "group": "01_Light",
+      "source_asset_path": "/Engine/VREditor/TransformGizmo/TranslateArrowHandle.TranslateArrowHandle",
+      "demo_asset_path": "/Game/UABADemo/01_Light/SM_UABA_05_TranslateArrowHandle.SM_UABA_05_TranslateArrowHandle",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 172,
+        "lod0_vertices": 203,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 172,
+        "lod0_vertices": 203,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 6,
+      "group": "01_Light",
+      "source_asset_path": "/Engine/EditorMeshes/Cascade/BackgroundCube.BackgroundCube",
+      "demo_asset_path": "/Game/UABADemo/01_Light/SM_UABA_06_BackgroundCube.SM_UABA_06_BackgroundCube",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 204,
+        "lod0_vertices": 138,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 204,
+        "lod0_vertices": 138,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 7,
+      "group": "01_Light",
+      "source_asset_path": "/Engine/VREditor/TransformGizmo/SM_Dialog_Move.SM_Dialog_Move",
+      "demo_asset_path": "/Game/UABADemo/01_Light/SM_UABA_07_SM_Dialog_Move.SM_UABA_07_SM_Dialog_Move",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 240,
+        "lod0_vertices": 112,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 240,
+        "lod0_vertices": 112,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 8,
+      "group": "01_Light",
+      "source_asset_path": "/Engine/VREditor/TransformGizmo/RotationHandleIndicator.RotationHandleIndicator",
+      "demo_asset_path": "/Game/UABADemo/01_Light/SM_UABA_08_RotationHandleIndicator.SM_UABA_08_RotationHandleIndicator",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 272,
+        "lod0_vertices": 156,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 272,
+        "lod0_vertices": 156,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 9,
+      "group": "02_Medium",
+      "source_asset_path": "/Engine/VREditor/TransformGizmo/RotationHandle.RotationHandle",
+      "demo_asset_path": "/Game/UABADemo/02_Medium/SM_UABA_09_RotationHandle.SM_UABA_09_RotationHandle",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 352,
+        "lod0_vertices": 354,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 352,
+        "lod0_vertices": 354,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 10,
+      "group": "02_Medium",
+      "source_asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "demo_asset_path": "/Game/UABADemo/02_Medium/SM_UABA_10_Cylinder.SM_UABA_10_Cylinder",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 512,
+        "lod0_vertices": 334,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 512,
+        "lod0_vertices": 334,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 11,
+      "group": "02_Medium",
+      "source_asset_path": "/Engine/VREditor/UI/SM_ContentWindow_01.SM_ContentWindow_01",
+      "demo_asset_path": "/Game/UABADemo/02_Medium/SM_UABA_11_SM_ContentWindow_01.SM_UABA_11_SM_ContentWindow_01",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 670,
+        "lod0_vertices": 376,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 670,
+        "lod0_vertices": 376,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 12,
+      "group": "02_Medium",
+      "source_asset_path": "/Engine/VREditor/TransformGizmo/RotationHandleQuarter.RotationHandleQuarter",
+      "demo_asset_path": "/Game/UABADemo/02_Medium/SM_UABA_12_RotationHandleQuarter.SM_UABA_12_RotationHandleQuarter",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 952,
+        "lod0_vertices": 760,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 952,
+        "lod0_vertices": 760,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 13,
+      "group": "02_Medium",
+      "source_asset_path": "/Engine/EditorMeshes/Camera/SM_CraneRig_Base.SM_CraneRig_Base",
+      "demo_asset_path": "/Game/UABADemo/02_Medium/SM_UABA_13_SM_CraneRig_Base.SM_UABA_13_SM_CraneRig_Base",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 1068,
+        "lod0_vertices": 738,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 1068,
+        "lod0_vertices": 738,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 14,
+      "group": "02_Medium",
+      "source_asset_path": "/Engine/VREditor/BasicMeshes/SM_Cube_01.SM_Cube_01",
+      "demo_asset_path": "/Game/UABADemo/02_Medium/SM_UABA_14_SM_Cube_01.SM_UABA_14_SM_Cube_01",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 1404,
+        "lod0_vertices": 816,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 1404,
+        "lod0_vertices": 816,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 15,
+      "group": "02_Medium",
+      "source_asset_path": "/Engine/VREditor/UI/SM_Radial_Disk.SM_Radial_Disk",
+      "demo_asset_path": "/Game/UABADemo/02_Medium/SM_UABA_15_SM_Radial_Disk.SM_UABA_15_SM_Radial_Disk",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 1728,
+        "lod0_vertices": 1152,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 1728,
+        "lod0_vertices": 1152,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 16,
+      "group": "02_Medium",
+      "source_asset_path": "/Engine/EngineVolumetrics/FogEnvironment/Mesh/S_EV_FogVolume_Sphere_01.S_EV_FogVolume_Sphere_01",
+      "demo_asset_path": "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 3968,
+        "lod0_vertices": 2143,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 3968,
+        "lod0_vertices": 2143,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 17,
+      "group": "03_Heavy",
+      "source_asset_path": "/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/PivotPainter2/SimplePivotPainterExample.SimplePivotPainterExample",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_17_SimplePivotPainterExample.SM_UABA_17_SimplePivotPainterExample",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 4080,
+        "lod0_vertices": 4590,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 4080,
+        "lod0_vertices": 4590,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 18,
+      "group": "03_Heavy",
+      "source_asset_path": "/Engine/EditorMeshes/Camera/SM_CineCam.SM_CineCam",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_18_SM_CineCam.SM_UABA_18_SM_CineCam",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 6252,
+        "lod0_vertices": 4174,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 6252,
+        "lod0_vertices": 4174,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 19,
+      "group": "03_Heavy",
+      "source_asset_path": "/Engine/VREditor/Devices/Vive/VivePreController_Trimlines.VivePreController_Trimlines",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 17912,
+        "lod0_vertices": 10587,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 17912,
+        "lod0_vertices": 10587,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 20,
+      "group": "03_Heavy",
+      "source_asset_path": "/Engine/VREditor/TransformGizmo/TransformGizmoFreeRotation.TransformGizmoFreeRotation",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 32256,
+        "lod0_vertices": 32512,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 32256,
+        "lod0_vertices": 32512,
+        "material_slot_count": 2,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 21,
+      "group": "03_Heavy",
+      "source_asset_path": "/Engine/EditorMeshes/ColorCalibrator/SM_ColorCalibrator.SM_ColorCalibrator",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 37472,
+        "lod0_vertices": 21422,
+        "material_slot_count": 5,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 37472,
+        "lod0_vertices": 21422,
+        "material_slot_count": 5,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 22,
+      "group": "03_Heavy",
+      "source_asset_path": "/Engine/EditorMeshes/EditorShaderBall.EditorShaderBall",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 58540,
+        "lod0_vertices": 32470,
+        "material_slot_count": 3,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 58540,
+        "lod0_vertices": 32470,
+        "material_slot_count": 3,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 23,
+      "group": "03_Heavy",
+      "source_asset_path": "/Engine/EngineMeshes/SM_MatPreviewMesh_01.SM_MatPreviewMesh_01",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 58540,
+        "lod0_vertices": 32470,
+        "material_slot_count": 3,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 58540,
+        "lod0_vertices": 32470,
+        "material_slot_count": 3,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    },
+    {
+      "index": 24,
+      "group": "03_Heavy",
+      "source_asset_path": "/Engine/VREditor/BasicMeshes/SM_Room_01.SM_Room_01",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "source_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 63774,
+        "lod0_vertices": 41436,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "demo_metadata": {
+        "lod_count": 1,
+        "lod0_triangles": 63774,
+        "lod0_vertices": 41436,
+        "material_slot_count": 1,
+        "nanite_enabled": false
+      },
+      "matches_source_metadata": true
+    }
+  ],
+  "valid_asset_paths": [
+    "/Game/UABADemo/01_Light/SM_UABA_01_LineSegmentCylinder.SM_UABA_01_LineSegmentCylinder",
+    "/Game/UABADemo/01_Light/SM_UABA_02_DemoBoxMesh.SM_UABA_02_DemoBoxMesh",
+    "/Game/UABADemo/01_Light/SM_UABA_03_GizmoCornerHandle.SM_UABA_03_GizmoCornerHandle",
+    "/Game/UABADemo/01_Light/SM_UABA_04_StretchingHandle.SM_UABA_04_StretchingHandle",
+    "/Game/UABADemo/01_Light/SM_UABA_05_TranslateArrowHandle.SM_UABA_05_TranslateArrowHandle",
+    "/Game/UABADemo/01_Light/SM_UABA_06_BackgroundCube.SM_UABA_06_BackgroundCube",
+    "/Game/UABADemo/01_Light/SM_UABA_07_SM_Dialog_Move.SM_UABA_07_SM_Dialog_Move",
+    "/Game/UABADemo/01_Light/SM_UABA_08_RotationHandleIndicator.SM_UABA_08_RotationHandleIndicator",
+    "/Game/UABADemo/02_Medium/SM_UABA_09_RotationHandle.SM_UABA_09_RotationHandle",
+    "/Game/UABADemo/02_Medium/SM_UABA_10_Cylinder.SM_UABA_10_Cylinder",
+    "/Game/UABADemo/02_Medium/SM_UABA_11_SM_ContentWindow_01.SM_UABA_11_SM_ContentWindow_01",
+    "/Game/UABADemo/02_Medium/SM_UABA_12_RotationHandleQuarter.SM_UABA_12_RotationHandleQuarter",
+    "/Game/UABADemo/02_Medium/SM_UABA_13_SM_CraneRig_Base.SM_UABA_13_SM_CraneRig_Base",
+    "/Game/UABADemo/02_Medium/SM_UABA_14_SM_Cube_01.SM_UABA_14_SM_Cube_01",
+    "/Game/UABADemo/02_Medium/SM_UABA_15_SM_Radial_Disk.SM_UABA_15_SM_Radial_Disk",
+    "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01",
+    "/Game/UABADemo/03_Heavy/SM_UABA_17_SimplePivotPainterExample.SM_UABA_17_SimplePivotPainterExample",
+    "/Game/UABADemo/03_Heavy/SM_UABA_18_SM_CineCam.SM_UABA_18_SM_CineCam",
+    "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+    "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
+    "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+    "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+    "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+    "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01"
+  ],
+  "diagnostic_paths": [
+    "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial",
+    "/Game/UABADemo/Missing/SM_DoesNotExist.SM_DoesNotExist"
+  ],
+  "notes": [
+    "Demo assets are project-owned duplicates; Engine source assets are never modified.",
+    "Folder names describe relative source complexity, not audit pass/fail status.",
+    "All demo thresholds are training values and are not studio standards."
+  ]
+}

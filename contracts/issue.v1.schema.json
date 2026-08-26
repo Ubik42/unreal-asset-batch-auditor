@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unreal-asset-audit-issue@1.0.0",
+  "title": "Unreal Asset Audit Issue",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "issue_id", "asset_path", "rule_id", "severity", "message", "evidence_id"],
+  "properties": {
+    "schema_version": { "const": "unreal-asset-audit@1.0.0" },
+    "issue_id": { "type": "string", "minLength": 1 },
+    "asset_path": { "type": "string", "minLength": 1 },
+    "rule_id": { "type": "string", "minLength": 1 },
+    "severity": { "enum": ["info", "warning", "error"] },
+    "message": { "type": "string", "minLength": 1 },
+    "evidence_id": { "type": "string", "minLength": 1 }
+  }
+}

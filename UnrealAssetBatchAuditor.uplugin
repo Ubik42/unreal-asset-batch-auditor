@@ -1,0 +1,25 @@
+{
+  "FileVersion": 3,
+  "Version": 3,
+  "VersionName": "0.3.0",
+  "FriendlyName": "Unreal Asset Batch Auditor",
+  "Description": "Editor-only Static Mesh audit workbench with profile-driven, read-only evidence collection.",
+  "Category": "Editor",
+  "CreatedBy": "Ubik42",
+  "CanContainContent": true,
+  "IsBetaVersion": true,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "UnrealAssetBatchAuditor",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "PythonScriptPlugin",
+      "Enabled": true
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0007",
+  "goalId": "unreal-asset-batch-auditor",
+  "stateRevision": 7,
+  "completedSlice": "M3-S2",
+  "summary": "The scoped read-only Static Mesh auditor is complete. Python now bounds every explicit scan into caller-selected C++ batches, emits progress, cancels only between batches, retains completed failures, and persists internally consistent execution counts. The final packaged code passed UE 5.8.1 host validation without changing assets.",
+  "evidence": [
+    "Content/Python/unreal_asset_batch_auditor/batching.py implements positive batch limits, progress events, deterministic aggregation, and between-batch cancellation",
+    "Report v1 additively records requested, processed, cancelled, completed batch, and batch-size values and validates count consistency",
+    "artifacts/host-validation/ue-5.8.1-batching-validation.json records real_unreal_validation=true and completed C++ call sizes [2,2,1] for batch_size=2",
+    "The same real-host artifact records cancellation after the first [2] call, one retained success, one retained NOT_STATIC_MESH failure, and three cancelled inputs",
+    "The final real-host run hashed four scanned BasicShapes uassets before and after and records unchanged=true",
+    "The final current package completed UE 5.8.1 UHT, compilation, linking, and Win64 Development Editor BuildPlugin packaging with BUILD SUCCESSFUL",
+    "29 tests, Ruff, goal-state audit, contract checks, and mutation-surface checks passed at completion"
+  ],
+  "nextSlice": null,
+  "unresolvedRisks": [
+    "UE 5.4 and UE 5.5 compatibility is not claimed",
+    "The 64-asset warm-cache benchmark is not a production-scale or cold-start guarantee",
+    "No asset mutation, automatic Nanite change, package save, or large-scale C++ optimization is included"
+  ]
+}

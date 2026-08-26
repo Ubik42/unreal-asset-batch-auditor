@@ -1,0 +1,13 @@
+{
+  "schema_version": "unreal-static-mesh-profile@1.0.0",
+  "profile_id": "example-desktop-prop",
+  "profile_version": "1.0.0",
+  "description": "Example only. Copy into the project and replace every limit with approved values.",
+  "rules": {
+    "triangle_budget": { "enabled": true, "max_lod0": 50000, "severity": "error" },
+    "vertex_budget": { "enabled": true, "max_lod0": 35000, "severity": "error" },
+    "material_slots": { "enabled": true, "max_count": 4, "severity": "warning" },
+    "lod_count": { "enabled": true, "min_count": 3, "severity": "warning" },
+    "nanite": { "enabled": true, "expected": "enabled", "severity": "warning" }
+  }
+}

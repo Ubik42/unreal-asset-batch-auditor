@@ -1,0 +1,114 @@
+{
+  "schema_version": "unreal-asset-audit@1.0.0",
+  "report_id": "report-6904fe15f9372c52",
+  "created_at": "2026-08-25T21:13:37.349987+00:00",
+  "profile_id": "example-desktop-prop",
+  "profile_version": "1.0.0",
+  "profile_schema_version": "unreal-static-mesh-profile@1.0.0",
+  "collection_mode": "offline_fixture",
+  "real_unreal_validation": false,
+  "host_engine_version": null,
+  "asset_count": 2,
+  "issue_count": 5,
+  "collection_failure_count": 0,
+  "issues": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-0402e7854c990513",
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 90000 exceed profile limit 50000.",
+      "evidence_id": "ev-66dc666f5628f5dc"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-2f672ccbbe249886",
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 65000 exceed profile limit 35000.",
+      "evidence_id": "ev-bdb39d9e0bab33ad"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-0609a670555cb7ed",
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "rule_id": "static_mesh.material_slots",
+      "severity": "warning",
+      "message": "Material slots 7 exceed profile limit 4.",
+      "evidence_id": "ev-e6957e5b1e0f87c2"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-34cbba086053ce2f",
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "rule_id": "static_mesh.lod_count",
+      "severity": "warning",
+      "message": "LOD count 1 is below profile minimum 3.",
+      "evidence_id": "ev-38e2d0bac1702e38"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-8e8903f9535bce15",
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "rule_id": "static_mesh.nanite_state",
+      "severity": "warning",
+      "message": "Nanite is disabled; profile expects enabled.",
+      "evidence_id": "ev-34ba154ea349e5f8"
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-66dc666f5628f5dc",
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "metric": "lod0.triangles",
+      "observed": 90000,
+      "expected": 50000,
+      "profile_pointer": "/rules/triangle_budget/max_lod0",
+      "collector": "offline_fixture"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-bdb39d9e0bab33ad",
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "metric": "lod0.vertices",
+      "observed": 65000,
+      "expected": 35000,
+      "profile_pointer": "/rules/vertex_budget/max_lod0",
+      "collector": "offline_fixture"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-e6957e5b1e0f87c2",
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "metric": "material_slot_count",
+      "observed": 7,
+      "expected": 4,
+      "profile_pointer": "/rules/material_slots/max_count",
+      "collector": "offline_fixture"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-38e2d0bac1702e38",
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "metric": "lod_count",
+      "observed": 1,
+      "expected": 3,
+      "profile_pointer": "/rules/lod_count/min_count",
+      "collector": "offline_fixture"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-34ba154ea349e5f8",
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "metric": "nanite_enabled",
+      "observed": false,
+      "expected": true,
+      "profile_pointer": "/rules/nanite/expected",
+      "collector": "offline_fixture"
+    }
+  ],
+  "collection_failures": []
+}

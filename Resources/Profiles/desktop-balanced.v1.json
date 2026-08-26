@@ -1,0 +1,13 @@
+{
+  "schema_version": "unreal-static-mesh-profile@1.0.0",
+  "profile_id": "demo-desktop-balanced",
+  "profile_version": "1.0.0",
+  "description": "演示用桌面平衡规则：同时覆盖通过与超标资产。数值为模拟项目数据，不代表行业标准。",
+  "rules": {
+    "triangle_budget": { "enabled": true, "max_lod0": 2000, "severity": "error" },
+    "vertex_budget": { "enabled": true, "max_lod0": 1500, "severity": "error" },
+    "material_slots": { "enabled": true, "max_count": 2, "severity": "warning" },
+    "lod_count": { "enabled": true, "min_count": 1, "severity": "warning" },
+    "nanite": { "enabled": true, "expected": "any", "severity": "warning" }
+  }
+}

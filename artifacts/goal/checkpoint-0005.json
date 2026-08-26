@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0005",
+  "goalId": "unreal-asset-batch-auditor",
+  "stateRevision": 5,
+  "completedSlice": "M2-S1",
+  "summary": "UE 5.8.1 real-host validation passed after NetFxSDK recovery. The packaged Editor plugin compiled, collected two known meshes plus one diagnosable bad path, matched visible Static Mesh Editor values, and left all recorded BasicShapes uassets unchanged.",
+  "evidence": [
+    "UE 5.8.1 BuildPlugin completed UHT, C++ compilation, linking, and Win64 Development Editor packaging with BUILD SUCCESSFUL",
+    "artifacts/host-validation/ue-5.8.1-host-report.json records real_unreal_validation=true, two collected meshes, and one NOT_STATIC_MESH failure",
+    "Cube report and Editor both show LOD0 48 triangles, 54 vertices, one material slot, one LOD, and Nanite disabled",
+    "Sphere report and Editor both show LOD0 960 triangles, 559 vertices, one material slot, one LOD, and Nanite disabled",
+    "artifacts/host-validation/ue-5.8.1-basic-shapes-comparison.json records unchanged=true for nine .uasset files",
+    "21 tests, Ruff, and goal-state audit passed before advancement"
+  ],
+  "nextSlice": "M3-S1",
+  "unresolvedRisks": [
+    "Performance has not yet been measured on a representative repeated batch",
+    "UE 5.4 and UE 5.5 compatibility remains unverified",
+    "The disposable BasicShapes host does not represent production content complexity"
+  ]
+}

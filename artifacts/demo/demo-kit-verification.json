@@ -1,0 +1,50 @@
+{
+  "schema_version": "unreal-asset-auditor-demo-verification@1.0.0",
+  "created_at": "2026-08-25T23:21:21.2499330Z",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "project": "Demo/UABADemo.uproject",
+  "real_unreal_validation": true,
+  "assets": {
+    "count": 24,
+    "total_bytes": 10304413,
+    "groups": {
+      "01_Light": 8,
+      "02_Medium": 8,
+      "03_Heavy": 8
+    }
+  },
+  "diagnostic_input_count": 2,
+  "profiles": [
+    {
+      "profile_id": "demo-desktop-balanced",
+      "passing_assets": 15,
+      "assets_with_issues": 9,
+      "issue_count": 21,
+      "collection_failure_count": 2,
+      "integrity_unchanged": true
+    },
+    {
+      "profile_id": "demo-mobile-strict",
+      "passing_assets": 0,
+      "assets_with_issues": 24,
+      "issue_count": 87,
+      "collection_failure_count": 2,
+      "integrity_unchanged": true
+    },
+    {
+      "profile_id": "demo-review-lenient",
+      "passing_assets": 18,
+      "assets_with_issues": 6,
+      "issue_count": 13,
+      "collection_failure_count": 2,
+      "integrity_unchanged": true
+    }
+  ],
+  "preparation_script_verified": true,
+  "preparation_command": ".\\scripts\\prepare_demo.ps1 -SkipBuild",
+  "limitations": [
+    "Profile thresholds are simulated training data, not studio or industry standards.",
+    "The current Editor interaction uses Tools > Execute Python Script, not a finished Slate panel.",
+    "The demo proves UE 5.8.1 behavior only."
+  ]
+}
