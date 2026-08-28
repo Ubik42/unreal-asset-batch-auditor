@@ -38,6 +38,7 @@ def test_panel_request_file_forwards_explicit_inputs(tmp_path: Path, monkeypatch
         "asset_paths": ["/Game/A.A", "/Game/B.B"],
         "output_path": "D:/Saved/latest-report.json",
         "batch_size": 8,
+        "session_root": None,
     }
 
 
@@ -70,5 +71,6 @@ def test_native_panel_exposes_complete_asset_ledger_and_issue_detail_views() -> 
     assert 'Root->GetArrayField(TEXT("assets"))' in source
     assert 'Root->GetArrayField(TEXT("issues"))' in source
     assert 'Root->GetArrayField(TEXT("collection_failures"))' in source
+    assert 'TEXT("session_root")' in source
     assert 'TEXT("三角形")' in source
     assert 'TEXT("材质槽")' in source

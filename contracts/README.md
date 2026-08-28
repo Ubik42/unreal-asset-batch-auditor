@@ -19,3 +19,10 @@ Evidence 是确定性的审计输出；破坏性变更必须新增 schema 文件
 解析器会检查计数自洽。
 
 `benchmark.v1` 专门记录真实宿主计时来源与只读完整性，不是离线 fixture 合同；其限制说明不可省略。
+
+## 会话历史与比较
+
+`unreal-audit-session-index@1.0.0` 是项目 `Saved` 目录中的轻量索引，不是数据库。历史 Report 采用
+独占创建和 SHA-256 校验，已存在且内容不同的文件会被拒绝覆盖；索引可原子替换，但索引损坏不会删除
+历史文件。`unreal-audit-comparison@1.0.0` 以稳定的 `asset_path + rule_id` 比较两份 Report，分别输出
+新增、持续、已解决 Issue，以及新增、持续、已解决采集失败。

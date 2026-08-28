@@ -64,6 +64,7 @@
 - UE 原生中文 Slate 面板：读取 Content Browser 选择、从预置规则下拉框切换 Profile、运行审计与共享搜索；
 - “资产总览”展示每个已采集资产的通过/需处理/失败状态、几何预算、LOD、Nanite、碰撞、Lightmap UV、Lightmap 分辨率和问题数，不再隐藏通过资产；
 - “问题明细”保留严重度、规则、实测值、Profile 阈值与本地化证据说明，并可直接打开最新 JSON 或报告目录；
+- 面板运行会在项目 `Saved/UnrealAssetBatchAuditor/Sessions` 中保存不可变历史报告和版本化轻量索引，不再只留下会被覆盖的 `latest-report.json`；
 - 调用方可设置正整数批次大小；进度事件覆盖请求、处理、成功、失败和取消数量；
 - 取消仅在 C++ 批次之间生效，已完成批次的资产与失败证据会保留在 Report；
 - Python fixture collector 与 Unreal C++ collector 使用同一编排边界；
@@ -147,7 +148,7 @@ report = run(
 - 有界分批、进度、批次间取消和部分失败汇总已在真实 UE 5.8.1 宿主验证；完整场景调用尺寸为 `[2,2,1]`，取消场景只执行首批 `[2]`；
 - M5-S1 已完成碰撞与 Lightmap Profile/Report v2、UE 5.8.1 BuildPlugin、真实宿主采集、只读哈希验证和 8 张当前版本 Slate 截图；
 - M5-S2 已完成可选命名/目录政策、三类真实 Demo 故障、UE 5.8.1 v0.6 BuildPlugin、独立 PID 生命周期验证和 10 张当前版本 Slate 截图；
-- M6–M7 继续处理大批量交互、保存会话、团队交接、发布包与完整视觉证据，不为了复杂度强行加入 AI/PCG。
+- M6 已进入历史会话与回归对比：不可变归档和比较核心已实现，后续接入中文历史列表、基线选择与新增/持续/已解决视图；M7 处理发布包与最终视觉证据，不为了复杂度强行加入 AI/PCG。
 
 持续开发状态见 [`config/goal-state.json`](config/goal-state.json)，可恢复的 Codex `/goal` 提示词见
 [`docs/development/CODEX_PRODUCTIZATION_GOAL.md`](docs/development/CODEX_PRODUCTIZATION_GOAL.md)，完整路线见

@@ -4,7 +4,13 @@ import json
 from collections.abc import Callable
 from pathlib import Path
 
-from unreal_asset_batch_auditor import AuditProfile, BatchProgress, UnrealCppCollector, audit_assets
+from unreal_asset_batch_auditor import (
+    AuditProfile,
+    BatchProgress,
+    SessionStore,
+    UnrealCppCollector,
+    audit_assets,
+)
 
 
 def run(
@@ -15,6 +21,7 @@ def run(
     batch_size: int = 128,
     should_cancel: Callable[[], bool] | None = None,
     on_progress: Callable[[BatchProgress], None] | None = None,
+    session_root: str | None = None,
 ) -> dict:
     """Collect explicit Static Mesh paths through C++, evaluate in Python, and write a report."""
 
@@ -27,6 +34,8 @@ def run(
         on_progress=on_progress,
     )
     report.write(Path(output_path))
+    if session_root:
+        SessionStore(session_root).save_report(output_path)
     return report.to_dict()
 
 
@@ -39,4 +48,5 @@ def run_from_request_file(request_path: str) -> dict:
         asset_paths=[str(path) for path in request["asset_paths"]],
         output_path=str(request["output_path"]),
         batch_size=int(request.get("batch_size", 64)),
+        session_root=(str(request["session_root"]) if request.get("session_root") else None),
     )

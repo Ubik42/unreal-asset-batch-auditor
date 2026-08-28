@@ -556,6 +556,9 @@ FReply SUnrealAssetAuditPanel::RunAudit()
     TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
     Request->SetStringField(TEXT("profile_path"), ProfilePath);
     Request->SetStringField(TEXT("output_path"), ReportPath);
+    Request->SetStringField(
+        TEXT("session_root"),
+        FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Sessions")));
     Request->SetNumberField(TEXT("batch_size"), BatchSize);
     TArray<TSharedPtr<FJsonValue>> Paths;
     for (const FString& Path : SelectedAssetPaths)
