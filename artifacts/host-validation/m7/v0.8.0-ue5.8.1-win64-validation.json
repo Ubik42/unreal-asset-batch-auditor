@@ -1,0 +1,69 @@
+{
+  "schema_version": "unreal-audit-release-validation@1.0.0",
+  "created_at": "2026-08-28T05:02:44.5821011+00:00",
+  "release_label": "v0.8.0-ue5.8.1-win64",
+  "plugin_version": "0.8.0",
+  "tested_engine_version": "5.8.1",
+  "platform": "Win64",
+  "archive_path": "dist/UnrealAssetBatchAuditor-0.8.0-UE5.8-Win64.zip",
+  "archive_bytes": 485760,
+  "archive_sha256": "CD700ECC4501420227B6181ABF2E6E1B6850D3528A8CA7DA446CE2FA8A16C1F1",
+  "payload_tree_sha256": "28edb9e6f5b12a92f2bbf3eb3fa581e1776e4032e543ec3124ff97a3e23ec2ae",
+  "payload_file_count": 32,
+  "source_revision": "2b2049ce44db511577087b626bd0083c5089f48f",
+  "fresh_project_created": true,
+  "install": {
+    "independent_copy": true,
+    "project_descriptor_enabled": true,
+    "plugin_is_reparse_point": false,
+    "smoke": {
+      "phase": "install",
+      "pid": 45348,
+      "started_at": "2026-08-28T05:01:48.2338071+00:00",
+      "finished_at": "2026-08-28T05:02:16.1432252+00:00",
+      "duration_seconds": 27.909,
+      "timed_out": false,
+      "exit_code": 0,
+      "automation_test": "UnrealAssetBatchAuditor.ReleaseInstallSmoke",
+      "automation_passed": true,
+      "log_path": "artifacts/host-runtime/release-20260827-230147/FreshProject/Saved/Logs/UABAReleaseValidation.log",
+      "log_excerpt_path": "artifacts/host-validation/m7/v0.8.0-ue5.8.1-win64-install-log.txt",
+      "log_excerpt_sha256": "01079F9E3A04FE7DC78820B2A7235533241CFD95298B26CB04A7BF45D564CC8C"
+    }
+  },
+  "upgrade": {
+    "backup_created": true,
+    "smoke": {
+      "phase": "upgrade",
+      "pid": 15440,
+      "started_at": "2026-08-28T05:02:16.2312155+00:00",
+      "finished_at": "2026-08-28T05:02:43.9881887+00:00",
+      "duration_seconds": 27.757,
+      "timed_out": false,
+      "exit_code": 0,
+      "automation_test": "UnrealAssetBatchAuditor.ReleaseInstallSmoke",
+      "automation_passed": true,
+      "log_path": "artifacts/host-runtime/release-20260827-230147/FreshProject/Saved/Logs/UABAReleaseValidation.log",
+      "log_excerpt_path": "artifacts/host-validation/m7/v0.8.0-ue5.8.1-win64-upgrade-log.txt",
+      "log_excerpt_sha256": "86C3329CF378B110553E374C190AE04DEC406B488FFD55AA9510772A31E57879"
+    }
+  },
+  "uninstall": {
+    "plugin_directory_removed": true,
+    "recoverable_backup_created": true,
+    "project_descriptor_entry_removed": true
+  },
+  "report_path": "artifacts/host-validation/m7/v0.8.0-ue5.8.1-win64-report.json",
+  "report_sha256": "85D4F10195551D97A06D4C8DDE1BCF061BAC0597FC625890F6399918FD5196C7",
+  "existing_unreal_pids_before": [],
+  "created_unreal_pids": [
+    15440,
+    45348
+  ],
+  "existing_unreal_pids_after": [],
+  "existing_processes_survived": true,
+  "residual_created_processes": [],
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false,
+  "claims_cross_version_compatibility": false
+}

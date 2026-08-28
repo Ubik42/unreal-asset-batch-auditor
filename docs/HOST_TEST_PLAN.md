@@ -116,6 +116,21 @@ Python 在报告层完成。`-RenderOffscreen` 证据不声明人工鼠标交互
 但仍明确记录 `claims_user_interaction=false` 与 `claims_visible_editor_review=false`，不能代替录屏者的
 可见点击、停靠和取消时机验收。单个 C++ 批次仍是同步边界，本轮也不证明数千生产资产不会卡顿。
 
+## 2026-08-27 v0.8.0 发布安装验证
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| 最终 BuildPlugin | 通过；UE 5.8.1 Win64 Development Editor 从提交 `2b2049c` 完整编译 | `artifacts/host-build/UE_5.8.1-v0.8.0-release1`（本机忽略目录） |
+| 确定性发布 | 通过；32 个白名单 payload，同一输入两次 ZIP SHA-256 完全一致 | `artifacts/host-validation/m7/v0.8.0-ue5.8.1-win64-validation.json` |
+| 全新项目安装 | 通过；独立复制到全新 Project Plugins、更新 `.uproject`，非 Junction | 同上 |
+| 安装后真实烟雾 | 通过；生产 Tab spawner、中文面板、Python Profile 编排、C++ Cube 采集和 Report 落盘 | 同上与 `v0.8.0-ue5.8.1-win64-report.json` |
+| 升级后真实烟雾 | 通过；旧目录备份后再次由独立 UE 进程完成同一真实审计 | 同上 |
+| 可恢复卸载 | 通过；移除插件启用项和目标目录，保留插件与 `.uproject` 备份 | 同上 |
+| 进程隔离 | 通过；两个精确 PID 均正常退出，无本轮残留进程 | 同上 |
+
+发布 ZIP 的 SHA-256 为 `CD700ECC4501420227B6181ABF2E6E1B6850D3528A8CA7DA446CE2FA8A16C1F1`。
+该验证仍是隐藏宿主自动化，不声明人工鼠标点击；同时只覆盖 Windows 11、Win64 与 UE 5.8.1。
+
 本结果只覆盖记录的 UE 5.8.1 非生产宿主和 Engine 内容，不等价于 UE 5.4/5.5 兼容证明，也不等价于大规模生产性能证明。
 
 哈希证据使用仓库内只读脚本：

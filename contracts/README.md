@@ -34,3 +34,8 @@ failed 状态、对象/批次计数和最终产物路径。状态文件采用原
 
 `unreal-audit-handoff@1.0.0` 是 HTML/CSV 交接目录的清单，固定记录源 Report、Profile、宿主、验证边界、
 统计摘要和文件 SHA-256。导出器只消费已有 Report，不重新采集或修改资产。
+
+## 发布清单
+
+`unreal-audit-release@1.0.0` 描述可安装 ZIP 的插件版本、测试宿主、二进制兼容标识、源修订、payload
+逐文件 SHA-256 和整体 tree hash，并显式记录 Marketplace、跨版本兼容和 Engine 派生素材声明。

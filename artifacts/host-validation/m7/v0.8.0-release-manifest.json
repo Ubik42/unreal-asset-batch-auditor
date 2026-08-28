@@ -1,0 +1,181 @@
+{
+  "schema_version": "unreal-audit-release@1.0.0",
+  "plugin_name": "UnrealAssetBatchAuditor",
+  "plugin_version": "0.8.0",
+  "release_channel": "beta",
+  "platform": "Win64",
+  "tested_engine_version": "5.8.1",
+  "binary_engine_compatibility": "5.8.0",
+  "source_revision": "2b2049ce44db511577087b626bd0083c5089f48f",
+  "install_scope": "project_plugin",
+  "payload_file_count": 32,
+  "payload_bytes": 1705387,
+  "payload_tree_sha256": "28edb9e6f5b12a92f2bbf3eb3fa581e1776e4032e543ec3124ff97a3e23ec2ae",
+  "payload": [
+    {
+      "path": "LICENSE.txt",
+      "bytes": 1063,
+      "sha256": "70879b3537d1d8e79a757ef15ac9f6376d47a40e16325a8cdcfb6b8abb3419ad"
+    },
+    {
+      "path": "README_安装说明.md",
+      "bytes": 3183,
+      "sha256": "7e0fc22cc10f399ea87a9f1a141a4181b04a518e3b99fab1e79e14c08af2038f"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Binaries/Win64/UnrealEditor-UnrealAssetBatchAuditor.dll",
+      "bytes": 1503232,
+      "sha256": "390b825e717453448f403efa32f98127511e1b3df9e374fe5e8898e1bf4a85dd"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Binaries/Win64/UnrealEditor.modules",
+      "bytes": 124,
+      "sha256": "d5edf7c3721b464160e70f93c6cc49ea041accd3561233931b3d5b60d968e86b"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/init_unreal.py",
+      "bytes": 326,
+      "sha256": "e9984978aacd9995b39821ecca72dff0c435e53111e5395249fdb260aa8696e6"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/run_asset_audit.py",
+      "bytes": 2998,
+      "sha256": "c015bc3df6f18bffe05897738695124786fe87b6c329de2bc680f289e5b17539"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/unreal_asset_batch_auditor/__init__.py",
+      "bytes": 1546,
+      "sha256": "25103e4c75a9c77500a8d1052aaccdab5b3e34bbcc5061b8791f71800de3daed"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/unreal_asset_batch_auditor/audit.py",
+      "bytes": 14619,
+      "sha256": "a59d67e1e1f88154c88e88be7690245a17d354da4e67b47a0d1ed91620485600"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/unreal_asset_batch_auditor/batching.py",
+      "bytes": 2987,
+      "sha256": "b13f296ebe9c693d672695be0638804cc892665cbb1119bff867772f48bed4bc"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/unreal_asset_batch_auditor/benchmark.py",
+      "bytes": 2081,
+      "sha256": "070a24c557882367cb112432010e90aa08b272f8055de638ec4ed216d29cbab0"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/unreal_asset_batch_auditor/cli.py",
+      "bytes": 1030,
+      "sha256": "908ede3da4406031ae02acf158817123d86b23e8dff0bdee12eb2c9558c0881c"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/unreal_asset_batch_auditor/collectors.py",
+      "bytes": 5955,
+      "sha256": "dabb44adf8435929f4fb81bf73bf47ce3a3b406cbbe39699cf4f7b3046185ed0"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/unreal_asset_batch_auditor/contracts.py",
+      "bytes": 19884,
+      "sha256": "36163c1fae51a4d038528f17630b4255e3891b81bc2822737b967ae2430e0431"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/unreal_asset_batch_auditor/handoff.py",
+      "bytes": 13771,
+      "sha256": "8935d9eaf66ff4585e5166113ad09298305dad9cc7361c4518584630d0e25ada"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/unreal_asset_batch_auditor/panel_task.py",
+      "bytes": 10088,
+      "sha256": "b7dd855b77c1a7206bcf38e88d402c3b4c257202527b5332ad8fd4ec21194ac6"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Content/Python/unreal_asset_batch_auditor/sessions.py",
+      "bytes": 10809,
+      "sha256": "c94f496248b61c4fedb19d4f414fdfa1b226f72507b0d6137ecd518a678df1c6"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/LICENSE.txt",
+      "bytes": 1063,
+      "sha256": "70879b3537d1d8e79a757ef15ac9f6376d47a40e16325a8cdcfb6b8abb3419ad"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Resources/Profiles/desktop-balanced.v1.json",
+      "bytes": 688,
+      "sha256": "d27f226f321dae11611da79f386b1375bfcb7169b3f499b050d425f4790b019a"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Resources/Profiles/desktop-balanced.v2.json",
+      "bytes": 1285,
+      "sha256": "a2e7967b02a742e60726f8aab201fb1f3d2d0a0e8fe82809631efb24ee5bd96c"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Resources/Profiles/mobile-strict.v1.json",
+      "bytes": 693,
+      "sha256": "734e312eab881187361e1d347cd517be2b8081f3921a974d7f88c840613cf508"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Resources/Profiles/mobile-strict.v2.json",
+      "bytes": 1307,
+      "sha256": "4ba16744fcb04ab393611dc6821598cd612c10ff71fe2f9f14780cb82a239c5b"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Resources/Profiles/review-lenient.v1.json",
+      "bytes": 678,
+      "sha256": "b63667aa20617578d36e05239e2303645852863f77a3c8083997620b68883d6d"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Resources/Profiles/review-lenient.v2.json",
+      "bytes": 1233,
+      "sha256": "ab41424fed72523fc0dffa8ba661333ea416fb2c8cd87b42b3821d49b976fa7e"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Source/UnrealAssetBatchAuditor/Private/SUnrealAssetAuditPanel.cpp",
+      "bytes": 81471,
+      "sha256": "41231242b7c5db8e57ad28d4a9c261da23384aa035e7b6dbd3970a30523b4095"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Source/UnrealAssetBatchAuditor/Private/SUnrealAssetAuditPanel.h",
+      "bytes": 6703,
+      "sha256": "1a223f08ae112b2795997f76b443656437f4cfb0ed045f2748ad0155f403848d"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Source/UnrealAssetBatchAuditor/Private/UnrealAssetBatchAuditorLibrary.cpp",
+      "bytes": 3591,
+      "sha256": "64b22bca749097298f33e08f3c3cb5b6480ac647b963b3299a92e76de0e6bef7"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Source/UnrealAssetBatchAuditor/Private/UnrealAssetBatchAuditorModule.cpp",
+      "bytes": 2378,
+      "sha256": "e376e0d6755fee18d004dd907f9da2a9eb1fa84677e66e722f282fdad88f9271"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Source/UnrealAssetBatchAuditor/Public/UnrealAssetBatchAuditorLibrary.h",
+      "bytes": 2432,
+      "sha256": "355f2904de73153999f4df980c6b23cb899ce002fbc056703fb8a703f18e764b"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Source/UnrealAssetBatchAuditor/Public/UnrealAssetBatchAuditorModule.h",
+      "bytes": 404,
+      "sha256": "353d702cdde75a4e50d81a94b459a3c70f94cd6fa6e4744886b16a95d8969185"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/Source/UnrealAssetBatchAuditor/UnrealAssetBatchAuditor.Build.cs",
+      "bytes": 705,
+      "sha256": "12dfa09dc88502eee5e98b0149803ceacdb91ea1312236ee8679d01d3ff4b83d"
+    },
+    {
+      "path": "UnrealAssetBatchAuditor/UnrealAssetBatchAuditor.uplugin",
+      "bytes": 835,
+      "sha256": "0463ab7c0b0c74ff48e743445e73e448a48868ea5a2f5717b0b4822f9067caaf"
+    },
+    {
+      "path": "install-plugin.ps1",
+      "bytes": 6225,
+      "sha256": "37235aefa8d89656363e6c5088094450d31bfbbc80c978268008d9b92f592e69"
+    }
+  ],
+  "claims": {
+    "marketplace_ready": false,
+    "cross_version_compatible": false,
+    "contains_engine_derived_demo_assets": false
+  }
+}

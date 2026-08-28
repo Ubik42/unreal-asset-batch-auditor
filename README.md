@@ -2,6 +2,20 @@
 
 面向 Unreal 项目 Static Mesh 的只读批量审计工作台。项目 Profile 定义预算和预期，Editor-only C++ 模块批量采集元数据，Python 负责规则编排与 JSON 报告。扫描接口不保存资产、不重建网格，也不修改 Nanite。
 
+> **作品集可运行版本：v0.8.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.8.0) ·
+> [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
+
+![资产批量审计完整工作台](docs/images/workflow/v0.8/02-asset-overview.png)
+
+## 这个项目体现什么
+
+- **真实管线分层**：C++ 批量读取 Unreal 原生元数据，Python 负责项目规则、任务编排和报告，UI 不承载隐藏业务判断；
+- **上下文与证据设计**：Profile、Issue、Evidence、Report 均有版本化合同，每个问题都能追到实测值、期望值和规则指针；
+- **生产可靠性**：逐批任务、批次间取消、部分失败隔离、不可变会话和修复前后回归，不把“没有抛异常”当作成功；
+- **团队交付**：一键生成中文 HTML、Excel 可读 CSV 和 SHA-256 清单，无 Unreal 环境也能参与复核；
+- **可安装而非只在开发机运行**：发布 ZIP 经过确定性打包、全新项目安装、升级、卸载和两轮独立 UE 宿主验证。
+
 ## 三步完成资产审计
 
 ### 1. 选择项目检查规则
@@ -15,7 +29,7 @@
 
 在 Content Browser 中选择资产，读取当前选择后执行只读审计。资产总览不会隐藏通过项：同一批次内可以直接对比通过、需处理和采集失败对象，以及几何预算、碰撞、Lightmap 和问题数。
 
-![完整资产审计台账](docs/images/workflow/v0.8/02-asset-overview.png)
+![正在执行可观察批处理](docs/images/workflow/v0.8/13-running-batch-task.png)
 
 ### 3. 查看可追溯报告
 
@@ -144,7 +158,21 @@ Demo Profile 是为了形成清晰对比而模拟的项目数据，不代表行�
 插件安装包自带三套可直接选择的演示规则：`桌面平衡（推荐演示）`、`移动端严格`、`宽松复核`。
 普通用户不需要填写 JSON 路径；“导入自定义规则”只用于项目接入自己的 Profile。
 
-## Unreal 安装与编译
+## 安装
+
+### 推荐：直接使用发布包
+
+从 [GitHub Releases](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.8.0)
+下载 `UnrealAssetBatchAuditor-0.8.0-UE5.8-Win64.zip`，解压后执行：
+
+```powershell
+.\install-plugin.ps1 -Action Install -ProjectPath "<项目目录或 .uproject 路径>"
+```
+
+安装器会复制独立插件目录、备份并更新 `.uproject`。升级保留旧插件备份，卸载也可恢复；完整步骤见
+[发布包安装说明](docs/RELEASE_INSTALL.md)。
+
+### 从源码编译
 
 1. 把本仓复制或链接到 `<Project>/Plugins/UnrealAssetBatchAuditor`。
 2. 在项目 `.uproject` 中启用 `PythonScriptPlugin`，并启用本插件。
@@ -182,8 +210,16 @@ report = run(
 - M5-S1 已完成碰撞与 Lightmap Profile/Report v2、UE 5.8.1 BuildPlugin、真实宿主采集、只读哈希验证和 8 张当前版本 Slate 截图；
 - M5-S2 已完成可选命名/目录政策、三类真实 Demo 故障、UE 5.8.1 v0.6 BuildPlugin、独立 PID 生命周期验证和 10 张当前版本 Slate 截图；
 - M6-S1 已完成历史会话与回归对比：同 Profile 基线选择、不可变归档及新增/持续/已解决/失败分类；
-- M6-S2 已完成可观察批处理、批次间取消、合法部分报告与中文 HTML/CSV 团队包；60 项离线测试、UE 5.8.1 v0.8 BuildPlugin、独立宿主完整/取消生命周期、19 个任务产物和 15 张当前截图均已验证；
-- 下一阶段是干净安装与可发布插件包，不为了复杂度强行加入 AI/PCG，也不声明未经实测的其他 UE 版本兼容性。
+- M6-S2 已完成可观察批处理、批次间取消、合法部分报告与中文 HTML/CSV 团队包；
+- M7 已生成 32 文件白名单发布包，排除 Intermediate、PDB、pycache 和 Engine 派生 Demo 资产；相同输入双次打包哈希一致；
+- 最终 ZIP 已在两个独立 UE 5.8.1 进程中完成“全新安装”和“升级后启动”烟雾测试，均通过真实面板入口审计 `/Engine/BasicShapes/Cube`；卸载会移除启用项并保留可恢复备份；
+- 当前 63 项自动化测试、v0.8.0 `release1` BuildPlugin、15 张当前截图均通过；不声明 Marketplace 就绪或其他 UE 版本兼容性。
+
+## 许可证与演示素材
+
+源码使用 [MIT License](LICENSE)。仓库不再分发 Unreal Engine 派生 `.uasset`；24 个 Demo 网格由用户本机
+已安装的 Engine 内容通过确定性脚本复制到项目专用命名空间，生成器不会修改 `/Engine` 原件。Profile
+阈值是用于展示机制的模拟项目数据，不代表行业统一标准。
 
 持续开发状态见 [`config/goal-state.json`](config/goal-state.json)，可恢复的 Codex `/goal` 提示词见
 [`docs/development/CODEX_PRODUCTIZATION_GOAL.md`](docs/development/CODEX_PRODUCTIZATION_GOAL.md)，完整路线见
