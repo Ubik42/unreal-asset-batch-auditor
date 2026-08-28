@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import re
 from datetime import UTC, datetime
 from pathlib import Path
@@ -11,6 +12,9 @@ from unreal_asset_batch_auditor import UnrealCppCollector
 
 DEMO_ROOT = "/Game/UABADemo"
 ASSET_COUNT = 24
+DEMO_VARIANT = os.environ.get("UABA_DEMO_VARIANT", "current").strip().lower()
+if DEMO_VARIANT not in {"baseline", "current"}:
+    raise RuntimeError(f"Unsupported UABA_DEMO_VARIANT: {DEMO_VARIANT}")
 
 
 def _project_root() -> Path:
@@ -104,10 +108,10 @@ def _demo_location(index: int, source_name: str, default_group: str) -> tuple[st
     group = default_group
     asset_name = f"SM_UABA_{index:02d}_{safe_source_name}"
     policy_faults: list[str] = []
-    if index == 22:
+    if DEMO_VARIANT == "current" and index == 22:
         asset_name = f"BAD_UABA_{index:02d}_{safe_source_name}"
         policy_faults.append("invalid_object_name")
-    if index == 23:
+    if DEMO_VARIANT == "current" and index == 23:
         group = "Developers"
         policy_faults.append("forbidden_package_segment")
     return group, asset_name, policy_faults
@@ -130,19 +134,28 @@ def main() -> None:
             index, source.asset_name, default_group
         )
         destination = f"{DEMO_ROOT}/{group}/{asset_name}"
-        legacy_name = f"SM_UABA_{index:02d}_{_safe_name(source.asset_name)}"
-        legacy_destination = f"{DEMO_ROOT}/{default_group}/{legacy_name}"
+        standard_name = f"SM_UABA_{index:02d}_{_safe_name(source.asset_name)}"
+        candidates = {
+            f"{DEMO_ROOT}/{default_group}/{standard_name}",
+            f"{DEMO_ROOT}/{default_group}/BAD_UABA_{index:02d}_{_safe_name(source.asset_name)}",
+            f"{DEMO_ROOT}/Developers/{standard_name}",
+        }
+        for stale_destination in sorted(candidates - {destination}):
+            if (
+                unreal.EditorAssetLibrary.does_asset_exist(stale_destination)
+                and not unreal.EditorAssetLibrary.delete_asset(stale_destination)
+            ):
+                raise RuntimeError(f"Could not remove generated variant: {stale_destination}")
+        # Always restore from the Engine source so switching variants is deterministic.
         if (
-            legacy_destination != destination
-            and unreal.EditorAssetLibrary.does_asset_exist(legacy_destination)
-            and not unreal.EditorAssetLibrary.delete_asset(legacy_destination)
+            unreal.EditorAssetLibrary.does_asset_exist(destination)
+            and not unreal.EditorAssetLibrary.delete_asset(destination)
         ):
-            raise RuntimeError(f"Could not remove legacy generated asset: {legacy_destination}")
-        if not unreal.EditorAssetLibrary.does_asset_exist(destination):
-            duplicated = unreal.EditorAssetLibrary.duplicate_asset(source.asset_path, destination)
-            if duplicated is None:
-                raise RuntimeError(f"Could not duplicate {source.asset_path} to {destination}")
-        intentional_variation = index == ASSET_COUNT
+            raise RuntimeError(f"Could not refresh generated asset: {destination}")
+        duplicated = unreal.EditorAssetLibrary.duplicate_asset(source.asset_path, destination)
+        if duplicated is None:
+            raise RuntimeError(f"Could not duplicate {source.asset_path} to {destination}")
+        intentional_variation = DEMO_VARIANT == "current" and index == ASSET_COUNT
         if intentional_variation:
             demo_asset = unreal.EditorAssetLibrary.load_asset(destination)
             if not isinstance(demo_asset, unreal.StaticMesh):
@@ -184,6 +197,7 @@ def main() -> None:
         "created_at": datetime.now(UTC).isoformat(),
         "engine_version": collector.host_engine_version,
         "project_kind": "recording_demo_non_production",
+        "demo_variant": DEMO_VARIANT,
         "asset_root": DEMO_ROOT,
         "asset_count": len(entries),
         "source_inventory_count": len(source_batch.assets),
@@ -201,12 +215,20 @@ def main() -> None:
             "Demo assets are project-owned duplicates; Engine source assets are never modified.",
             "Folder names describe relative source complexity, not audit pass/fail status.",
             "All demo thresholds are training values and are not studio standards.",
-            "Asset 22 intentionally violates the object-name policy.",
-            "Asset 23 intentionally lives under the forbidden Developers segment.",
-            "Asset 24 is an explicitly labeled project-owned collision and resolution fault.",
+            (
+                "Current variant: assets 22-24 introduce naming, directory, collision, and "
+                "Lightmap resolution faults."
+                if DEMO_VARIANT == "current"
+                else "Baseline variant: assets 22-24 remain unmodified reference duplicates."
+            ),
         ],
     }
-    manifest_path = _project_root() / "demo-asset-manifest.json"
+    manifest_name = (
+        "demo-baseline-asset-manifest.json"
+        if DEMO_VARIANT == "baseline"
+        else "demo-asset-manifest.json"
+    )
+    manifest_path = _project_root() / manifest_name
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     unreal.log(
         f"UABA_DEMO_GENERATION_OK assets={len(entries)} "

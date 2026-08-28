@@ -14,8 +14,9 @@ cd D:\3D\_tools\unreal-asset-batch-auditor
 .\scripts\prepare_demo.ps1 -EngineRoot "C:\Program Files\Epic Games\UE_5.8"
 ```
 
-它会依次完成：BuildPlugin、把打包插件链接到 Demo Project、幂等生成 24 个项目资产、执行
-三套 Profile，并把报告写入 `artifacts/demo/`。它不会删除已有 Demo 资产。
+它会依次完成：BuildPlugin、把打包插件链接到 Demo Project、重建插件专用 `/Game/UABADemo`
+演示资产、执行一轮基线审计和一轮故障审计、再执行三套 Profile，并把报告写入
+`artifacts/demo/`。脚本只清理自己确定性生成的保留路径，不触碰 `/Engine` 源资产或其他项目内容。
 
 ## 2. 打开录屏工程
 
@@ -47,6 +48,22 @@ D:\3D\_tools\unreal-asset-batch-auditor\Demo\UABADemo.uproject
 7. 切换“问题明细”，用搜索框筛选规则、证据说明或资产名，并对照实测值与 Profile 阈值；
 8. 点击“打开最新报告”直接查看 JSON，或点击“打开报告目录”进入本次报告所在目录。
 
+## 4. 展示修复前后回归对比
+
+`prepare_demo.ps1` 已经为“桌面平衡”生成两个同 Profile 真实会话：基线轮保持第 22–24 个副本
+为原始状态，当前轮再注入错误命名、禁用目录、无简单碰撞和低 Lightmap 分辨率。
+
+1. 保持“桌面平衡（推荐演示）”；
+2. 在“回归基线（同一 Profile）”下拉框选择较早的 `41 个问题` 会话；
+3. 点击“与所选基线比较”，再切换顶部“回归对比”；
+4. 依次指出 `新增 10`、`持续 35`、`已解决 6` 和 `失败变化 2`；
+5. 在搜索框输入“已解决”，展示因资产路径变化而从旧稳定标识中消失的 6 条历史问题；
+6. 点击“打开会话目录”，展示不可变 Reports、`session-index.v1.json` 与
+   `latest-comparison.v1.json`。
+
+“已解决”表示当前 `asset_path + rule_id` 不再命中，不等于插件替用户修复了资产。命名或移动导致
+稳定路径改变时，旧路径会归类为已解决、新路径上的命中会归类为新增，这一语义需要在团队接入时明确。
+
 桌面平衡 v2 场景应显示：24 个资产完成真实采集，5 个资产通过，45 条 Issue。面板审计只处理当前选择，
 所以不会凭空加入不存在路径。若同时选中一个 Material，它会被显示为“采集失败”，其余网格仍继续完成。
 
@@ -66,7 +83,7 @@ Demo/Saved/UABAAudit/demo-desktop-balanced-v2-report.json
 artifacts/demo/demo-desktop-balanced-v2-report.json
 ```
 
-## 4. 展示“规则来自项目”
+## 5. 展示“规则来自项目”
 
 回到面板，对同一批选择依次切换“移动端严格”和“宽松复核”后重复审计。
 
@@ -75,7 +92,7 @@ artifacts/demo/demo-desktop-balanced-v2-report.json
 
 不要说“移动端标准就是这些数值”。正确说法是：“这是为了演示 Profile 驱动机制而模拟的项目阈值。”
 
-## 5. 如何阅读报告
+## 6. 如何阅读报告
 
 报告的重要区域：
 
@@ -87,13 +104,15 @@ artifacts/demo/demo-desktop-balanced-v2-report.json
 - `issues`：规则、严重度、消息与 Evidence ID；
 - `evidence`：观测值、期望值和 Profile JSON Pointer；
 - `collection_failures`：类型错误与不存在路径；
+- `Sessions/session-index.v1.json`：按时间倒序的轻量历史索引和报告 SHA-256；
+- `Sessions/latest-comparison.v1.json`：新增、持续、已解决与失败变化；
 - `requested/processed/cancelled`：本次批次执行统计；
 - `real_unreal_validation=true`：数据来自真实 Unreal Editor；
 - Session 的 `integrity.unchanged=true`：本次扫描没有改写演示资产。
 
-## 6. 重新生成与故障处理
+## 7. 重新生成与故障处理
 
-- 资产生成器是幂等的，重复执行会复用 `/Game/UABADemo` 中的资产并重新核对元数据；
+- 资产生成器是确定性的，重复执行会在插件保留命名空间内从 Engine 源重新生成副本并核对元数据；
 - 24 个资产均从本机 Engine 内容复制为项目资产；第 24 个项目副本被明确改造成“无简单碰撞、Lightmap 分辨率 8”的故障素材，Engine 原件不受影响；
 - 第 22 个副本故意命名为 `BAD_UABA_...`，第 23 个副本故意位于 `Developers`；生成器升级时只清理这两个保留命名空间中的旧生成副本，随后可确定性重建；
 - 如果插件未加载，先关闭 Editor，重新执行 `prepare_demo.ps1`；

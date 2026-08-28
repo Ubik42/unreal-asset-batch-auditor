@@ -1,0 +1,9 @@
+LogCsvProfiler: Display: Metadata set : engineversion="5.8.1-56057345+++UE5+Release-5.8"
+LogCsvProfiler: Display: Metadata set : commandline="" D:\3D\_tools\unreal-asset-batch-auditor\artifacts\host-runtime\panel-20260827-221030\UnrealAssetBatchAuditorHost.uproject -ExecCmds="Automation RunTests UnrealAssetBatchAuditor.PanelEvidence" -TestExit="Automation Test Queue Empty" -unattended -nop4 -nosplash -RenderOffscreen""
+LogInit: Command Line: -ExecCmds="Automation RunTests UnrealAssetBatchAuditor.PanelEvidence" -TestExit="Automation Test Queue Empty" -unattended -nop4 -nosplash -RenderOffscreen
+[2026.08.28-04.10.59:461][177]LogAutomationCommandLine: Display: Found 1 automation tests based on 'UnrealAssetBatchAuditor.PanelEvidence'
+[2026.08.28-04.10.59:465][177]LogAutomationController: Display: Test Started. Name={PanelEvidence} Path={UnrealAssetBatchAuditor.PanelEvidence}
+[2026.08.28-04.10.59:877][179]LogAutomationController: Display: Test Completed. Result={Success} Name={PanelEvidence} Path={UnrealAssetBatchAuditor.PanelEvidence}
+[2026.08.28-04.10.59:879][180]LogAutomationCommandLine: Display: ...Automation Test Queue Empty 1 tests performed.
+[2026.08.28-04.10.59:879][180]LogExit: Display: **** TestExit: Automation Test Queue Empty ****
+[2026.08.28-04.10.59:879][180]LogCore: Engine exit requested (reason: Win RequestExit)

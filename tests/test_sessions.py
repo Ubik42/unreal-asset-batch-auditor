@@ -130,3 +130,64 @@ def test_comparison_classifies_new_persistent_resolved_and_failures(tmp_path: Pa
     assert [item["asset_path"] for item in result.resolved_failures] == [
         "/Game/OldFailure.OldFailure"
     ]
+
+
+def test_latest_comparison_uses_previous_session_with_same_profile(tmp_path: Path) -> None:
+    store = SessionStore(tmp_path / "Sessions")
+    baseline = tmp_path / "baseline.json"
+    unrelated = tmp_path / "unrelated.json"
+    current = tmp_path / "current.json"
+    _report(
+        baseline,
+        report_id="baseline",
+        created_at="2026-08-28T01:00:00+00:00",
+        issues=[("/Game/A.A", "rule.a")],
+        failures=[],
+    )
+    _report(
+        unrelated,
+        report_id="unrelated",
+        created_at="2026-08-28T02:00:00+00:00",
+        issues=[],
+        failures=[],
+    )
+    unrelated_raw = json.loads(unrelated.read_text(encoding="utf-8"))
+    unrelated_raw["profile_id"] = "other-profile"
+    unrelated.write_text(json.dumps(unrelated_raw), encoding="utf-8")
+    _report(
+        current,
+        report_id="current",
+        created_at="2026-08-28T03:00:00+00:00",
+        issues=[("/Game/B.B", "rule.b")],
+        failures=[],
+    )
+    store.save_report(baseline)
+    store.save_report(unrelated)
+    current_record = store.save_report(current)
+
+    payload = store.write_latest_comparison(current_record)
+
+    assert payload["status"] == "ready"
+    assert payload["baseline_report_id"] == "baseline"
+    assert payload["current_report_id"] == "current"
+    assert payload["new_issues"][0]["asset_path"] == "/Game/B.B"
+    assert payload["resolved_issues"][0]["asset_path"] == "/Game/A.A"
+
+
+def test_first_session_writes_localized_no_baseline_state(tmp_path: Path) -> None:
+    source = tmp_path / "first.json"
+    _report(
+        source,
+        report_id="first",
+        created_at="2026-08-28T01:00:00+00:00",
+        issues=[],
+        failures=[],
+    )
+    store = SessionStore(tmp_path / "Sessions")
+    record = store.save_report(source)
+
+    payload = store.write_latest_comparison(record)
+
+    assert payload["status"] == "no_baseline"
+    assert "下一次审计" in payload["message"]
+    assert (store.root / "latest-comparison.v1.json").is_file()

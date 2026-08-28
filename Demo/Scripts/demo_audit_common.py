@@ -29,10 +29,15 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def run_demo(profile_filename: str) -> dict:
+def run_demo(
+    profile_filename: str,
+    *,
+    manifest_filename: str = "demo-asset-manifest.json",
+    output_stem: str | None = None,
+) -> dict:
     project_root = _project_root()
     repo_root = project_root.parent
-    manifest_path = project_root / "demo-asset-manifest.json"
+    manifest_path = project_root / manifest_filename
     profile_path = project_root / "Profiles" / profile_filename
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     valid_paths = list(manifest["valid_asset_paths"])
@@ -60,7 +65,7 @@ def run_demo(profile_filename: str) -> dict:
     changed = sorted(path for path in valid_paths if before[path] != after[path])
     saved_root = project_root / "Saved" / "UABAAudit"
     artifact_root = repo_root / "artifacts" / "demo"
-    report_name = f"{report.profile_id}-report.json"
+    report_name = f"{output_stem or report.profile_id}-report.json"
     report.write(saved_root / report_name)
     report.write(artifact_root / report_name)
 
@@ -89,7 +94,7 @@ def run_demo(profile_filename: str) -> dict:
             str(artifact_root / report_name),
         ],
     }
-    session_name = f"{report.profile_id}-session.json"
+    session_name = f"{output_stem or report.profile_id}-session.json"
     saved_root.mkdir(parents=True, exist_ok=True)
     artifact_root.mkdir(parents=True, exist_ok=True)
     (saved_root / session_name).write_text(json.dumps(session, indent=2) + "\n", encoding="utf-8")

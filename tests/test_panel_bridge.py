@@ -74,3 +74,58 @@ def test_native_panel_exposes_complete_asset_ledger_and_issue_detail_views() -> 
     assert 'TEXT("session_root")' in source
     assert 'TEXT("三角形")' in source
     assert 'TEXT("材质槽")' in source
+    assert 'TEXT("回归对比")' in source
+    assert 'TEXT("回归基线（同一 Profile）")' in source
+    assert 'TEXT("与所选基线比较")' in source
+
+
+def test_panel_comparison_request_writes_versioned_result(tmp_path: Path) -> None:
+    def report(report_id: str, issues: list[dict]) -> dict:
+        return {
+            "schema_version": "unreal-asset-audit@2.0.0",
+            "report_id": report_id,
+            "created_at": "2026-08-28T01:00:00+00:00",
+            "profile_id": "desktop",
+            "profile_version": "2.0.0",
+            "asset_count": 1,
+            "issue_count": len(issues),
+            "collection_failure_count": 0,
+            "issues": issues,
+            "collection_failures": [],
+        }
+
+    baseline = report("baseline", [])
+    current = report(
+        "current",
+        [
+            {
+                "asset_path": "/Game/A.A",
+                "rule_id": "static_mesh.material_slots",
+                "severity": "warning",
+                "message": "Material slots exceed limit.",
+            }
+        ],
+    )
+    baseline_path = tmp_path / "baseline.json"
+    current_path = tmp_path / "current.json"
+    output_path = tmp_path / "comparison.json"
+    request_path = tmp_path / "request.json"
+    baseline_path.write_text(json.dumps(baseline), encoding="utf-8")
+    current_path.write_text(json.dumps(current), encoding="utf-8")
+    request_path.write_text(
+        json.dumps(
+            {
+                "baseline_report_path": str(baseline_path),
+                "current_report_path": str(current_path),
+                "output_path": str(output_path),
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_asset_audit.compare_from_request_file(str(request_path))
+
+    assert result["schema_version"] == "unreal-audit-comparison@1.0.0"
+    assert result["status"] == "ready"
+    assert len(result["new_issues"]) == 1
+    assert json.loads(output_path.read_text(encoding="utf-8")) == result

@@ -10,6 +10,7 @@ from unreal_asset_batch_auditor import (
     SessionStore,
     UnrealCppCollector,
     audit_assets,
+    compare_reports,
 )
 
 
@@ -35,7 +36,9 @@ def run(
     )
     report.write(Path(output_path))
     if session_root:
-        SessionStore(session_root).save_report(output_path)
+        store = SessionStore(session_root)
+        session = store.save_report(output_path)
+        store.write_latest_comparison(session)
     return report.to_dict()
 
 
@@ -50,3 +53,19 @@ def run_from_request_file(request_path: str) -> dict:
         batch_size=int(request.get("batch_size", 64)),
         session_root=(str(request["session_root"]) if request.get("session_root") else None),
     )
+
+
+def compare_from_request_file(request_path: str) -> dict:
+    """Compare two immutable reports selected by the native panel and write JSON output."""
+
+    request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+    result = compare_reports(
+        str(request["baseline_report_path"]), str(request["current_report_path"])
+    ).to_dict()
+    result["status"] = "ready"
+    destination = Path(str(request["output_path"]))
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temp = destination.with_suffix(destination.suffix + ".tmp")
+    temp.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    temp.replace(destination)
+    return result

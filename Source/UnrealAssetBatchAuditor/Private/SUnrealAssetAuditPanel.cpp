@@ -120,6 +120,38 @@ FText AssetStatusLabel(const FString& Status)
     if (Status == TEXT("issue")) return FText::FromString(TEXT("需处理"));
     return FText::FromString(TEXT("通过"));
 }
+
+FText ComparisonChangeLabel(const FString& ChangeType)
+{
+    if (ChangeType == TEXT("new")) return FText::FromString(TEXT("新增"));
+    if (ChangeType == TEXT("persistent")) return FText::FromString(TEXT("持续"));
+    if (ChangeType == TEXT("resolved")) return FText::FromString(TEXT("已解决"));
+    if (ChangeType == TEXT("new_failure")) return FText::FromString(TEXT("新增失败"));
+    if (ChangeType == TEXT("persistent_failure")) return FText::FromString(TEXT("持续失败"));
+    return FText::FromString(TEXT("失败已恢复"));
+}
+
+FLinearColor ComparisonChangeColor(const FString& ChangeType)
+{
+    if (ChangeType == TEXT("new") || ChangeType == TEXT("new_failure")) return RedAccent;
+    if (ChangeType == TEXT("persistent") || ChangeType == TEXT("persistent_failure")) return AmberAccent;
+    return GreenAccent;
+}
+
+FString LocalizedComparisonMessage(const FString& ChangeType)
+{
+    if (ChangeType == TEXT("new"))
+        return TEXT("当前审计首次触发该规则，请检查资产改动或确认 Profile 阈值。");
+    if (ChangeType == TEXT("persistent"))
+        return TEXT("基线与当前审计均触发该规则，问题仍未关闭。");
+    if (ChangeType == TEXT("resolved"))
+        return TEXT("当前审计不再触发该规则，修复结果已记录。");
+    if (ChangeType == TEXT("new_failure"))
+        return TEXT("当前审计新增采集失败；该资产未参与规则评估。");
+    if (ChangeType == TEXT("persistent_failure"))
+        return TEXT("该资产在基线与当前审计中均采集失败，需要修复采集边界。");
+    return TEXT("当前审计已恢复采集，该资产重新进入规则评估。");
+}
 }
 
 class SAuditIssueRow final : public SMultiColumnTableRow<SUnrealAssetAuditPanel::FIssuePtr>
@@ -216,6 +248,59 @@ private:
     SUnrealAssetAuditPanel::FAssetPtr Item;
 };
 
+class SAuditComparisonRow final
+    : public SMultiColumnTableRow<SUnrealAssetAuditPanel::FComparisonPtr>
+{
+public:
+    SLATE_BEGIN_ARGS(SAuditComparisonRow) {}
+        SLATE_ARGUMENT(SUnrealAssetAuditPanel::FComparisonPtr, Item)
+    SLATE_END_ARGS()
+
+    void Construct(const FArguments& InArgs, const TSharedRef<STableViewBase>& OwnerTable)
+    {
+        Item = InArgs._Item;
+        SMultiColumnTableRow::Construct(
+            FSuperRowType::FArguments().Padding(FMargin(4.0f, 3.0f)), OwnerTable);
+    }
+
+    virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& ColumnName) override
+    {
+        if (ColumnName == TEXT("Change"))
+        {
+            return SNew(STextBlock)
+                .Text(ComparisonChangeLabel(Item->ChangeType))
+                .ColorAndOpacity(ComparisonChangeColor(Item->ChangeType))
+                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")));
+        }
+        if (ColumnName == TEXT("Asset"))
+        {
+            FString Name;
+            Item->AssetPath.Split(TEXT("."), nullptr, &Name, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+            return SNew(STextBlock)
+                .Text(FText::FromString(Name.IsEmpty() ? Item->AssetPath : Name))
+                .ToolTipText(FText::FromString(Item->AssetPath));
+        }
+        if (ColumnName == TEXT("Rule"))
+        {
+            return SNew(STextBlock)
+                .Text(RuleLabel(Item->RuleId))
+                .ToolTipText(FText::FromString(Item->RuleId));
+        }
+        if (ColumnName == TEXT("Severity"))
+        {
+            return SNew(STextBlock)
+                .Text(SeverityLabel(Item->Severity))
+                .ColorAndOpacity(SeverityColor(Item->Severity));
+        }
+        return SNew(STextBlock)
+            .Text(FText::FromString(Item->Message))
+            .ToolTipText(FText::FromString(Item->Message));
+    }
+
+private:
+    SUnrealAssetAuditPanel::FComparisonPtr Item;
+};
+
 void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
 {
     const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("UnrealAssetBatchAuditor"));
@@ -238,6 +323,8 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
     };
     SelectedProfile = ProfileOptions[0];
     ReportPath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Reports/latest-report.json"));
+    SessionRoot = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Sessions"));
+    ComparisonPath = FPaths::Combine(SessionRoot, TEXT("latest-comparison.v1.json"));
     StatusMessage = TEXT("选择 Static Mesh，然后开始只读审计");
 
     ChildSlot
@@ -346,6 +433,29 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         [
                             SNew(SSpinBox<int32>).MinValue(1).MaxValue(1024).Value(BatchSize).OnValueChanged_Lambda([this](int32 Value) { BatchSize = Value; })
                         ]
+                        + SVerticalBox::Slot().AutoHeight().Padding(0, 18, 0, 4)
+                        [
+                            SNew(STextBlock)
+                            .Text(FText::FromString(TEXT("回归基线（同一 Profile）")))
+                            .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                        ]
+                        + SVerticalBox::Slot().AutoHeight()
+                        [
+                            SAssignNew(SessionComboBox, SComboBox<FSessionPtr>)
+                            .OptionsSource(&SessionOptions)
+                            .OnGenerateWidget(this, &SUnrealAssetAuditPanel::GenerateSessionOption)
+                            .OnSelectionChanged(this, &SUnrealAssetAuditPanel::HandleSessionChanged)
+                            [
+                                SNew(STextBlock).Text(this, &SUnrealAssetAuditPanel::GetSelectedSessionLabel)
+                            ]
+                        ]
+                        + SVerticalBox::Slot().AutoHeight().Padding(0, 6, 0, 0)
+                        [
+                            SNew(SButton)
+                            .Text(FText::FromString(TEXT("与所选基线比较")))
+                            .IsEnabled(this, &SUnrealAssetAuditPanel::CanRunComparison)
+                            .OnClicked(this, &SUnrealAssetAuditPanel::RunComparison)
+                        ]
                         + SVerticalBox::Slot().FillHeight(1)
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 16, 0, 0)
                         [
@@ -378,7 +488,7 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                             SNew(SButton)
                             .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
                             .Text(FText::FromString(TEXT("资产总览")))
-                            .ForegroundColor_Lambda([this] { return bShowingAssetOverview ? FSlateColor(CyanAccent) : FSlateColor::UseForeground(); })
+                            .ForegroundColor_Lambda([this] { return ResultViewMode == 0 ? FSlateColor(CyanAccent) : FSlateColor::UseForeground(); })
                             .OnClicked(this, &SUnrealAssetAuditPanel::ShowAssetOverview)
                         ]
                         + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
@@ -386,8 +496,16 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                             SNew(SButton)
                             .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
                             .Text(FText::FromString(TEXT("问题明细")))
-                            .ForegroundColor_Lambda([this] { return bShowingAssetOverview ? FSlateColor::UseForeground() : FSlateColor(CyanAccent); })
+                            .ForegroundColor_Lambda([this] { return ResultViewMode == 1 ? FSlateColor(CyanAccent) : FSlateColor::UseForeground(); })
                             .OnClicked(this, &SUnrealAssetAuditPanel::ShowIssueDetails)
+                        ]
+                        + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                        [
+                            SNew(SButton)
+                            .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                            .Text(FText::FromString(TEXT("回归对比")))
+                            .ForegroundColor_Lambda([this] { return ResultViewMode == 2 ? FSlateColor(CyanAccent) : FSlateColor::UseForeground(); })
+                            .OnClicked(this, &SUnrealAssetAuditPanel::ShowComparison)
                         ]
                         + SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center).Padding(12, 0, 0, 0)
                         [
@@ -446,6 +564,62 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                                 + SHeaderRow::Column(TEXT("Message")).DefaultLabel(FText::FromString(TEXT("证据说明"))).FillWidth(0.34f)
                             )
                         ]
+                        + SOverlay::Slot()
+                        [
+                            SNew(SVerticalBox)
+                            .Visibility(this, &SUnrealAssetAuditPanel::GetComparisonViewVisibility)
+                            + SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 8)
+                            [
+                                SNew(SBorder)
+                                .BorderImage(FAppStyle::GetBrush(TEXT("Brushes.Header")))
+                                .BorderBackgroundColor(FLinearColor(0.05f, 0.10f, 0.12f, 1.0f))
+                                .Padding(FMargin(12, 9))
+                                [
+                                    SNew(SVerticalBox)
+                                    + SVerticalBox::Slot().AutoHeight()
+                                    [
+                                        SNew(STextBlock)
+                                        .Text(FText::FromString(TEXT("同一 Profile 的质量变化")))
+                                        .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+                                        .ColorAndOpacity(CyanAccent)
+                                    ]
+                                    + SVerticalBox::Slot().AutoHeight().Padding(0, 3, 0, 0)
+                                    [
+                                        SNew(STextBlock)
+                                        .Text(this, &SUnrealAssetAuditPanel::GetComparisonBaselineText)
+                                        .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                                    ]
+                                ]
+                            ]
+                            + SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 8)
+                            [
+                                SNew(SHorizontalBox)
+                                + SHorizontalBox::Slot().FillWidth(1)
+                                [BuildSummaryCell(FText::FromString(TEXT("新增问题")), TAttribute<FText>::CreateSP(this, &SUnrealAssetAuditPanel::GetNewIssueCountText), RedAccent)]
+                                + SHorizontalBox::Slot().FillWidth(1).Padding(6, 0)
+                                [BuildSummaryCell(FText::FromString(TEXT("持续问题")), TAttribute<FText>::CreateSP(this, &SUnrealAssetAuditPanel::GetPersistentIssueCountText), AmberAccent)]
+                                + SHorizontalBox::Slot().FillWidth(1).Padding(6, 0)
+                                [BuildSummaryCell(FText::FromString(TEXT("已解决")), TAttribute<FText>::CreateSP(this, &SUnrealAssetAuditPanel::GetResolvedIssueCountText), GreenAccent)]
+                                + SHorizontalBox::Slot().FillWidth(1)
+                                [BuildSummaryCell(FText::FromString(TEXT("失败变化")), TAttribute<FText>::CreateSP(this, &SUnrealAssetAuditPanel::GetFailureChangeCountText), CyanAccent)]
+                            ]
+                            + SVerticalBox::Slot().FillHeight(1)
+                            [
+                                SAssignNew(ComparisonList, SListView<FComparisonPtr>)
+                                .ListItemsSource(&FilteredComparisons)
+                                .SelectionMode(ESelectionMode::Single)
+                                .OnGenerateRow(this, &SUnrealAssetAuditPanel::GenerateComparisonRow)
+                                .HeaderRow
+                                (
+                                    SNew(SHeaderRow)
+                                    + SHeaderRow::Column(TEXT("Change")).DefaultLabel(FText::FromString(TEXT("变化"))).FixedWidth(82)
+                                    + SHeaderRow::Column(TEXT("Asset")).DefaultLabel(FText::FromString(TEXT("资产"))).FillWidth(0.25f)
+                                    + SHeaderRow::Column(TEXT("Rule")).DefaultLabel(FText::FromString(TEXT("检查项"))).FillWidth(0.18f)
+                                    + SHeaderRow::Column(TEXT("Severity")).DefaultLabel(FText::FromString(TEXT("级别"))).FixedWidth(68)
+                                    + SHeaderRow::Column(TEXT("Message")).DefaultLabel(FText::FromString(TEXT("变化说明"))).FillWidth(0.39f)
+                                )
+                            ]
+                        ]
                     ]
                     + SVerticalBox::Slot().AutoHeight()
                     [
@@ -473,6 +647,10 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                             [
                                 SNew(SButton).Text(FText::FromString(TEXT("打开报告目录"))).OnClicked(this, &SUnrealAssetAuditPanel::OpenReportFolder)
                             ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                            [
+                                SNew(SButton).Text(FText::FromString(TEXT("打开会话目录"))).OnClicked(this, &SUnrealAssetAuditPanel::OpenSessionFolder)
+                            ]
                         ]
                     ]
                 ]
@@ -481,6 +659,13 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
     ];
 
     RefreshSelection();
+    if (FPaths::FileExists(ReportPath))
+    {
+        FString LoadError;
+        LoadReport(ReportPath, LoadError);
+        LoadSessionIndex(LoadError);
+        if (FPaths::FileExists(ComparisonPath)) LoadComparison(ComparisonPath, LoadError);
+    }
 }
 
 TSharedRef<SWidget> SUnrealAssetAuditPanel::BuildSummaryCell(
@@ -558,7 +743,7 @@ FReply SUnrealAssetAuditPanel::RunAudit()
     Request->SetStringField(TEXT("output_path"), ReportPath);
     Request->SetStringField(
         TEXT("session_root"),
-        FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Sessions")));
+        SessionRoot);
     Request->SetNumberField(TEXT("batch_size"), BatchSize);
     TArray<TSharedPtr<FJsonValue>> Paths;
     for (const FString& Path : SelectedAssetPaths)
@@ -605,6 +790,9 @@ FReply SUnrealAssetAuditPanel::RunAudit()
         StatusMessage = FString::Printf(TEXT("报告读取失败：%s"), *Error);
         return FReply::Handled();
     }
+    FString SessionError;
+    LoadSessionIndex(SessionError);
+    if (FPaths::FileExists(ComparisonPath)) LoadComparison(ComparisonPath, SessionError);
     StatusMessage = FString::Printf(TEXT("审计完成 · %d 个资产 · %d 个问题"), AssetCount, IssueCount);
     return FReply::Handled();
 }
@@ -628,7 +816,10 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
     AssetCount = Root->GetIntegerField(TEXT("asset_count"));
     IssueCount = Root->GetIntegerField(TEXT("issue_count"));
     FailureCount = Root->GetIntegerField(TEXT("collection_failure_count"));
-    bShowingAssetOverview = true;
+    ResultViewMode = 0;
+    CurrentProfileId = Root->GetStringField(TEXT("profile_id"));
+    CurrentProfileVersion = Root->GetStringField(TEXT("profile_version"));
+    CurrentReportCreatedAt = Root->GetStringField(TEXT("created_at"));
     AllIssues.Reset();
     AllAssets.Reset();
     TSet<FString> AssetsWithIssues;
@@ -744,16 +935,158 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
     return true;
 }
 
+bool SUnrealAssetAuditPanel::LoadSessionIndex(FString& OutError)
+{
+    SessionOptions.Reset();
+    SelectedSession.Reset();
+    const FString IndexPath = FPaths::Combine(SessionRoot, TEXT("session-index.v1.json"));
+    FString Json;
+    if (!FFileHelper::LoadFileToString(Json, *IndexPath))
+    {
+        OutError = TEXT("当前 Profile 尚无历史会话");
+        if (SessionComboBox.IsValid()) SessionComboBox->RefreshOptions();
+        return false;
+    }
+    TSharedPtr<FJsonObject> Root;
+    const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
+    if (!FJsonSerializer::Deserialize(Reader, Root) || !Root.IsValid()
+        || Root->GetStringField(TEXT("schema_version")) != TEXT("unreal-audit-session-index@1.0.0"))
+    {
+        OutError = TEXT("会话索引格式无效；历史报告没有被删除");
+        if (SessionComboBox.IsValid()) SessionComboBox->RefreshOptions();
+        return false;
+    }
+
+    for (const TSharedPtr<FJsonValue>& Value : Root->GetArrayField(TEXT("sessions")))
+    {
+        const TSharedPtr<FJsonObject> Session = Value->AsObject();
+        if (!Session.IsValid()
+            || Session->GetStringField(TEXT("profile_id")) != CurrentProfileId
+            || Session->GetStringField(TEXT("profile_version")) != CurrentProfileVersion
+            || Session->GetStringField(TEXT("created_at")) == CurrentReportCreatedAt)
+        {
+            continue;
+        }
+        FString CreatedAt = Session->GetStringField(TEXT("created_at"));
+        CreatedAt.ReplaceInline(TEXT("T"), TEXT(" "));
+        if (CreatedAt.Len() > 19) CreatedAt.LeftInline(19);
+        const int32 SessionIssueCount = Session->GetIntegerField(TEXT("issue_count"));
+        FSessionPtr Option = MakeShared<FAuditSessionOption>();
+        Option->SessionId = Session->GetStringField(TEXT("session_id"));
+        Option->IssueCount = SessionIssueCount;
+        Option->Label = FString::Printf(TEXT("%s · %d 个问题"), *CreatedAt, SessionIssueCount);
+        Option->ReportPath = FPaths::Combine(
+            SessionRoot, Session->GetStringField(TEXT("report_path")));
+        SessionOptions.Add(Option);
+    }
+    if (!SessionOptions.IsEmpty()) SelectedSession = SessionOptions[0];
+    if (SessionComboBox.IsValid())
+    {
+        SessionComboBox->RefreshOptions();
+        SessionComboBox->SetSelectedItem(SelectedSession);
+    }
+    OutError = SessionOptions.IsEmpty() ? TEXT("当前 Profile 尚无更早会话") : FString();
+    return !SessionOptions.IsEmpty();
+}
+
+bool SUnrealAssetAuditPanel::LoadComparison(const FString& Path, FString& OutError)
+{
+    FString Json;
+    if (!FFileHelper::LoadFileToString(Json, *Path))
+    {
+        OutError = TEXT("尚未生成回归对比");
+        return false;
+    }
+    TSharedPtr<FJsonObject> Root;
+    const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
+    if (!FJsonSerializer::Deserialize(Reader, Root) || !Root.IsValid()
+        || Root->GetStringField(TEXT("schema_version")) != TEXT("unreal-audit-comparison@1.0.0"))
+    {
+        OutError = TEXT("回归对比 JSON 格式无效");
+        return false;
+    }
+
+    AllComparisons.Reset();
+    NewIssueCount = 0;
+    PersistentIssueCount = 0;
+    ResolvedIssueCount = 0;
+    FailureChangeCount = 0;
+    if (Root->GetStringField(TEXT("status")) == TEXT("no_baseline"))
+    {
+        ComparisonBaselineLabel = Root->GetStringField(TEXT("message"));
+        RebuildFilteredComparisons();
+        return true;
+    }
+
+    const TSharedPtr<FJsonObject>* BaselineSession = nullptr;
+    if (Root->TryGetObjectField(TEXT("baseline_session"), BaselineSession)
+        && BaselineSession && BaselineSession->IsValid())
+    {
+        FString CreatedAt = (*BaselineSession)->GetStringField(TEXT("created_at"));
+        CreatedAt.ReplaceInline(TEXT("T"), TEXT(" "));
+        if (CreatedAt.Len() > 19) CreatedAt.LeftInline(19);
+        ComparisonBaselineLabel = FString::Printf(
+            TEXT("基线：%s · 当前：%s"), *CreatedAt, *CurrentReportCreatedAt.Left(19).Replace(TEXT("T"), TEXT(" ")));
+    }
+    else
+    {
+        ComparisonBaselineLabel = SelectedSession.IsValid()
+            ? FString::Printf(TEXT("基线：%s"), *SelectedSession->Label)
+            : TEXT("已生成回归对比");
+    }
+
+    auto AppendRows = [this, &Root](const TCHAR* Field, const TCHAR* ChangeType, bool bFailure)
+    {
+        const TArray<TSharedPtr<FJsonValue>>& Values = Root->GetArrayField(Field);
+        for (const TSharedPtr<FJsonValue>& Value : Values)
+        {
+            const TSharedPtr<FJsonObject> Item = Value->AsObject();
+            if (!Item.IsValid()) continue;
+            FComparisonPtr Row = MakeShared<FAuditComparisonRow>();
+            Row->ChangeType = ChangeType;
+            Row->AssetPath = Item->GetStringField(TEXT("asset_path"));
+            Row->RuleId = bFailure ? TEXT("collection.failure") : Item->GetStringField(TEXT("rule_id"));
+            Row->Severity = bFailure ? TEXT("error") : Item->GetStringField(TEXT("severity"));
+            Row->Message = LocalizedComparisonMessage(ChangeType);
+            AllComparisons.Add(Row);
+        }
+    };
+    AppendRows(TEXT("new_issues"), TEXT("new"), false);
+    AppendRows(TEXT("persistent_issues"), TEXT("persistent"), false);
+    AppendRows(TEXT("resolved_issues"), TEXT("resolved"), false);
+    AppendRows(TEXT("new_failures"), TEXT("new_failure"), true);
+    AppendRows(TEXT("persistent_failures"), TEXT("persistent_failure"), true);
+    AppendRows(TEXT("resolved_failures"), TEXT("resolved_failure"), true);
+    NewIssueCount = Root->GetArrayField(TEXT("new_issues")).Num();
+    PersistentIssueCount = Root->GetArrayField(TEXT("persistent_issues")).Num();
+    ResolvedIssueCount = Root->GetArrayField(TEXT("resolved_issues")).Num();
+    FailureChangeCount = Root->GetArrayField(TEXT("new_failures")).Num()
+        + Root->GetArrayField(TEXT("persistent_failures")).Num()
+        + Root->GetArrayField(TEXT("resolved_failures")).Num();
+    RebuildFilteredComparisons();
+    OutError.Reset();
+    return true;
+}
+
 #if WITH_DEV_AUTOMATION_TESTS
 bool SUnrealAssetAuditPanel::LoadReportForEvidence(const FString& Path, FString& OutError)
 {
     ReportPath = Path;
-    return LoadReport(Path, OutError);
+    if (!LoadReport(Path, OutError)) return false;
+    FString SessionError;
+    LoadSessionIndex(SessionError);
+    return true;
+}
+
+bool SUnrealAssetAuditPanel::LoadComparisonForEvidence(const FString& Path, FString& OutError)
+{
+    ComparisonPath = Path;
+    return LoadComparison(Path, OutError);
 }
 
 void SUnrealAssetAuditPanel::SetEvidenceView(bool bAssetOverview, const FString& FilterText)
 {
-    bShowingAssetOverview = bAssetOverview;
+    ResultViewMode = bAssetOverview ? 0 : 1;
     SearchText = FilterText;
     if (SearchInput.IsValid())
     {
@@ -765,6 +1098,21 @@ void SUnrealAssetAuditPanel::SetEvidenceView(bool bAssetOverview, const FString&
         RebuildFilteredAssets();
     }
 }
+
+
+void SUnrealAssetAuditPanel::SetComparisonEvidenceView(const FString& FilterText)
+{
+    ResultViewMode = 2;
+    SearchText = FilterText;
+    if (SearchInput.IsValid())
+    {
+        SearchInput->SetText(FText::FromString(FilterText));
+    }
+    else
+    {
+        RebuildFilteredComparisons();
+    }
+}
 #endif
 
 void SUnrealAssetAuditPanel::HandleSearchChanged(const FText& Text)
@@ -772,6 +1120,7 @@ void SUnrealAssetAuditPanel::HandleSearchChanged(const FText& Text)
     SearchText = Text.ToString().TrimStartAndEnd();
     RebuildFilteredIssues();
     RebuildFilteredAssets();
+    RebuildFilteredComparisons();
 }
 
 void SUnrealAssetAuditPanel::RebuildFilteredIssues()
@@ -811,6 +1160,26 @@ void SUnrealAssetAuditPanel::RebuildFilteredAssets()
     if (AssetList.IsValid()) AssetList->RequestListRefresh();
 }
 
+void SUnrealAssetAuditPanel::RebuildFilteredComparisons()
+{
+    FilteredComparisons.Reset();
+    for (const FComparisonPtr& Item : AllComparisons)
+    {
+        const FString Change = ComparisonChangeLabel(Item->ChangeType).ToString();
+        const FString Rule = RuleLabel(Item->RuleId).ToString();
+        if (SearchText.IsEmpty()
+            || Item->AssetPath.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->RuleId.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Change.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Rule.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->Message.Contains(SearchText, ESearchCase::IgnoreCase))
+        {
+            FilteredComparisons.Add(Item);
+        }
+    }
+    if (ComparisonList.IsValid()) ComparisonList->RequestListRefresh();
+}
+
 TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateIssueRow(
     FIssuePtr Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
@@ -823,15 +1192,29 @@ TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateAssetRow(
     return SNew(SAuditAssetRow, OwnerTable).Item(Item);
 }
 
+TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateComparisonRow(
+    FComparisonPtr Item, const TSharedRef<STableViewBase>& OwnerTable)
+{
+    return SNew(SAuditComparisonRow, OwnerTable).Item(Item);
+}
+
 FReply SUnrealAssetAuditPanel::ShowAssetOverview()
 {
-    bShowingAssetOverview = true;
+    ResultViewMode = 0;
     return FReply::Handled();
 }
 
 FReply SUnrealAssetAuditPanel::ShowIssueDetails()
 {
-    bShowingAssetOverview = false;
+    ResultViewMode = 1;
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::ShowComparison()
+{
+    ResultViewMode = 2;
+    FString Error;
+    if (FPaths::FileExists(ComparisonPath)) LoadComparison(ComparisonPath, Error);
     return FReply::Handled();
 }
 
@@ -839,6 +1222,60 @@ FReply SUnrealAssetAuditPanel::OpenReportFolder()
 {
     IFileManager::Get().MakeDirectory(*FPaths::GetPath(ReportPath), true);
     FPlatformProcess::ExploreFolder(*FPaths::GetPath(ReportPath));
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::OpenSessionFolder()
+{
+    IFileManager::Get().MakeDirectory(*SessionRoot, true);
+    FPlatformProcess::ExploreFolder(*SessionRoot);
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::RunComparison()
+{
+    if (!CanRunComparison()) return FReply::Handled();
+    TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
+    Request->SetStringField(TEXT("baseline_report_path"), SelectedSession->ReportPath);
+    Request->SetStringField(TEXT("current_report_path"), ReportPath);
+    Request->SetStringField(TEXT("output_path"), ComparisonPath);
+    const FString RequestPath = FPaths::Combine(
+        FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/comparison-request.json"));
+    FString RequestJson;
+    const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestJson);
+    FJsonSerializer::Serialize(Request, Writer);
+    IFileManager::Get().MakeDirectory(*FPaths::GetPath(RequestPath), true);
+    if (!FFileHelper::SaveStringToFile(
+        RequestJson, *RequestPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
+    {
+        StatusMessage = TEXT("无法写入回归比较请求");
+        return FReply::Handled();
+    }
+    IPythonScriptPlugin* Python = IPythonScriptPlugin::Get();
+    if (!Python || (!Python->IsPythonInitialized() && !Python->ForceEnablePythonAtRuntime()))
+    {
+        StatusMessage = TEXT("Python Script Plugin 未就绪");
+        return FReply::Handled();
+    }
+    FString PythonPath = RequestPath.Replace(TEXT("\\"), TEXT("/"));
+    PythonPath.ReplaceInline(TEXT("'"), TEXT("\\'"));
+    const FString Command = FString::Printf(
+        TEXT("import run_asset_audit; run_asset_audit.compare_from_request_file(r'%s')"),
+        *PythonPath);
+    if (!Python->ExecPythonCommand(*Command))
+    {
+        StatusMessage = TEXT("回归比较失败；详细堆栈已写入 Output Log");
+        return FReply::Handled();
+    }
+    FString Error;
+    if (!LoadComparison(ComparisonPath, Error))
+    {
+        StatusMessage = FString::Printf(TEXT("回归比较读取失败：%s"), *Error);
+        return FReply::Handled();
+    }
+    ResultViewMode = 2;
+    StatusMessage = FString::Printf(
+        TEXT("回归对比完成 · 新增 %d · 已解决 %d"), NewIssueCount, ResolvedIssueCount);
     return FReply::Handled();
 }
 
@@ -869,12 +1306,27 @@ bool SUnrealAssetAuditPanel::CanRunAudit() const
         && !SelectedProfile->Path.IsEmpty();
 }
 
+bool SUnrealAssetAuditPanel::CanRunComparison() const
+{
+    return SelectedSession.IsValid() && FPaths::FileExists(SelectedSession->ReportPath)
+        && FPaths::FileExists(ReportPath);
+}
+
 void SUnrealAssetAuditPanel::HandleProfileChanged(FProfilePtr Item, ESelectInfo::Type SelectInfo)
 {
     if (Item.IsValid())
     {
         SelectedProfile = Item;
         StatusMessage = FString::Printf(TEXT("已切换检查规则：%s"), *Item->Label);
+    }
+}
+
+void SUnrealAssetAuditPanel::HandleSessionChanged(FSessionPtr Item, ESelectInfo::Type SelectInfo)
+{
+    if (Item.IsValid())
+    {
+        SelectedSession = Item;
+        StatusMessage = FString::Printf(TEXT("已选择回归基线：%s"), *Item->Label);
     }
 }
 
@@ -887,6 +1339,20 @@ TSharedRef<SWidget> SUnrealAssetAuditPanel::GenerateProfileOption(FProfilePtr It
         [SNew(STextBlock).Text(FText::FromString(Item->Summary)).ColorAndOpacity(FSlateColor::UseSubduedForeground())];
 }
 
+TSharedRef<SWidget> SUnrealAssetAuditPanel::GenerateSessionOption(FSessionPtr Item) const
+{
+    return SNew(SVerticalBox)
+        + SVerticalBox::Slot().AutoHeight().Padding(8, 5, 8, 1)
+        [SNew(STextBlock).Text(FText::FromString(Item->Label))]
+        + SVerticalBox::Slot().AutoHeight().Padding(8, 0, 8, 5)
+        [
+            SNew(STextBlock)
+            .Text(FText::FromString(Item->SessionId))
+            .Font(FAppStyle::GetFontStyle(TEXT("SmallFont")))
+            .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+        ];
+}
+
 FText SUnrealAssetAuditPanel::GetSelectedProfileLabel() const
 {
     return SelectedProfile.IsValid() ? FText::FromString(SelectedProfile->Label) : FText::FromString(TEXT("请选择检查规则"));
@@ -897,22 +1363,51 @@ FText SUnrealAssetAuditPanel::GetSelectedProfileSummary() const
     return SelectedProfile.IsValid() ? FText::FromString(SelectedProfile->Summary) : FText::GetEmpty();
 }
 
+FText SUnrealAssetAuditPanel::GetSelectedSessionLabel() const
+{
+    return SelectedSession.IsValid()
+        ? FText::FromString(SelectedSession->Label)
+        : FText::FromString(TEXT("暂无同 Profile 历史会话"));
+}
+
+FText SUnrealAssetAuditPanel::GetComparisonBaselineText() const
+{
+    return FText::FromString(
+        ComparisonBaselineLabel.IsEmpty()
+            ? TEXT("完成至少两次同 Profile 审计后显示质量变化")
+            : ComparisonBaselineLabel);
+}
+
+FText SUnrealAssetAuditPanel::GetNewIssueCountText() const { return FText::AsNumber(NewIssueCount); }
+FText SUnrealAssetAuditPanel::GetPersistentIssueCountText() const { return FText::AsNumber(PersistentIssueCount); }
+FText SUnrealAssetAuditPanel::GetResolvedIssueCountText() const { return FText::AsNumber(ResolvedIssueCount); }
+FText SUnrealAssetAuditPanel::GetFailureChangeCountText() const { return FText::AsNumber(FailureChangeCount); }
+
 FText SUnrealAssetAuditPanel::GetResultViewHint() const
 {
-    if (bShowingAssetOverview)
+    if (ResultViewMode == 0)
     {
         return FText::Format(
             FText::FromString(TEXT("显示 {0} 个已处理对象（含采集失败）")), FilteredAssets.Num());
     }
-    return FText::Format(FText::FromString(TEXT("显示 {0} 条可追溯问题")), FilteredIssues.Num());
+    if (ResultViewMode == 1)
+    {
+        return FText::Format(FText::FromString(TEXT("显示 {0} 条可追溯问题")), FilteredIssues.Num());
+    }
+    return FText::Format(FText::FromString(TEXT("显示 {0} 条质量变化")), FilteredComparisons.Num());
 }
 
 EVisibility SUnrealAssetAuditPanel::GetAssetViewVisibility() const
 {
-    return bShowingAssetOverview ? EVisibility::Visible : EVisibility::Collapsed;
+    return ResultViewMode == 0 ? EVisibility::Visible : EVisibility::Collapsed;
 }
 
 EVisibility SUnrealAssetAuditPanel::GetIssueViewVisibility() const
 {
-    return bShowingAssetOverview ? EVisibility::Collapsed : EVisibility::Visible;
+    return ResultViewMode == 1 ? EVisibility::Visible : EVisibility::Collapsed;
+}
+
+EVisibility SUnrealAssetAuditPanel::GetComparisonViewVisibility() const
+{
+    return ResultViewMode == 2 ? EVisibility::Visible : EVisibility::Collapsed;
 }

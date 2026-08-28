@@ -1,0 +1,29 @@
+{
+  "schema_version": "unreal-audit-session-index@1.0.0",
+  "sessions": [
+    {
+      "session_id": "session-6700bf18fbf4f905",
+      "created_at": "2026-08-28T04:04:03.511097+00:00",
+      "report_id": "report-a5b81a1f0389ceb0",
+      "profile_id": "demo-desktop-balanced-v2",
+      "profile_version": "2.0.0",
+      "report_path": "Reports/20260828040403511097-report-a5b81a1f0389ceb0-6700bf18.json",
+      "report_sha256": "6700bf18fbf4f9058807d3bab71ae8a9c7a396d0d142424d322dc07074906170",
+      "asset_count": 24,
+      "issue_count": 45,
+      "collection_failure_count": 2
+    },
+    {
+      "session_id": "session-edd51d8b9dd8a5ed",
+      "created_at": "2026-08-28T04:03:15.565222+00:00",
+      "report_id": "report-98ddec5e70c788d0",
+      "profile_id": "demo-desktop-balanced-v2",
+      "profile_version": "2.0.0",
+      "report_path": "Reports/20260828040315565222-report-98ddec5e70c788d0-edd51d8b.json",
+      "report_sha256": "edd51d8b9dd8a5ed9a339b090344ecffee47e7b5a966b04cbc722d6ef6b260a9",
+      "asset_count": 24,
+      "issue_count": 41,
+      "collection_failure_count": 2
+    }
+  ]
+}

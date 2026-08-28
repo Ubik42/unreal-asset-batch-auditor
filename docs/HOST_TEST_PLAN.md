@@ -86,6 +86,20 @@
 
 生命周期证据仍不声明人工点击、停靠或前台可见验收；这些交互由录屏者按教程完成。
 
+## 2026-08-27 v0.7 历史会话与回归对比
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| v0.7.0 BuildPlugin | 通过；UE 5.8.1 Win64 Development Editor 完整编译、链接、打包 | `artifacts/host-build/UE_5.8.1-v0.7.0-dev1`（本机忽略目录） |
+| 两轮真实报告 | 通过；同一 Profile 的 24 个项目资产先后产生 41 / 45 条 Issue，均有 2 条注入式采集失败 | `artifacts/demo/demo-desktop-balanced-v2-*-report.json` |
+| 不可变会话 | 通过；两份报告均按 SHA-256 归档，版本化索引保留相对路径 | `artifacts/demo/session-history/session-index.v1.json` |
+| 回归分类 | 通过；10 新增、35 持续、6 已解决、2 持续失败 | `artifacts/demo/session-history/latest-comparison.v1.json` |
+| 面板生命周期 | 通过；独立隐藏 PID、无超时、自动化 Success、退出后无残留 Unreal PID | `artifacts/host-validation/m6/panel-lifecycle-v0.7.0-dev1.json` |
+| 视觉证据 | 通过；12 张当前生产 Slate PNG，其中 2 张覆盖回归总览和已解决筛选 | `docs/images/workflow/v0.7/` |
+
+本轮“真实”只指两份源 Report 均由 UE 5.8.1 的 C++ collector 采集；历史归档和差异分类由
+Python 在报告层完成。`-RenderOffscreen` 证据不声明人工鼠标交互通过。
+
 本结果只覆盖记录的 UE 5.8.1 非生产宿主和 Engine 内容，不等价于 UE 5.4/5.5 兼容证明，也不等价于大规模生产性能证明。
 
 哈希证据使用仓库内只读脚本：

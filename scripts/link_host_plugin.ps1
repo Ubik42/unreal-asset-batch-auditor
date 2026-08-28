@@ -1,5 +1,5 @@
 param(
-    [string]$BuildLabel = "UE_5.8.1-v0.6.0-dev1"
+    [string]$BuildLabel = "UE_5.8.1-v0.7.0-dev1"
 )
 
 $ErrorActionPreference = "Stop"

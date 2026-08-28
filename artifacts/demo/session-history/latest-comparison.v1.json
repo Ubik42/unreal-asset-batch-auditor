@@ -1,0 +1,356 @@
+{
+  "baseline_report_id": "report-98ddec5e70c788d0",
+  "current_report_id": "report-a5b81a1f0389ceb0",
+  "new_issues": [
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/BAD_UABA_22_EditorShaderBall.BAD_UABA_22_EditorShaderBall",
+      "rule_id": "static_mesh.material_slots",
+      "severity": "warning",
+      "message": "Material slots 3 exceed profile limit 2."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/BAD_UABA_22_EditorShaderBall.BAD_UABA_22_EditorShaderBall",
+      "rule_id": "static_mesh.object_name",
+      "severity": "warning",
+      "message": "Asset name 'BAD_UABA_22_EditorShaderBall' does not satisfy prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/BAD_UABA_22_EditorShaderBall.BAD_UABA_22_EditorShaderBall",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 58540 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/BAD_UABA_22_EditorShaderBall.BAD_UABA_22_EditorShaderBall",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 32470 exceed profile limit 1500."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "rule_id": "static_mesh.lightmap_resolution",
+      "severity": "info",
+      "message": "Lightmap resolution 8 is below profile minimum 32."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "rule_id": "static_mesh.simple_collision",
+      "severity": "warning",
+      "message": "Simple collision primitives are 0; collision complexity is project_default; profile expects >=1 simple primitives or complex-as-simple."
+    },
+    {
+      "asset_path": "/Game/UABADemo/Developers/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "rule_id": "static_mesh.material_slots",
+      "severity": "warning",
+      "message": "Material slots 3 exceed profile limit 2."
+    },
+    {
+      "asset_path": "/Game/UABADemo/Developers/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "rule_id": "static_mesh.package_path",
+      "severity": "warning",
+      "message": "Package directory '/Game/UABADemo/Developers' is outside allowed roots or contains forbidden segments ['Developers']."
+    },
+    {
+      "asset_path": "/Game/UABADemo/Developers/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 58540 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/Developers/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 32470 exceed profile limit 1500."
+    }
+  ],
+  "persistent_issues": [
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_01_LineSegmentCylinder.SM_UABA_01_LineSegmentCylinder",
+      "rule_id": "static_mesh.lightmap_uv",
+      "severity": "warning",
+      "message": "Lightmap coordinate index is 0 with 1 UV channels; profile requires a valid index and at least 2 channels."
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_02_DemoBoxMesh.SM_UABA_02_DemoBoxMesh",
+      "rule_id": "static_mesh.simple_collision",
+      "severity": "warning",
+      "message": "Simple collision primitives are 0; collision complexity is project_default; profile expects >=1 simple primitives or complex-as-simple."
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_03_GizmoCornerHandle.SM_UABA_03_GizmoCornerHandle",
+      "rule_id": "static_mesh.lightmap_resolution",
+      "severity": "info",
+      "message": "Lightmap resolution 4 is below profile minimum 32."
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_03_GizmoCornerHandle.SM_UABA_03_GizmoCornerHandle",
+      "rule_id": "static_mesh.lightmap_uv",
+      "severity": "warning",
+      "message": "Lightmap coordinate index is 0 with 1 UV channels; profile requires a valid index and at least 2 channels."
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_04_StretchingHandle.SM_UABA_04_StretchingHandle",
+      "rule_id": "static_mesh.lightmap_uv",
+      "severity": "warning",
+      "message": "Lightmap coordinate index is 0 with 1 UV channels; profile requires a valid index and at least 2 channels."
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_06_BackgroundCube.SM_UABA_06_BackgroundCube",
+      "rule_id": "static_mesh.lightmap_resolution",
+      "severity": "info",
+      "message": "Lightmap resolution 4 is below profile minimum 32."
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_06_BackgroundCube.SM_UABA_06_BackgroundCube",
+      "rule_id": "static_mesh.lightmap_uv",
+      "severity": "warning",
+      "message": "Lightmap coordinate index is 0 with 1 UV channels; profile requires a valid index and at least 2 channels."
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_06_BackgroundCube.SM_UABA_06_BackgroundCube",
+      "rule_id": "static_mesh.simple_collision",
+      "severity": "warning",
+      "message": "Simple collision primitives are 0; collision complexity is project_default; profile expects >=1 simple primitives or complex-as-simple."
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_07_SM_Dialog_Move.SM_UABA_07_SM_Dialog_Move",
+      "rule_id": "static_mesh.simple_collision",
+      "severity": "warning",
+      "message": "Simple collision primitives are 0; collision complexity is project_default; profile expects >=1 simple primitives or complex-as-simple."
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_09_RotationHandle.SM_UABA_09_RotationHandle",
+      "rule_id": "static_mesh.lightmap_uv",
+      "severity": "warning",
+      "message": "Lightmap coordinate index is 0 with 1 UV channels; profile requires a valid index and at least 2 channels."
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_11_SM_ContentWindow_01.SM_UABA_11_SM_ContentWindow_01",
+      "rule_id": "static_mesh.lightmap_uv",
+      "severity": "warning",
+      "message": "Lightmap coordinate index is 0 with 1 UV channels; profile requires a valid index and at least 2 channels."
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_11_SM_ContentWindow_01.SM_UABA_11_SM_ContentWindow_01",
+      "rule_id": "static_mesh.simple_collision",
+      "severity": "warning",
+      "message": "Simple collision primitives are 0; collision complexity is project_default; profile expects >=1 simple primitives or complex-as-simple."
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_13_SM_CraneRig_Base.SM_UABA_13_SM_CraneRig_Base",
+      "rule_id": "static_mesh.simple_collision",
+      "severity": "warning",
+      "message": "Simple collision primitives are 0; collision complexity is project_default; profile expects >=1 simple primitives or complex-as-simple."
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_14_SM_Cube_01.SM_UABA_14_SM_Cube_01",
+      "rule_id": "static_mesh.lightmap_uv",
+      "severity": "warning",
+      "message": "Lightmap coordinate index is 0 with 1 UV channels; profile requires a valid index and at least 2 channels."
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01",
+      "rule_id": "static_mesh.lightmap_resolution",
+      "severity": "info",
+      "message": "Lightmap resolution 4 is below profile minimum 32."
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01",
+      "rule_id": "static_mesh.lightmap_uv",
+      "severity": "warning",
+      "message": "Lightmap coordinate index is 0 with 1 UV channels; profile requires a valid index and at least 2 channels."
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01",
+      "rule_id": "static_mesh.simple_collision",
+      "severity": "warning",
+      "message": "Simple collision primitives are 0; collision complexity is project_default; profile expects >=1 simple primitives or complex-as-simple."
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 3968 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 2143 exceed profile limit 1500."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_17_SimplePivotPainterExample.SM_UABA_17_SimplePivotPainterExample",
+      "rule_id": "static_mesh.simple_collision",
+      "severity": "warning",
+      "message": "Simple collision primitives are 0; collision complexity is project_default; profile expects >=1 simple primitives or complex-as-simple."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_17_SimplePivotPainterExample.SM_UABA_17_SimplePivotPainterExample",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 4080 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_17_SimplePivotPainterExample.SM_UABA_17_SimplePivotPainterExample",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 4590 exceed profile limit 1500."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_18_SM_CineCam.SM_UABA_18_SM_CineCam",
+      "rule_id": "static_mesh.simple_collision",
+      "severity": "warning",
+      "message": "Simple collision primitives are 0; collision complexity is project_default; profile expects >=1 simple primitives or complex-as-simple."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_18_SM_CineCam.SM_UABA_18_SM_CineCam",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 6252 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_18_SM_CineCam.SM_UABA_18_SM_CineCam",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 4174 exceed profile limit 1500."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+      "rule_id": "static_mesh.simple_collision",
+      "severity": "warning",
+      "message": "Simple collision primitives are 0; collision complexity is project_default; profile expects >=1 simple primitives or complex-as-simple."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 17912 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 10587 exceed profile limit 1500."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 32256 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 32512 exceed profile limit 1500."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "rule_id": "static_mesh.material_slots",
+      "severity": "warning",
+      "message": "Material slots 5 exceed profile limit 2."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 37472 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 21422 exceed profile limit 1500."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 63774 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 41436 exceed profile limit 1500."
+    }
+  ],
+  "resolved_issues": [
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+      "rule_id": "static_mesh.material_slots",
+      "severity": "warning",
+      "message": "Material slots 3 exceed profile limit 2."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 58540 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 32470 exceed profile limit 1500."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "rule_id": "static_mesh.material_slots",
+      "severity": "warning",
+      "message": "Material slots 3 exceed profile limit 2."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 58540 exceed profile limit 2000."
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 32470 exceed profile limit 1500."
+    }
+  ],
+  "new_failures": [],
+  "persistent_failures": [
+    {
+      "asset_path": "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial",
+      "code": "NOT_STATIC_MESH",
+      "message": "Object could not be loaded as UStaticMesh."
+    },
+    {
+      "asset_path": "/Game/UABADemo/Missing/SM_DoesNotExist.SM_DoesNotExist",
+      "code": "NOT_STATIC_MESH",
+      "message": "Object could not be loaded as UStaticMesh."
+    }
+  ],
+  "resolved_failures": [],
+  "schema_version": "unreal-audit-comparison@1.0.0",
+  "status": "ready",
+  "baseline_session": {
+    "session_id": "session-edd51d8b9dd8a5ed",
+    "created_at": "2026-08-28T04:03:15.565222+00:00",
+    "report_id": "report-98ddec5e70c788d0",
+    "profile_id": "demo-desktop-balanced-v2",
+    "profile_version": "2.0.0",
+    "report_path": "Reports/20260828040315565222-report-98ddec5e70c788d0-edd51d8b.json",
+    "report_sha256": "edd51d8b9dd8a5ed9a339b090344ecffee47e7b5a966b04cbc722d6ef6b260a9",
+    "asset_count": 24,
+    "issue_count": 41,
+    "collection_failure_count": 2
+  },
+  "current_session": {
+    "session_id": "session-6700bf18fbf4f905",
+    "created_at": "2026-08-28T04:04:03.511097+00:00",
+    "report_id": "report-a5b81a1f0389ceb0",
+    "profile_id": "demo-desktop-balanced-v2",
+    "profile_version": "2.0.0",
+    "report_path": "Reports/20260828040403511097-report-a5b81a1f0389ceb0-6700bf18.json",
+    "report_sha256": "6700bf18fbf4f9058807d3bab71ae8a9c7a396d0d142424d322dc07074906170",
+    "asset_count": 24,
+    "issue_count": 45,
+    "collection_failure_count": 2
+  }
+}

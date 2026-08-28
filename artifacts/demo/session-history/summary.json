@@ -1,0 +1,12 @@
+{
+  "schema_version": "unreal-demo-session-history@1.0.0",
+  "baseline_session_id": "session-edd51d8b9dd8a5ed",
+  "current_session_id": "session-6700bf18fbf4f905",
+  "new_issue_count": 10,
+  "persistent_issue_count": 35,
+  "resolved_issue_count": 6,
+  "new_failure_count": 0,
+  "persistent_failure_count": 2,
+  "resolved_failure_count": 0,
+  "evidence_boundary": "Both source reports were collected in UE; this script only archives and compares them."
+}

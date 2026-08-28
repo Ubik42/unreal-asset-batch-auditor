@@ -1,6 +1,6 @@
 param(
     [string]$EngineRoot = "C:\Program Files\Epic Games\UE_5.8",
-    [string]$BuildLabel = "UE_5.8.1-v0.6.0-dev1",
+    [string]$BuildLabel = "UE_5.8.1-v0.7.0-dev1",
     [switch]$SkipBuild
 )
 
@@ -21,17 +21,27 @@ if (-not $SkipBuild) {
 & (Join-Path $PSScriptRoot "link_demo_plugin.ps1") -BuildLabel $BuildLabel
 
 $demoScripts = @(
-    "generate_demo_assets.py",
-    "run_demo_balanced.py",
-    "run_demo_mobile.py",
-    "run_demo_lenient.py"
+    @{ Variant = "baseline"; Name = "generate_demo_assets.py" },
+    @{ Variant = "baseline"; Name = "run_demo_baseline.py" },
+    @{ Variant = "current"; Name = "generate_demo_assets.py" },
+    @{ Variant = "current"; Name = "run_demo_balanced.py" },
+    @{ Variant = "current"; Name = "run_demo_mobile.py" },
+    @{ Variant = "current"; Name = "run_demo_lenient.py" }
 )
-foreach ($scriptName in $demoScripts) {
+foreach ($entry in $demoScripts) {
+    $scriptName = $entry.Name
+    $env:UABA_DEMO_VARIANT = $entry.Variant
     $scriptPath = Join-Path $repoRoot "Demo\Scripts\$scriptName"
     & $editorCmd $project "-ExecutePythonScript=$scriptPath" -unattended -nop4 -nosplash -NullRHI
     if ($LASTEXITCODE -ne 0) {
         throw "Demo host script failed: $scriptName"
     }
+}
+Remove-Item Env:\UABA_DEMO_VARIANT -ErrorAction SilentlyContinue
+& (Join-Path $repoRoot ".venv\Scripts\python.exe") `
+    (Join-Path $repoRoot "Demo\Scripts\build_demo_session_history.py")
+if ($LASTEXITCODE -ne 0) {
+    throw "Demo session history build failed"
 }
 
 Write-Output "Demo kit ready: $project"

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0013",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 13,
+  "completedSlice": "M6-S1",
+  "summary": "M6-S1 is complete. Version 0.7 adds immutable project-local audit history, same-Profile baseline selection, deterministic regression classification, a native Chinese comparison view, two real Unreal report sessions, current documentation, and reproducible isolated host evidence.",
+  "evidence": [
+    "Historical reports are stored by content hash and never overwritten; index corruption returns a localized diagnostic without deleting Reports",
+    "Comparison identity is asset_path plus rule_id, with separate new, persistent, resolved, and collection-failure categories",
+    "The native panel exposes a same-Profile baseline dropdown, manual comparison action, three result views, shared search, and session-folder access",
+    "The Demo runs a baseline asset variant and a current fault variant through the real UE 5.8.1 C++ collector before Python archives and compares the reports",
+    "The recorded comparison contains 10 new, 35 persistent, 6 resolved issues, and 2 persistent failures",
+    "52 offline tests and Ruff pass",
+    "UE_5.8.1-v0.7.0-dev1 BuildPlugin completed UHT, C++ compilation, linking, and Win64 packaging",
+    "UnrealAssetBatchAuditor.PanelEvidence passed in an independent hidden RenderOffscreen process and produced 12 current production Slate screenshots",
+    "The final lifecycle began and ended with no pre-existing or residual Unreal processes and records report, comparison, log, and screenshot hashes",
+    "Chinese README, Demo tutorial, video script, screenshot plan, development plan, and host test plan describe the workflow and evidence ceiling"
+  ],
+  "nextSlice": "M6-S2",
+  "unresolvedRisks": [
+    "Visible mouse-click, docking, and cancellation interaction remains a manual recording step",
+    "Current panel execution is synchronous and must not be described as non-blocking",
+    "Comparison treats a rename or move as resolved old identity plus new current identity",
+    "Cross-version Unreal compatibility is not claimed",
+    "No asset mutation or automatic repair is authorized"
+  ]
+}

@@ -1,9 +1,9 @@
 {
   "schema_version": "unreal-asset-auditor-demo-manifest@1.0.0",
-  "created_at": "2026-08-28T04:03:45.171724+00:00",
+  "created_at": "2026-08-28T04:02:57.176650+00:00",
   "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
   "project_kind": "recording_demo_non_production",
-  "demo_variant": "current",
+  "demo_variant": "baseline",
   "asset_root": "/Game/UABADemo",
   "asset_count": 24,
   "source_inventory_count": 120,
@@ -769,7 +769,7 @@
       "index": 22,
       "group": "03_Heavy",
       "source_asset_path": "/Engine/EditorMeshes/EditorShaderBall.EditorShaderBall",
-      "demo_asset_path": "/Game/UABADemo/03_Heavy/BAD_UABA_22_EditorShaderBall.BAD_UABA_22_EditorShaderBall",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
       "source_metadata": {
         "lod_count": 1,
         "lod0_triangles": 58540,
@@ -784,9 +784,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
-      "policy_faults": [
-        "invalid_object_name"
-      ],
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -805,9 +803,9 @@
     },
     {
       "index": 23,
-      "group": "Developers",
+      "group": "03_Heavy",
       "source_asset_path": "/Engine/EngineMeshes/SM_MatPreviewMesh_01.SM_MatPreviewMesh_01",
-      "demo_asset_path": "/Game/UABADemo/Developers/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
       "source_metadata": {
         "lod_count": 1,
         "lod0_triangles": 58540,
@@ -822,9 +820,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
-      "policy_faults": [
-        "forbidden_package_segment"
-      ],
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -859,23 +855,23 @@
         "lightmap_resolution": 1024,
         "lightmap_uv_valid": true
       },
-      "intentional_variation": true,
+      "intentional_variation": false,
       "policy_faults": [],
-      "variation_note": "Synthetic delivery fault: no simple collision and Lightmap resolution 8.",
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 63774,
         "lod0_vertices": 41436,
         "material_slot_count": 1,
         "nanite_enabled": false,
-        "simple_collision_primitive_count": 0,
+        "simple_collision_primitive_count": 13,
         "collision_complexity": "project_default",
         "uv_channel_count": 2,
         "lightmap_coordinate_index": 1,
-        "lightmap_resolution": 8,
+        "lightmap_resolution": 1024,
         "lightmap_uv_valid": true
       },
-      "matches_source_metadata": false
+      "matches_source_metadata": true
     }
   ],
   "valid_asset_paths": [
@@ -900,8 +896,8 @@
     "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
     "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
     "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
-    "/Game/UABADemo/03_Heavy/BAD_UABA_22_EditorShaderBall.BAD_UABA_22_EditorShaderBall",
-    "/Game/UABADemo/Developers/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+    "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+    "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
     "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01"
   ],
   "diagnostic_paths": [
@@ -912,6 +908,6 @@
     "Demo assets are project-owned duplicates; Engine source assets are never modified.",
     "Folder names describe relative source complexity, not audit pass/fail status.",
     "All demo thresholds are training values and are not studio standards.",
-    "Current variant: assets 22-24 introduce naming, directory, collision, and Lightmap resolution faults."
+    "Baseline variant: assets 22-24 remain unmodified reference duplicates."
   ]
 }

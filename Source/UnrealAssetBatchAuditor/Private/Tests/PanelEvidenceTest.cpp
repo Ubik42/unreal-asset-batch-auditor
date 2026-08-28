@@ -42,11 +42,14 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
 {
     const FString ReportPath = FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_REPORT"));
     const FString OutputDirectory = FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_OUTPUT"));
+    const FString ComparisonPath = FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_COMPARISON"));
     const FString EvidenceMode = FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_MODE"));
     const int32 ExpectedAssets = FCString::Atoi(
         *FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_EXPECTED_ASSETS")));
     const int32 ExpectedIssues = FCString::Atoi(
         *FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_EXPECTED_ISSUES")));
+    const int32 ExpectedComparisonRows = FCString::Atoi(
+        *FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_EXPECTED_COMPARISONS")));
     if (!FPaths::FileExists(ReportPath))
     {
         AddError(FString::Printf(TEXT("Evidence report does not exist: %s"), *ReportPath));
@@ -118,6 +121,25 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         Capture(TEXT("09-object-name-evidence.png"));
         Panel->SetEvidenceView(false, TEXT("目录规范"));
         Capture(TEXT("10-package-path-evidence.png"));
+        if (!ComparisonPath.IsEmpty())
+        {
+            if (!Panel->LoadComparisonForEvidence(ComparisonPath, LoadError))
+            {
+                AddError(FString::Printf(TEXT("Could not load comparison evidence: %s"), *LoadError));
+                bPassed = false;
+            }
+            else
+            {
+                Panel->SetComparisonEvidenceView(TEXT(""));
+                TestEqual(
+                    TEXT("Comparison rows include issue and collection-failure changes"),
+                    Panel->GetEvidenceComparisonCount(),
+                    ExpectedComparisonRows > 0 ? ExpectedComparisonRows : 53);
+                Capture(TEXT("11-regression-overview.png"));
+                Panel->SetComparisonEvidenceView(TEXT("已解决"));
+                Capture(TEXT("12-resolved-changes.png"));
+            }
+        }
     }
     else
     {

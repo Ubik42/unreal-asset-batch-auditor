@@ -1,27 +1,24 @@
 {
   "schema_version": "unreal-asset-auditor-demo-session@1.0.0",
-  "created_at": "2026-08-28T04:04:21.565048+00:00",
-  "profile_id": "demo-mobile-strict-v2",
+  "created_at": "2026-08-28T04:03:15.590412+00:00",
+  "profile_id": "demo-desktop-balanced-v2",
   "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
   "requested_count": 26,
   "asset_count": 24,
-  "issue_count": 113,
+  "issue_count": 41,
   "collection_failure_count": 2,
   "rule_counts": {
-    "static_mesh.lightmap_resolution": 5,
+    "static_mesh.lightmap_resolution": 3,
     "static_mesh.lightmap_uv": 8,
-    "static_mesh.lod_count": 24,
-    "static_mesh.material_slots": 11,
-    "static_mesh.nanite_state": 24,
-    "static_mesh.object_name": 1,
-    "static_mesh.package_path": 1,
-    "static_mesh.simple_collision": 11,
-    "static_mesh.triangle_budget.lod0": 15,
-    "static_mesh.vertex_budget.lod0": 13
+    "static_mesh.material_slots": 3,
+    "static_mesh.simple_collision": 9,
+    "static_mesh.triangle_budget.lod0": 9,
+    "static_mesh.vertex_budget.lod0": 9
   },
   "severity_counts": {
-    "error": 49,
-    "warning": 64
+    "error": 18,
+    "info": 3,
+    "warning": 20
   },
   "progress_events": [
     {
@@ -68,7 +65,7 @@
     "changed": []
   },
   "report_paths": [
-    "D:\\3D\\_tools\\unreal-asset-batch-auditor\\Demo\\Saved\\UABAAudit\\demo-mobile-strict-v2-report.json",
-    "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\demo\\demo-mobile-strict-v2-report.json"
+    "D:\\3D\\_tools\\unreal-asset-batch-auditor\\Demo\\Saved\\UABAAudit\\demo-desktop-balanced-v2-baseline-report.json",
+    "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\demo\\demo-desktop-balanced-v2-baseline-report.json"
   ]
 }

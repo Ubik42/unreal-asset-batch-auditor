@@ -1,10 +1,13 @@
 param(
     [string]$EngineRoot = "C:\Program Files\Epic Games\UE_5.8",
-    [string]$BuildLabel = "UE_5.8.1-v0.6.0-dev1",
+    [string]$BuildLabel = "UE_5.8.1-v0.7.0-dev1",
     [string]$ReportPath = "",
+    [string]$ComparisonPath = "",
+    [string]$SessionRootPath = "",
     [string]$OutputDirectory = "",
     [int]$ExpectedAssets = 26,
     [int]$ExpectedIssues = 47,
+    [int]$ExpectedComparisons = 53,
     [int]$TimeoutSeconds = 120
 )
 
@@ -16,9 +19,15 @@ if (-not $ReportPath) {
     $ReportPath = Join-Path $repoRoot "artifacts\demo\demo-desktop-balanced-v2-report.json"
 }
 if (-not $OutputDirectory) {
-    $OutputDirectory = Join-Path $repoRoot "docs\images\workflow\v0.6"
+    $OutputDirectory = Join-Path $repoRoot "docs\images\workflow\v0.7"
 }
-foreach ($required in @($editorCmd, (Join-Path $build "UnrealAssetBatchAuditor.uplugin"), $ReportPath)) {
+if (-not $ComparisonPath) {
+    $ComparisonPath = Join-Path $repoRoot "artifacts\demo\session-history\latest-comparison.v1.json"
+}
+if (-not $SessionRootPath) {
+    $SessionRootPath = Join-Path $repoRoot "Demo\Saved\UnrealAssetBatchAuditor\Sessions"
+}
+foreach ($required in @($editorCmd, (Join-Path $build "UnrealAssetBatchAuditor.uplugin"), $ReportPath, $ComparisonPath, $SessionRootPath)) {
     if (-not (Test-Path -LiteralPath $required)) {
         throw "Required panel evidence input does not exist: $required"
     }
@@ -30,14 +39,19 @@ $plugins = Join-Path $runtime "Plugins"
 New-Item -ItemType Directory -Path $plugins -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $repoRoot "tests\host\UnrealAssetBatchAuditorHost.uproject") -Destination $runtime
 Copy-Item -LiteralPath $build -Destination (Join-Path $plugins "UnrealAssetBatchAuditor") -Recurse
+$runtimeSessionRoot = Join-Path $runtime "Saved\UnrealAssetBatchAuditor\Sessions"
+New-Item -ItemType Directory -Path (Split-Path -Parent $runtimeSessionRoot) -Force | Out-Null
+Copy-Item -LiteralPath $SessionRootPath -Destination $runtimeSessionRoot -Recurse
 New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 
 $existing = @(Get-Process UnrealEditor, UnrealEditor-Cmd -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 $env:UABA_PANEL_EVIDENCE_REPORT = $ReportPath
 $env:UABA_PANEL_EVIDENCE_OUTPUT = $OutputDirectory
+$env:UABA_PANEL_EVIDENCE_COMPARISON = $ComparisonPath
 $env:UABA_PANEL_EVIDENCE_MODE = "v2"
 $env:UABA_PANEL_EVIDENCE_EXPECTED_ASSETS = [string]$ExpectedAssets
 $env:UABA_PANEL_EVIDENCE_EXPECTED_ISSUES = [string]$ExpectedIssues
+$env:UABA_PANEL_EVIDENCE_EXPECTED_COMPARISONS = [string]$ExpectedComparisons
 
 $project = Join-Path $runtime "UnrealAssetBatchAuditorHost.uproject"
 $arguments = @(
@@ -78,7 +92,8 @@ $finishedAt = [DateTimeOffset]::UtcNow
 $logPath = Join-Path $runtime "Saved\Logs\UnrealAssetBatchAuditorHost.log"
 $log = if (Test-Path -LiteralPath $logPath) { Get-Content -LiteralPath $logPath -Raw } else { "" }
 $automationPassed = $log -match 'Test Completed\. Result=\{Success\} Name=\{PanelEvidence\}'
-$logEvidencePath = Join-Path $repoRoot "artifacts\host-validation\m5\panel-lifecycle-v0.6.0-dev1-log.txt"
+$logEvidencePath = Join-Path $repoRoot "artifacts\host-validation\m6\panel-lifecycle-v0.7.0-dev1-log.txt"
+New-Item -ItemType Directory -Path (Split-Path -Parent $logEvidencePath) -Force | Out-Null
 $logPatterns = @(
     'engineversion=', 'Command Line:', 'Found 1 automation', 'Test Started',
     'Test Completed', 'Automation Test Queue Empty', 'Engine exit requested'
@@ -115,6 +130,8 @@ $result = [ordered]@{
     automation_passed = $automationPassed
     report_path = [IO.Path]::GetRelativePath($repoRoot, $ReportPath).Replace('\', '/')
     report_sha256 = (Get-FileHash -LiteralPath $ReportPath -Algorithm SHA256).Hash
+    comparison_path = [IO.Path]::GetRelativePath($repoRoot, $ComparisonPath).Replace('\', '/')
+    comparison_sha256 = (Get-FileHash -LiteralPath $ComparisonPath -Algorithm SHA256).Hash
     log_path = [IO.Path]::GetRelativePath($repoRoot, $logPath).Replace('\', '/')
     committed_log_excerpt = [IO.Path]::GetRelativePath($repoRoot, $logEvidencePath).Replace('\', '/')
     committed_log_excerpt_sha256 = (Get-FileHash -LiteralPath $logEvidencePath -Algorithm SHA256).Hash
@@ -123,11 +140,11 @@ $result = [ordered]@{
     claims_user_interaction = $false
     claims_visible_editor_review = $false
 }
-$evidencePath = Join-Path $repoRoot "artifacts\host-validation\m5\panel-lifecycle-v0.6.0-dev1.json"
+$evidencePath = Join-Path $repoRoot "artifacts\host-validation\m6\panel-lifecycle-v0.7.0-dev1.json"
 $result | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $evidencePath -Encoding utf8
 
 if ($timedOut -or $process.ExitCode -ne 0 -or -not $automationPassed -or
-    -not $existingSurvived -or $screenshots.Count -ne 10) {
+    -not $existingSurvived -or $screenshots.Count -ne 12) {
     throw "Panel evidence failed; inspect $evidencePath and $logPath"
 }
 Write-Output "Panel evidence passed: $evidencePath"

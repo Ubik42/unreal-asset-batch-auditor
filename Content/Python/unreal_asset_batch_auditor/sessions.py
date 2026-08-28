@@ -48,7 +48,17 @@ class SessionComparison:
     schema_version: str = COMPARISON_VERSION
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        return {
+            "baseline_report_id": self.baseline_report_id,
+            "current_report_id": self.current_report_id,
+            "new_issues": list(self.new_issues),
+            "persistent_issues": list(self.persistent_issues),
+            "resolved_issues": list(self.resolved_issues),
+            "new_failures": list(self.new_failures),
+            "persistent_failures": list(self.persistent_failures),
+            "resolved_failures": list(self.resolved_failures),
+            "schema_version": self.schema_version,
+        }
 
 
 def _read_report(path: str | Path) -> tuple[dict[str, Any], bytes]:
@@ -151,6 +161,50 @@ class SessionStore:
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
         temp.replace(self.index_path)
+
+    def _baseline_for(self, current: SessionRecord) -> SessionRecord | None:
+        candidates = [
+            item
+            for item in self.load_index().sessions
+            if item.session_id != current.session_id
+            and item.profile_id == current.profile_id
+            and item.profile_version == current.profile_version
+        ]
+        return candidates[0] if candidates else None
+
+    def compare_latest(self, current: SessionRecord) -> SessionComparison | None:
+        baseline = self._baseline_for(current)
+        if baseline is None:
+            return None
+        return compare_reports(
+            self.root / baseline.report_path,
+            self.root / current.report_path,
+        )
+
+    def write_latest_comparison(self, current: SessionRecord) -> dict[str, Any]:
+        baseline = self._baseline_for(current)
+        comparison = self.compare_latest(current)
+        if comparison is None:
+            payload: dict[str, Any] = {
+                "schema_version": COMPARISON_VERSION,
+                "status": "no_baseline",
+                "current_session": asdict(current),
+                "message": "当前 Profile 尚无更早会话，完成下一次审计后即可比较。",
+            }
+        else:
+            if baseline is None:
+                raise SessionError("比较基线状态不一致")
+            payload = comparison.to_dict()
+            payload["status"] = "ready"
+            payload["baseline_session"] = asdict(baseline)
+            payload["current_session"] = asdict(current)
+        destination = self.root / "latest-comparison.v1.json"
+        temp = self.root / "latest-comparison.v1.json.tmp"
+        temp.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        temp.replace(destination)
+        return payload
 
 
 def _issue_map(report: dict[str, Any]) -> dict[tuple[str, str], dict[str, Any]]:

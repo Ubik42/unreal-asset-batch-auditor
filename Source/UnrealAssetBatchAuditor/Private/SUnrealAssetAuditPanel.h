@@ -46,6 +46,23 @@ struct FAuditPanelAsset
     int32 IssueCount = 0;
 };
 
+struct FAuditSessionOption
+{
+    FString Label;
+    FString SessionId;
+    FString ReportPath;
+    int32 IssueCount = 0;
+};
+
+struct FAuditComparisonRow
+{
+    FString ChangeType;
+    FString AssetPath;
+    FString RuleId;
+    FString Severity;
+    FString Message;
+};
+
 class SUnrealAssetAuditPanel final : public SCompoundWidget
 {
 public:
@@ -55,14 +72,19 @@ public:
     using FIssuePtr = TSharedPtr<FAuditPanelIssue>;
     using FProfilePtr = TSharedPtr<FAuditProfileOption>;
     using FAssetPtr = TSharedPtr<FAuditPanelAsset>;
+    using FSessionPtr = TSharedPtr<FAuditSessionOption>;
+    using FComparisonPtr = TSharedPtr<FAuditComparisonRow>;
 
     void Construct(const FArguments& InArgs);
 
 #if WITH_DEV_AUTOMATION_TESTS
     bool LoadReportForEvidence(const FString& Path, FString& OutError);
+    bool LoadComparisonForEvidence(const FString& Path, FString& OutError);
     void SetEvidenceView(bool bAssetOverview, const FString& FilterText);
+    void SetComparisonEvidenceView(const FString& FilterText);
     int32 GetEvidenceAssetCount() const { return AllAssets.Num(); }
     int32 GetEvidenceIssueCount() const { return AllIssues.Num(); }
+    int32 GetEvidenceComparisonCount() const { return AllComparisons.Num(); }
 #endif
 
 private:
@@ -71,16 +93,25 @@ private:
     FReply RunAudit();
     FReply OpenReportFile();
     FReply OpenReportFolder();
+    FReply OpenSessionFolder();
+    FReply RunComparison();
     void HandleProfileChanged(FProfilePtr Item, ESelectInfo::Type SelectInfo);
     TSharedRef<SWidget> GenerateProfileOption(FProfilePtr Item) const;
     void HandleSearchChanged(const FText& Text);
+    void HandleSessionChanged(FSessionPtr Item, ESelectInfo::Type SelectInfo);
     void RebuildFilteredIssues();
     void RebuildFilteredAssets();
+    void RebuildFilteredComparisons();
     bool LoadReport(const FString& Path, FString& OutError);
+    bool LoadSessionIndex(FString& OutError);
+    bool LoadComparison(const FString& Path, FString& OutError);
     TSharedRef<ITableRow> GenerateIssueRow(FIssuePtr Item, const TSharedRef<STableViewBase>& OwnerTable);
     TSharedRef<ITableRow> GenerateAssetRow(FAssetPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
+    TSharedRef<ITableRow> GenerateComparisonRow(FComparisonPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
+    TSharedRef<SWidget> GenerateSessionOption(FSessionPtr Item) const;
     FReply ShowAssetOverview();
     FReply ShowIssueDetails();
+    FReply ShowComparison();
     TSharedRef<SWidget> BuildSummaryCell(const FText& Label, TAttribute<FText> Value, const FLinearColor& Accent) const;
 
     FText GetSelectionText() const;
@@ -92,9 +123,17 @@ private:
     FText GetSelectedProfileLabel() const;
     FText GetSelectedProfileSummary() const;
     FText GetResultViewHint() const;
+    FText GetSelectedSessionLabel() const;
+    FText GetComparisonBaselineText() const;
+    FText GetNewIssueCountText() const;
+    FText GetPersistentIssueCountText() const;
+    FText GetResolvedIssueCountText() const;
+    FText GetFailureChangeCountText() const;
     EVisibility GetAssetViewVisibility() const;
     EVisibility GetIssueViewVisibility() const;
+    EVisibility GetComparisonViewVisibility() const;
     bool CanRunAudit() const;
+    bool CanRunComparison() const;
 
     TArray<FString> SelectedAssetPaths;
     TArray<FIssuePtr> AllIssues;
@@ -103,11 +142,23 @@ private:
     TArray<FAssetPtr> AllAssets;
     TArray<FAssetPtr> FilteredAssets;
     TSharedPtr<SListView<FAssetPtr>> AssetList;
+    TArray<FComparisonPtr> AllComparisons;
+    TArray<FComparisonPtr> FilteredComparisons;
+    TSharedPtr<SListView<FComparisonPtr>> ComparisonList;
     TArray<FProfilePtr> ProfileOptions;
     FProfilePtr SelectedProfile;
     TSharedPtr<SComboBox<FProfilePtr>> ProfileComboBox;
+    TArray<FSessionPtr> SessionOptions;
+    FSessionPtr SelectedSession;
+    TSharedPtr<SComboBox<FSessionPtr>> SessionComboBox;
     TSharedPtr<SSearchBox> SearchInput;
     FString ReportPath;
+    FString SessionRoot;
+    FString ComparisonPath;
+    FString CurrentProfileId;
+    FString CurrentProfileVersion;
+    FString CurrentReportCreatedAt;
+    FString ComparisonBaselineLabel;
     FString StatusMessage;
     FString SearchText;
     int32 BatchSize = 64;
@@ -115,6 +166,10 @@ private:
     int32 PassingAssetCount = 0;
     int32 IssueCount = 0;
     int32 FailureCount = 0;
+    int32 NewIssueCount = 0;
+    int32 PersistentIssueCount = 0;
+    int32 ResolvedIssueCount = 0;
+    int32 FailureChangeCount = 0;
     bool bAuditRunning = false;
-    bool bShowingAssetOverview = true;
+    int32 ResultViewMode = 0;
 };

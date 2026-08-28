@@ -1,7 +1,7 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 12,
+  "stateRevision": 13,
   "status": "active",
   "currentMilestone": "M6",
   "milestones": [
@@ -55,20 +55,21 @@
     }
   ],
   "nextSlice": {
-    "id": "M6-S1",
+    "id": "M6-S2",
     "milestoneId": "M6",
-    "title": "Add saved audit sessions and regression comparison",
+    "title": "Add observable large-batch UX and team-readable exports",
     "scope": [
-      "Define a versioned project-local session index without adding a database or cloud dependency",
-      "Preserve immutable historical reports and expose recent sessions in the native Chinese panel",
-      "Compare current and baseline sessions by stable asset path and rule id",
-      "Classify new, persistent, resolved, and collection-failure changes with traceable evidence",
-      "Extend fixtures, tests, Demo flows, host lifecycle evidence, documentation, and screenshots"
+      "Expose explicit pending, running, progress, cancelling, completed, and failed states in the native Chinese panel",
+      "Provide a user cancellation entry point while preserving the existing between-batch cancellation contract",
+      "Generate deterministic Chinese HTML and UTF-8 CSV handoff artifacts from the versioned Report without rescanning assets",
+      "Include Profile identity, host version, summary, issues, evidence, collection failures, and validation boundary in the handoff package",
+      "Extend fixtures, tests, real host lifecycle evidence, tutorial, recording flow, and current screenshots"
     ],
     "nonGoals": [
-      "No cloud service, external database, user account, or telemetry upload",
+      "No cloud service, external database, user account, notification, or telemetry upload",
       "No asset mutation or automatic repair",
-      "No automatic CI gate or team notification in this slice",
+      "No claim that synchronous Editor work is non-blocking until independently measured",
+      "No automatic CI gate in this slice",
       "No compatibility claim beyond hosts actually tested"
     ],
     "allowedPaths": [
@@ -84,25 +85,26 @@
       "docs",
       "README.md",
       "AGENTS.md",
-      "UnrealAssetBatchAuditor.uplugin"
+      "UnrealAssetBatchAuditor.uplugin",
+      "pyproject.toml"
     ],
     "validationCommands": [
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ],
-    "evidenceCeiling": "Fixtures may prove comparison determinism; BuildPlugin may prove compilation; only fresh Unreal host sessions and Slate evidence may prove saved-history integration.",
+    "evidenceCeiling": "Fixtures may prove export determinism; BuildPlugin may prove compilation; only a fresh independent Unreal host lifecycle may prove panel task-state and cancellation wiring. RenderOffscreen evidence does not prove human mouse interaction or absence of Editor stalls.",
     "realHostRequired": true,
     "acceptance": [
-      "Existing reports remain readable and are never overwritten when saved as history",
-      "The session index tolerates missing or invalid historical files with localized diagnostics",
-      "Comparison results deterministically classify new, persistent, resolved, and failed items",
-      "Recent sessions and comparison state are usable from the native Chinese panel",
+      "The panel exposes understandable task state, bounded progress, and an honest between-batch cancellation action",
+      "Cancellation preserves already completed batches and produces a valid partial Report",
+      "Chinese HTML and UTF-8 CSV exports are deterministic and readable without Unreal Editor",
+      "Exports trace every issue to observed and expected evidence and clearly label fixture versus real-host provenance",
       "UE 5.8 BuildPlugin succeeds",
-      "A fresh independent Unreal host lifecycle validates history and comparison without touching existing user sessions",
-      "README, Demo tutorial, and screenshots show the session comparison workflow"
+      "A fresh independent Unreal host lifecycle validates task states and exports without touching existing user sessions",
+      "README, Demo tutorial, recording script, and screenshots show the large-batch and handoff workflow"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0012.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0013.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -134,6 +136,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "v0.6 added real project-owned naming and directory faults, three fresh UE reports, a clean UE 5.8.1 BuildPlugin, ten production Slate screenshots, and a structured isolated PID lifecycle record."
+    },
+    {
+      "id": "m6s1-history-and-regression",
+      "status": "completed",
+      "blocking": false,
+      "reason": "v0.7 preserves immutable same-Profile sessions, compares new/persistent/resolved/failure changes, packages two real UE reports, passes UE 5.8.1 BuildPlugin, and renders twelve current Slate screenshots in an isolated lifecycle."
     }
   ]
 }

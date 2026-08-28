@@ -9,47 +9,56 @@
 从插件内置的规则下拉框选择审计 Profile，界面直接展示三角形、顶点、材质槽、LOD、Nanite、
 简单碰撞与 Lightmap 阈值。普通用户无需接触 JSON 路径；项目可以通过“导入自定义规则”接入自己的标准。
 
-![选择项目检查规则与空状态](docs/images/workflow/v0.6/01-empty-state.png)
+![选择项目检查规则与空状态](docs/images/workflow/v0.7/01-empty-state.png)
 
 ### 2. 选择资源并执行批量审计
 
 在 Content Browser 中选择资产，读取当前选择后执行只读审计。资产总览不会隐藏通过项：同一批次内可以直接对比通过、需处理和采集失败对象，以及几何预算、碰撞、Lightmap 和问题数。
 
-![完整资产审计台账](docs/images/workflow/v0.6/02-asset-overview.png)
+![完整资产审计台账](docs/images/workflow/v0.7/02-asset-overview.png)
 
 ### 3. 查看可追溯报告
 
 切换“问题明细”即可看到严重度、规则、实测值、Profile 阈值和中文证据说明。面板把本次运行写入版本化 JSON Report，保留宿主版本、资产元数据、Issue、Evidence 与批次统计。
 
-![可追溯问题明细](docs/images/workflow/v0.6/05-issue-details.png)
+![可追溯问题明细](docs/images/workflow/v0.7/05-issue-details.png)
 
-以上 v0.6 截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 面板，数据来自 24 个真实 Demo `.uasset` 的已记录 Unreal Report；不是网页复刻或设计稿。生命周期记录保存测试 PID、耗时、退出状态、截图哈希和既有 Unreal 进程隔离结果。自动化证明面板渲染和报告解析，不冒充鼠标点击人工测试。演示 Profile 使用模拟项目阈值，不代表行业统一标准。
+以上 v0.7 截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 面板，数据来自 24 个真实 Demo `.uasset` 的两轮 Unreal Report；不是网页复刻或设计稿。生命周期记录保存测试 PID、耗时、退出状态、截图与报告哈希。自动化证明面板渲染、报告解析和回归视图，不冒充鼠标点击人工测试。演示 Profile 使用模拟项目阈值，不代表行业统一标准。
 
 ## 真实状态画廊
 
 ### 只看通过资产
 
-![5 个通过资产](docs/images/workflow/v0.6/03-passing-assets.png)
+![5 个通过资产](docs/images/workflow/v0.7/03-passing-assets.png)
 
 ### 只看需处理资产
 
-![19 个需处理资产](docs/images/workflow/v0.6/04-assets-needing-work.png)
+![19 个需处理资产](docs/images/workflow/v0.7/04-assets-needing-work.png)
 
 ### 简单碰撞证据
 
-![简单碰撞筛选](docs/images/workflow/v0.6/06-collision-evidence.png)
+![简单碰撞筛选](docs/images/workflow/v0.7/06-collision-evidence.png)
 
 ### Lightmap 就绪度证据
 
-![Lightmap UV 证据](docs/images/workflow/v0.6/07-lightmap-uv-evidence.png)
+![Lightmap UV 证据](docs/images/workflow/v0.7/07-lightmap-uv-evidence.png)
 
-![Lightmap 分辨率证据](docs/images/workflow/v0.6/08-lightmap-resolution-evidence.png)
+![Lightmap 分辨率证据](docs/images/workflow/v0.7/08-lightmap-resolution-evidence.png)
 
 ### 命名与目录政策
 
-![错误资产命名证据](docs/images/workflow/v0.6/09-object-name-evidence.png)
+![错误资产命名证据](docs/images/workflow/v0.7/09-object-name-evidence.png)
 
-![错误项目目录证据](docs/images/workflow/v0.6/10-package-path-evidence.png)
+![错误项目目录证据](docs/images/workflow/v0.7/10-package-path-evidence.png)
+
+### 修复前后回归对比
+
+每次面板审计都会保留不可变历史报告。选择同一 Profile 的历史会话作为基线后，插件按稳定的
+`asset_path + rule_id` 标识展示新增、持续、已解决问题，并独立跟踪采集失败变化。
+
+![同一 Profile 的回归对比](docs/images/workflow/v0.7/11-regression-overview.png)
+
+![只看已解决变化](docs/images/workflow/v0.7/12-resolved-changes.png)
 
 ## 当前已实现
 
@@ -65,6 +74,7 @@
 - “资产总览”展示每个已采集资产的通过/需处理/失败状态、几何预算、LOD、Nanite、碰撞、Lightmap UV、Lightmap 分辨率和问题数，不再隐藏通过资产；
 - “问题明细”保留严重度、规则、实测值、Profile 阈值与本地化证据说明，并可直接打开最新 JSON 或报告目录；
 - 面板运行会在项目 `Saved/UnrealAssetBatchAuditor/Sessions` 中保存不可变历史报告和版本化轻量索引，不再只留下会被覆盖的 `latest-report.json`；
+- 中文面板可选择同 Profile 历史会话作为回归基线，查看新增、持续、已解决和采集失败变化；比较结果使用版本化 JSON，可供后续 CI 或团队看板消费；
 - 调用方可设置正整数批次大小；进度事件覆盖请求、处理、成功、失败和取消数量；
 - 取消仅在 C++ 批次之间生效，已完成批次的资产与失败证据会保留在 Report；
 - Python fixture collector 与 Unreal C++ collector 使用同一编排边界；
@@ -90,7 +100,7 @@ python -m venv .venv
 
 仓库内置一个 UE 5.8.1 非生产演示工程和确定性生成脚本。脚本从用户本机已安装的 `/Engine`
 内容生成 24 个真实项目 `.uasset`，并建立三种复杂度分组、三套训练 Profile、两个诊断输入、
-真实 v2 报告与只读哈希证据。生成器明确构造三个项目自有故障副本：错误命名、放入
+两轮真实 v2 报告与只读哈希证据。生成器先建立无三类注入故障的基线，再明确构造三个项目自有故障副本：错误命名、放入
 `Developers` 目录、移除简单碰撞并把 Lightmap 分辨率降到 8；生成器不会修改 `/Engine` 源资产。
 
 ```powershell
@@ -100,7 +110,7 @@ python -m venv .venv
 - [完整安装与操作教程](docs/demo/DEMO_SETUP_AND_USE.md)
 - [24 个演示资产矩阵](docs/demo/DEMO_ASSET_MATRIX.md)
 - [6–8 分钟录屏分镜与讲稿](docs/demo/VIDEO_RECORDING_SCRIPT.md)
-- [10 张真实界面截图清单](docs/demo/SCREENSHOT_PLAN.md)
+- [12 张真实界面截图清单](docs/demo/SCREENSHOT_PLAN.md)
 
 Demo Profile 是为了形成清晰对比而模拟的项目数据，不代表行业标准。主要 Editor 交互入口是
 `工具 > 资产批量审计`；脚本入口仍保留给自动化、回归测试和进阶演示。
@@ -148,7 +158,7 @@ report = run(
 - 有界分批、进度、批次间取消和部分失败汇总已在真实 UE 5.8.1 宿主验证；完整场景调用尺寸为 `[2,2,1]`，取消场景只执行首批 `[2]`；
 - M5-S1 已完成碰撞与 Lightmap Profile/Report v2、UE 5.8.1 BuildPlugin、真实宿主采集、只读哈希验证和 8 张当前版本 Slate 截图；
 - M5-S2 已完成可选命名/目录政策、三类真实 Demo 故障、UE 5.8.1 v0.6 BuildPlugin、独立 PID 生命周期验证和 10 张当前版本 Slate 截图；
-- M6 已进入历史会话与回归对比：不可变归档和比较核心已实现，后续接入中文历史列表、基线选择与新增/持续/已解决视图；M7 处理发布包与最终视觉证据，不为了复杂度强行加入 AI/PCG。
+- M6-S1 已完成历史会话与回归对比：同 Profile 基线选择、不可变归档、新增/持续/已解决/采集失败分类、两轮真实 UE 报告、v0.7 BuildPlugin 和 12 张当前截图均已验证；下一切片处理大批次交互与团队可读交付，不为了复杂度强行加入 AI/PCG。
 
 持续开发状态见 [`config/goal-state.json`](config/goal-state.json)，可恢复的 Codex `/goal` 提示词见
 [`docs/development/CODEX_PRODUCTIZATION_GOAL.md`](docs/development/CODEX_PRODUCTIZATION_GOAL.md)，完整路线见
