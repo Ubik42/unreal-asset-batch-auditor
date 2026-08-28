@@ -54,3 +54,21 @@ def test_all_packaged_panel_profiles_are_valid() -> None:
         "demo-mobile-strict",
         "demo-review-lenient",
     }
+
+
+def test_native_panel_exposes_complete_asset_ledger_and_issue_detail_views() -> None:
+    source = (
+        ROOT
+        / "Source"
+        / "UnrealAssetBatchAuditor"
+        / "Private"
+        / "SUnrealAssetAuditPanel.cpp"
+    ).read_text(encoding="utf-8")
+
+    assert 'TEXT("资产总览")' in source
+    assert 'TEXT("问题明细")' in source
+    assert 'Root->GetArrayField(TEXT("assets"))' in source
+    assert 'Root->GetArrayField(TEXT("issues"))' in source
+    assert 'Root->GetArrayField(TEXT("collection_failures"))' in source
+    assert 'TEXT("三角形")' in source
+    assert 'TEXT("材质槽")' in source

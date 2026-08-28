@@ -6,7 +6,6 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 SCHEMA_VERSION = "codex-goal-state@1.0.0"
-GOAL_ID = "unreal-asset-batch-auditor"
 SAFE_VALIDATION_PREFIXES = (
     ".\\.venv\\Scripts\\python.exe -m pytest",
     ".\\.venv\\Scripts\\python.exe -m ruff check",
@@ -17,8 +16,9 @@ def validate(state: dict[str, Any], root: Path) -> list[str]:
     errors: list[str] = []
     if state.get("schemaVersion") != SCHEMA_VERSION:
         errors.append("schemaVersion mismatch")
-    if state.get("goalId") != GOAL_ID:
-        errors.append("goalId mismatch")
+    goal_id = state.get("goalId")
+    if not isinstance(goal_id, str) or not goal_id.strip():
+        errors.append("goalId must be a non-empty string")
     if not isinstance(state.get("stateRevision"), int) or state["stateRevision"] < 1:
         errors.append("stateRevision must be a positive integer")
 
@@ -74,7 +74,7 @@ def validate(state: dict[str, Any], root: Path) -> list[str]:
         errors.append("lastCheckpoint does not exist")
     else:
         payload = json.loads((root / checkpoint).read_text(encoding="utf-8"))
-        if payload.get("goalId") != GOAL_ID:
+        if payload.get("goalId") != goal_id:
             errors.append("checkpoint goalId mismatch")
         if payload.get("stateRevision") != state.get("stateRevision"):
             errors.append("checkpoint stateRevision mismatch")

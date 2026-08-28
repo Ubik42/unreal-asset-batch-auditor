@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0009",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 9,
+  "completedSlice": null,
+  "summary": "M4-S1 is implemented and compiled but intentionally remains in progress until visible Editor review and refreshed screenshots. The native panel now exposes a complete asset ledger, retains issue evidence, shares search across both views, and opens the latest report directly.",
+  "evidence": [
+    "SUnrealAssetAuditPanel parses Report v1 assets, issues, evidence, and collection failures into separate asset-overview and issue-detail views",
+    "The asset ledger displays pass, issue, and failure states plus LOD0 triangles, vertices, material slots, LOD count, Nanite state, and issue count",
+    "35 offline tests, Ruff, and the goal-state doctor pass",
+    "UE 5.8.1 Win64 Development Editor BuildPlugin succeeded for the final M4-S1 code in artifacts/host-build/UE_5.8.1-v0.4.0-dev6",
+    "An independent UnrealEditor-Cmd host loaded the packaged module and wrote a real_unreal_validation=true report for two Engine Static Meshes plus one isolated missing path",
+    "The host environment artifact explicitly records claims_visible_editor_review=false",
+    "README, Demo tutorial, productization goal, repository development rules, and an eight-shot visual evidence checklist are updated in Chinese"
+  ],
+  "nextSlice": "M4-S1",
+  "unresolvedRisks": [
+    "The expanded visible panel has not yet been manually reviewed in a fresh Editor session",
+    "The eight current-version screenshots have not yet replaced the three v0.3.0 workflow images",
+    "Collision, Lightmap UV, naming, path, and team-handoff capabilities remain future milestones",
+    "No asset mutation or automatic repair is authorized"
+  ]
+}

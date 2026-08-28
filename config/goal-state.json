@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
-  "goalId": "unreal-asset-batch-auditor",
-  "stateRevision": 7,
-  "status": "completed",
-  "currentMilestone": "M3",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 9,
+  "status": "active",
+  "currentMilestone": "M4",
   "milestones": [
     {
       "id": "M0",
@@ -28,17 +28,86 @@
       "title": "Measured batch performance and production hardening",
       "status": "completed",
       "dependsOn": ["M2"]
+    },
+    {
+      "id": "M4",
+      "title": "Audit ledger and production-facing result exploration",
+      "status": "in_progress",
+      "dependsOn": ["M3"]
+    },
+    {
+      "id": "M5",
+      "title": "Collision, Lightmap UV, naming, and project-structure policies",
+      "status": "pending",
+      "dependsOn": ["M4"]
+    },
+    {
+      "id": "M6",
+      "title": "Large-batch interaction, saved sessions, and team handoff",
+      "status": "pending",
+      "dependsOn": ["M5"]
+    },
+    {
+      "id": "M7",
+      "title": "Release packaging, visual evidence, and portfolio-grade delivery",
+      "status": "pending",
+      "dependsOn": ["M6"]
     }
   ],
-  "nextSlice": null,
-  "lastCheckpoint": "artifacts/goal/checkpoint-0007.json",
+  "nextSlice": {
+    "id": "M4-S1",
+    "milestoneId": "M4",
+    "title": "Expose the complete audit ledger in the native Chinese panel",
+    "scope": [
+      "Render every collected asset, including passing assets, from Report v1",
+      "Provide asset-overview and issue-detail views with shared search",
+      "Preserve the existing profile-driven read-only evidence chain",
+      "Add regression tests, build evidence, Chinese documentation, and fresh screenshots"
+    ],
+    "nonGoals": [
+      "No asset mutation or automatic repair",
+      "No new collision or Lightmap contract fields in this slice",
+      "No compatibility claim beyond hosts actually tested"
+    ],
+    "allowedPaths": [
+      "Source/UnrealAssetBatchAuditor",
+      "tests",
+      "scripts",
+      "config",
+      "artifacts/goal",
+      "docs",
+      "README.md",
+      "AGENTS.md",
+      "UnrealAssetBatchAuditor.uplugin"
+    ],
+    "validationCommands": [
+      ".\\.venv\\Scripts\\python.exe -m pytest -q",
+      ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
+    ],
+    "evidenceCeiling": "Offline tests may prove parsing and deterministic behavior; only BuildPlugin may prove compilation; only a fresh Unreal Editor host session may prove panel behavior.",
+    "realHostRequired": true,
+    "acceptance": [
+      "Asset overview includes pass, issue, and collection-failure rows",
+      "Issue detail remains searchable and traceable to observed and expected values",
+      "UE 5.8 BuildPlugin succeeds",
+      "A fresh independent Unreal host session validates the panel without touching existing user sessions",
+      "README and recording tutorial show the expanded workflow"
+    ]
+  },
+  "lastCheckpoint": "artifacts/goal/checkpoint-0009.json",
   "currentBlocker": null,
   "manualTracks": [
     {
       "id": "real-unreal-host",
-      "status": "completed",
+      "status": "in_progress",
       "blocking": false,
-      "reason": "UE 5.8.1 BuildPlugin, command-line host run, visible Static Mesh Editor review, and post-run uasset hash comparison all passed."
+      "reason": "The expanded module passed UE 5.8.1 BuildPlugin and independent command-line host collection; visible panel interaction still needs a fresh Editor review."
+    },
+    {
+      "id": "visual-evidence",
+      "status": "pending",
+      "blocking": false,
+      "reason": "The current README has three workflow screenshots; the productization goal requires six to ten current screenshots covering core, batch, success, issue, and failure states."
     }
   ]
 }

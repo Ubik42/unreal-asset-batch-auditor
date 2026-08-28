@@ -1,5 +1,8 @@
 # Product completion definition
 
+> 本文记录已经完成的 v0.3.0 MVP 目标。当前产品化目标与可恢复提示词见
+> `docs/development/CODEX_PRODUCTIZATION_GOAL.md`；历史完成证据仍保留在 checkpoint-0007。
+
 Deliver a reproducible, project-Profile-driven Unreal Static Mesh auditor. Python owns configuration,
 rule evaluation, reporting, and batch orchestration. An Editor-only C++ module owns bulk metadata
 collection. Read-only scans must never modify `.uasset` files.

@@ -6,7 +6,7 @@
   "required": ["schemaVersion", "goalId", "stateRevision", "status", "currentMilestone", "milestones", "nextSlice", "lastCheckpoint", "currentBlocker", "manualTracks"],
   "properties": {
     "schemaVersion": { "const": "codex-goal-state@1.0.0" },
-    "goalId": { "const": "unreal-asset-batch-auditor" },
+    "goalId": { "type": "string", "minLength": 1 },
     "stateRevision": { "type": "integer", "minimum": 1 },
     "status": { "enum": ["active", "complete", "blocked"] },
     "currentMilestone": { "type": ["string", "null"] },

@@ -48,6 +48,13 @@
 | 有界分批 | 通过；batch size 2 产生 `[2,2,1]` 三次真实 C++ 调用 | `ue-5.8.1-batching-validation.json` |
 | 批次间取消 | 通过；只执行首批，保留成功/失败并记录 3 个未处理资产 | `ue-5.8.1-batching-validation.json` |
 | 0.3.0 Slate 面板编译 | 通过；UE 5.8.1 Win64 Development Editor 完整编译、链接与打包 | `artifacts/host-build/UE_5.8.1-v0.3.0`（本机忽略目录） |
+
+## 2026-08-27 M4 产品化回归
+
+- 资产总览、问题明细、共享搜索与直接打开最新报告已通过 UE 5.8.1 Win64 Development Editor BuildPlugin（`UE_5.8.1-v0.4.0-dev6`）；
+- 独立 `UnrealEditor-Cmd` 宿主成功加载打包插件，真实采集 Cube、Sphere，并隔离一个缺失路径；
+- 证据环境明确记录 `claims_visible_editor_review=false`，因此不能把本次无界面回归写成可见面板验收；
+- 新版面板的 8 张真实截图与人工交互验收仍属于 M4 待办，不沿用旧图冒充完成。
 | 面板依赖宿主回归 | 通过；最终二进制加载，24 个真实网格完成采集，21 条 Issue、2 条脚本注入失败 | `artifacts/demo/demo-desktop-balanced-report.json` |
 
 面板的像素级布局、停靠和交互点击仍应由录制者在可见 Editor 中按上方七项做一次人工验收；

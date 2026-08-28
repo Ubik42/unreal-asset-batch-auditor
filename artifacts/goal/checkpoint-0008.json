@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0008",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 8,
+  "completedSlice": null,
+  "summary": "The completed v0.3.0 read-only Static Mesh MVP is preserved as historical evidence. A new productization goal now expands the plugin into a complete Chinese audit workbench, beginning with a full asset ledger instead of an issue-only table.",
+  "evidence": [
+    "checkpoint-0007 preserves the completed M0-M3 evidence and limits",
+    "README and docs describe the existing profile-driven C++ collection, Python evaluation, JSON report, and three-profile demo",
+    "The current native panel only renders issues even though Report v1 already contains metadata for every collected asset",
+    "The repository currently has three workflow screenshots and needs broader visual coverage for a production-tool presentation"
+  ],
+  "nextSlice": "M4-S1",
+  "unresolvedRisks": [
+    "The new asset-ledger UI has not yet completed BuildPlugin or fresh host validation",
+    "Collision, Lightmap UV, naming, path, and team-handoff capabilities remain future milestones",
+    "No asset mutation or automatic repair is authorized"
+  ]
+}

@@ -12,6 +12,7 @@ __pycache__/
 dist/
 *.egg-info/
 artifacts/host-build/
+artifacts/host-runtime/
 artifacts/python-dist/
 tests/host/Plugins/
 Demo/Plugins/

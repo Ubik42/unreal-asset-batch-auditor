@@ -22,6 +22,7 @@
 #include "Widgets/Input/SSpinBox.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SBox.h"
+#include "Widgets/SOverlay.h"
 #include "Widgets/Layout/SScrollBox.h"
 #include "Widgets/Layout/SSplitter.h"
 #include "Widgets/Text/STextBlock.h"
@@ -90,6 +91,20 @@ FText SeverityLabel(const FString& Severity)
     if (Severity == TEXT("warning")) return FText::FromString(TEXT("警告"));
     return FText::FromString(TEXT("提示"));
 }
+
+FLinearColor AssetStatusColor(const FString& Status)
+{
+    if (Status == TEXT("failed")) return RedAccent;
+    if (Status == TEXT("issue")) return AmberAccent;
+    return GreenAccent;
+}
+
+FText AssetStatusLabel(const FString& Status)
+{
+    if (Status == TEXT("failed")) return FText::FromString(TEXT("失败"));
+    if (Status == TEXT("issue")) return FText::FromString(TEXT("需处理"));
+    return FText::FromString(TEXT("通过"));
+}
 }
 
 class SAuditIssueRow final : public SMultiColumnTableRow<SUnrealAssetAuditPanel::FIssuePtr>
@@ -138,6 +153,49 @@ public:
 
 private:
     SUnrealAssetAuditPanel::FIssuePtr Item;
+};
+
+class SAuditAssetRow final : public SMultiColumnTableRow<SUnrealAssetAuditPanel::FAssetPtr>
+{
+public:
+    SLATE_BEGIN_ARGS(SAuditAssetRow) {}
+        SLATE_ARGUMENT(SUnrealAssetAuditPanel::FAssetPtr, Item)
+    SLATE_END_ARGS()
+
+    void Construct(const FArguments& InArgs, const TSharedRef<STableViewBase>& OwnerTable)
+    {
+        Item = InArgs._Item;
+        SMultiColumnTableRow::Construct(
+            FSuperRowType::FArguments().Padding(FMargin(4.0f, 3.0f)), OwnerTable);
+    }
+
+    virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& ColumnName) override
+    {
+        if (ColumnName == TEXT("Status"))
+        {
+            return SNew(STextBlock)
+                .Text(AssetStatusLabel(Item->Status))
+                .ColorAndOpacity(AssetStatusColor(Item->Status))
+                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")));
+        }
+        if (ColumnName == TEXT("Asset"))
+        {
+            return SNew(STextBlock)
+                .Text(FText::FromString(Item->AssetName))
+                .ToolTipText(FText::FromString(Item->AssetPath));
+        }
+        if (ColumnName == TEXT("Triangles")) return SNew(STextBlock).Text(FText::FromString(Item->TriangleCount));
+        if (ColumnName == TEXT("Vertices")) return SNew(STextBlock).Text(FText::FromString(Item->VertexCount));
+        if (ColumnName == TEXT("Materials")) return SNew(STextBlock).Text(FText::FromString(Item->MaterialSlotCount));
+        if (ColumnName == TEXT("LODs")) return SNew(STextBlock).Text(FText::FromString(Item->LodCount));
+        if (ColumnName == TEXT("Nanite")) return SNew(STextBlock).Text(FText::FromString(Item->NaniteState));
+        return SNew(STextBlock)
+            .Text(Item->IssueCount > 0 ? FText::AsNumber(Item->IssueCount) : FText::FromString(TEXT("—")))
+            .ColorAndOpacity(Item->IssueCount > 0 ? FSlateColor(AmberAccent) : FSlateColor::UseSubduedForeground());
+    }
+
+private:
+    SUnrealAssetAuditPanel::FAssetPtr Item;
 };
 
 void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
@@ -296,26 +354,77 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                     ]
                     + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
                     [
+                        SNew(SHorizontalBox)
+                        + SHorizontalBox::Slot().AutoWidth()
+                        [
+                            SNew(SButton)
+                            .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                            .Text(FText::FromString(TEXT("资产总览")))
+                            .ForegroundColor_Lambda([this] { return bShowingAssetOverview ? FSlateColor(CyanAccent) : FSlateColor::UseForeground(); })
+                            .OnClicked(this, &SUnrealAssetAuditPanel::ShowAssetOverview)
+                        ]
+                        + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                        [
+                            SNew(SButton)
+                            .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                            .Text(FText::FromString(TEXT("问题明细")))
+                            .ForegroundColor_Lambda([this] { return bShowingAssetOverview ? FSlateColor::UseForeground() : FSlateColor(CyanAccent); })
+                            .OnClicked(this, &SUnrealAssetAuditPanel::ShowIssueDetails)
+                        ]
+                        + SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center).Padding(12, 0, 0, 0)
+                        [
+                            SNew(STextBlock)
+                            .Text(this, &SUnrealAssetAuditPanel::GetResultViewHint)
+                            .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                        ]
+                    ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
+                    [
                         SAssignNew(SearchInput, SSearchBox)
-                        .HintText(FText::FromString(TEXT("搜索资产、规则或说明")))
+                        .HintText(FText::FromString(TEXT("搜索资产、状态、规则或证据说明")))
                         .OnTextChanged(this, &SUnrealAssetAuditPanel::HandleSearchChanged)
                     ]
                     + SVerticalBox::Slot().FillHeight(1).Padding(14, 0, 14, 10)
                     [
-                        SAssignNew(IssueList, SListView<FIssuePtr>)
-                        .ListItemsSource(&FilteredIssues)
-                        .SelectionMode(ESelectionMode::Single)
-                        .OnGenerateRow(this, &SUnrealAssetAuditPanel::GenerateIssueRow)
-                        .HeaderRow
-                        (
-                            SNew(SHeaderRow)
-                            + SHeaderRow::Column(TEXT("Severity")).DefaultLabel(FText::FromString(TEXT("级别"))).FixedWidth(68)
-                            + SHeaderRow::Column(TEXT("Asset")).DefaultLabel(FText::FromString(TEXT("资产"))).FillWidth(0.25f)
-                            + SHeaderRow::Column(TEXT("Rule")).DefaultLabel(FText::FromString(TEXT("检查项"))).FillWidth(0.16f)
-                            + SHeaderRow::Column(TEXT("Observed")).DefaultLabel(FText::FromString(TEXT("实测"))).FixedWidth(82)
-                            + SHeaderRow::Column(TEXT("Expected")).DefaultLabel(FText::FromString(TEXT("阈值"))).FixedWidth(82)
-                            + SHeaderRow::Column(TEXT("Message")).DefaultLabel(FText::FromString(TEXT("证据说明"))).FillWidth(0.34f)
-                        )
+                        SNew(SOverlay)
+                        + SOverlay::Slot()
+                        [
+                            SAssignNew(AssetList, SListView<FAssetPtr>)
+                            .Visibility(this, &SUnrealAssetAuditPanel::GetAssetViewVisibility)
+                            .ListItemsSource(&FilteredAssets)
+                            .SelectionMode(ESelectionMode::Single)
+                            .OnGenerateRow(this, &SUnrealAssetAuditPanel::GenerateAssetRow)
+                            .HeaderRow
+                            (
+                                SNew(SHeaderRow)
+                                + SHeaderRow::Column(TEXT("Status")).DefaultLabel(FText::FromString(TEXT("状态"))).FixedWidth(72)
+                                + SHeaderRow::Column(TEXT("Asset")).DefaultLabel(FText::FromString(TEXT("资产"))).FillWidth(0.31f)
+                                + SHeaderRow::Column(TEXT("Triangles")).DefaultLabel(FText::FromString(TEXT("三角形"))).FixedWidth(86)
+                                + SHeaderRow::Column(TEXT("Vertices")).DefaultLabel(FText::FromString(TEXT("顶点"))).FixedWidth(78)
+                                + SHeaderRow::Column(TEXT("Materials")).DefaultLabel(FText::FromString(TEXT("材质槽"))).FixedWidth(68)
+                                + SHeaderRow::Column(TEXT("LODs")).DefaultLabel(FText::FromString(TEXT("LOD"))).FixedWidth(52)
+                                + SHeaderRow::Column(TEXT("Nanite")).DefaultLabel(FText::FromString(TEXT("Nanite"))).FixedWidth(66)
+                                + SHeaderRow::Column(TEXT("Issues")).DefaultLabel(FText::FromString(TEXT("问题"))).FixedWidth(58)
+                            )
+                        ]
+                        + SOverlay::Slot()
+                        [
+                            SAssignNew(IssueList, SListView<FIssuePtr>)
+                            .Visibility(this, &SUnrealAssetAuditPanel::GetIssueViewVisibility)
+                            .ListItemsSource(&FilteredIssues)
+                            .SelectionMode(ESelectionMode::Single)
+                            .OnGenerateRow(this, &SUnrealAssetAuditPanel::GenerateIssueRow)
+                            .HeaderRow
+                            (
+                                SNew(SHeaderRow)
+                                + SHeaderRow::Column(TEXT("Severity")).DefaultLabel(FText::FromString(TEXT("级别"))).FixedWidth(68)
+                                + SHeaderRow::Column(TEXT("Asset")).DefaultLabel(FText::FromString(TEXT("资产"))).FillWidth(0.25f)
+                                + SHeaderRow::Column(TEXT("Rule")).DefaultLabel(FText::FromString(TEXT("检查项"))).FillWidth(0.16f)
+                                + SHeaderRow::Column(TEXT("Observed")).DefaultLabel(FText::FromString(TEXT("实测"))).FixedWidth(82)
+                                + SHeaderRow::Column(TEXT("Expected")).DefaultLabel(FText::FromString(TEXT("阈值"))).FixedWidth(82)
+                                + SHeaderRow::Column(TEXT("Message")).DefaultLabel(FText::FromString(TEXT("证据说明"))).FillWidth(0.34f)
+                            )
+                        ]
                     ]
                     + SVerticalBox::Slot().AutoHeight()
                     [
@@ -333,6 +442,13 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                                 .ToolTipText_Lambda([this] { return FText::FromString(ReportPath); })
                             ]
                             + SHorizontalBox::Slot().AutoWidth().Padding(8, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .Text(FText::FromString(TEXT("打开最新报告")))
+                                .IsEnabled_Lambda([this] { return FPaths::FileExists(ReportPath); })
+                                .OnClicked(this, &SUnrealAssetAuditPanel::OpenReportFile)
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
                             [
                                 SNew(SButton).Text(FText::FromString(TEXT("打开报告目录"))).OnClicked(this, &SUnrealAssetAuditPanel::OpenReportFolder)
                             ]
@@ -488,8 +604,11 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
     AssetCount = Root->GetIntegerField(TEXT("asset_count"));
     IssueCount = Root->GetIntegerField(TEXT("issue_count"));
     FailureCount = Root->GetIntegerField(TEXT("collection_failure_count"));
+    bShowingAssetOverview = true;
     AllIssues.Reset();
+    AllAssets.Reset();
     TSet<FString> AssetsWithIssues;
+    TMap<FString, int32> IssueCountByAsset;
 
     TMap<FString, TSharedPtr<FJsonObject>> EvidenceById;
     for (const TSharedPtr<FJsonValue>& Value : Root->GetArrayField(TEXT("evidence")))
@@ -507,6 +626,7 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         Item->RuleId = Issue->GetStringField(TEXT("rule_id"));
         const FString RawMessage = Issue->GetStringField(TEXT("message"));
         AssetsWithIssues.Add(Item->AssetPath);
+        IssueCountByAsset.FindOrAdd(Item->AssetPath) += 1;
         if (const TSharedPtr<FJsonObject>* Evidence = EvidenceById.Find(Issue->GetStringField(TEXT("evidence_id"))))
         {
             Item->Metric = (*Evidence)->GetStringField(TEXT("metric"));
@@ -530,9 +650,49 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         Item->Expected = TEXT("Static Mesh");
         Item->Message = TEXT("资产无法作为 Static Mesh 读取；本项已隔离，其余资产继续审计。");
         AllIssues.Add(Item);
+
+        FAssetPtr FailedAsset = MakeShared<FAuditPanelAsset>();
+        FailedAsset->AssetPath = Item->AssetPath;
+        FailedAsset->AssetName = FPaths::GetBaseFilename(Item->AssetPath);
+        FailedAsset->Status = TEXT("failed");
+        FailedAsset->TriangleCount = TEXT("—");
+        FailedAsset->VertexCount = TEXT("—");
+        FailedAsset->MaterialSlotCount = TEXT("—");
+        FailedAsset->LodCount = TEXT("—");
+        FailedAsset->NaniteState = TEXT("—");
+        FailedAsset->IssueCount = 1;
+        AllAssets.Add(FailedAsset);
     }
+    for (const TSharedPtr<FJsonValue>& Value : Root->GetArrayField(TEXT("assets")))
+    {
+        const TSharedPtr<FJsonObject> Asset = Value->AsObject();
+        if (!Asset.IsValid()) continue;
+        FAssetPtr Item = MakeShared<FAuditPanelAsset>();
+        Item->AssetPath = Asset->GetStringField(TEXT("asset_path"));
+        Item->AssetName = Asset->GetStringField(TEXT("asset_name"));
+        Item->IssueCount = IssueCountByAsset.FindRef(Item->AssetPath);
+        Item->Status = Item->IssueCount > 0 ? TEXT("issue") : TEXT("pass");
+        Item->MaterialSlotCount = FText::AsNumber(Asset->GetIntegerField(TEXT("material_slot_count"))).ToString();
+        Item->NaniteState = Asset->GetBoolField(TEXT("nanite_enabled")) ? TEXT("启用") : TEXT("关闭");
+        const TArray<TSharedPtr<FJsonValue>>& Lods = Asset->GetArrayField(TEXT("lods"));
+        Item->LodCount = FText::AsNumber(Lods.Num()).ToString();
+        Item->TriangleCount = TEXT("—");
+        Item->VertexCount = TEXT("—");
+        if (!Lods.IsEmpty())
+        {
+            const TSharedPtr<FJsonObject> Lod0 = Lods[0]->AsObject();
+            if (Lod0.IsValid())
+            {
+                Item->TriangleCount = FText::AsNumber(Lod0->GetIntegerField(TEXT("triangles"))).ToString();
+                Item->VertexCount = FText::AsNumber(Lod0->GetIntegerField(TEXT("vertices"))).ToString();
+            }
+        }
+        AllAssets.Add(Item);
+    }
+    AllAssets.Sort([](const FAssetPtr& Left, const FAssetPtr& Right) { return Left->AssetPath < Right->AssetPath; });
     PassingAssetCount = FMath::Max(0, AssetCount - AssetsWithIssues.Num());
     RebuildFilteredIssues();
+    RebuildFilteredAssets();
     return true;
 }
 
@@ -540,6 +700,7 @@ void SUnrealAssetAuditPanel::HandleSearchChanged(const FText& Text)
 {
     SearchText = Text.ToString().TrimStartAndEnd();
     RebuildFilteredIssues();
+    RebuildFilteredAssets();
 }
 
 void SUnrealAssetAuditPanel::RebuildFilteredIssues()
@@ -558,16 +719,60 @@ void SUnrealAssetAuditPanel::RebuildFilteredIssues()
     if (IssueList.IsValid()) IssueList->RequestListRefresh();
 }
 
+void SUnrealAssetAuditPanel::RebuildFilteredAssets()
+{
+    FilteredAssets.Reset();
+    for (const FAssetPtr& Item : AllAssets)
+    {
+        const FString StatusText = AssetStatusLabel(Item->Status).ToString();
+        if (SearchText.IsEmpty()
+            || Item->AssetPath.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->AssetName.Contains(SearchText, ESearchCase::IgnoreCase)
+            || StatusText.Contains(SearchText, ESearchCase::IgnoreCase))
+        {
+            FilteredAssets.Add(Item);
+        }
+    }
+    if (AssetList.IsValid()) AssetList->RequestListRefresh();
+}
+
 TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateIssueRow(
     FIssuePtr Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
     return SNew(SAuditIssueRow, OwnerTable).Item(Item);
 }
 
+TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateAssetRow(
+    FAssetPtr Item, const TSharedRef<STableViewBase>& OwnerTable)
+{
+    return SNew(SAuditAssetRow, OwnerTable).Item(Item);
+}
+
+FReply SUnrealAssetAuditPanel::ShowAssetOverview()
+{
+    bShowingAssetOverview = true;
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::ShowIssueDetails()
+{
+    bShowingAssetOverview = false;
+    return FReply::Handled();
+}
+
 FReply SUnrealAssetAuditPanel::OpenReportFolder()
 {
     IFileManager::Get().MakeDirectory(*FPaths::GetPath(ReportPath), true);
     FPlatformProcess::ExploreFolder(*FPaths::GetPath(ReportPath));
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::OpenReportFile()
+{
+    if (FPaths::FileExists(ReportPath))
+    {
+        FPlatformProcess::LaunchFileInDefaultExternalApplication(*ReportPath);
+    }
     return FReply::Handled();
 }
 
@@ -615,4 +820,24 @@ FText SUnrealAssetAuditPanel::GetSelectedProfileLabel() const
 FText SUnrealAssetAuditPanel::GetSelectedProfileSummary() const
 {
     return SelectedProfile.IsValid() ? FText::FromString(SelectedProfile->Summary) : FText::GetEmpty();
+}
+
+FText SUnrealAssetAuditPanel::GetResultViewHint() const
+{
+    if (bShowingAssetOverview)
+    {
+        return FText::Format(
+            FText::FromString(TEXT("显示 {0} 个已处理对象（含采集失败）")), FilteredAssets.Num());
+    }
+    return FText::Format(FText::FromString(TEXT("显示 {0} 条可追溯问题")), FilteredIssues.Num());
+}
+
+EVisibility SUnrealAssetAuditPanel::GetAssetViewVisibility() const
+{
+    return bShowingAssetOverview ? EVisibility::Visible : EVisibility::Collapsed;
+}
+
+EVisibility SUnrealAssetAuditPanel::GetIssueViewVisibility() const
+{
+    return bShowingAssetOverview ? EVisibility::Collapsed : EVisibility::Visible;
 }
