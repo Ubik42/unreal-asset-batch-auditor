@@ -8,5 +8,6 @@
   "new_failure_count": 0,
   "persistent_failure_count": 2,
   "resolved_failure_count": 0,
+  "handoff_path": "artifacts/demo/handoff/report-a5b81a1f0389ceb0",
   "evidence_boundary": "Both source reports were collected in UE; this script only archives and compares them."
 }

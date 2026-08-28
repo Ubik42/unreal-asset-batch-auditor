@@ -27,6 +27,7 @@ class SessionRecord:
     asset_count: int
     issue_count: int
     collection_failure_count: int
+    cancelled_asset_count: int = 0
 
 
 @dataclass(frozen=True)
@@ -142,6 +143,7 @@ class SessionStore:
             asset_count=int(raw["asset_count"]),
             issue_count=int(raw["issue_count"]),
             collection_failure_count=int(raw["collection_failure_count"]),
+            cancelled_asset_count=int(raw.get("cancelled_asset_count", 0)),
         )
         loaded = self.load_index()
         sessions = [item for item in loaded.sessions if item.session_id != session_id]
@@ -169,6 +171,7 @@ class SessionStore:
             if item.session_id != current.session_id
             and item.profile_id == current.profile_id
             and item.profile_version == current.profile_version
+            and item.cancelled_asset_count == 0
         ]
         return candidates[0] if candidates else None
 
@@ -182,10 +185,18 @@ class SessionStore:
         )
 
     def write_latest_comparison(self, current: SessionRecord) -> dict[str, Any]:
+        if current.cancelled_asset_count > 0:
+            payload: dict[str, Any] = {
+                "schema_version": COMPARISON_VERSION,
+                "status": "incomplete_current",
+                "current_session": asdict(current),
+                "message": "当前审计已取消并保留部分结果，不参与完整回归比较。",
+            }
+            return self._write_comparison(payload)
         baseline = self._baseline_for(current)
         comparison = self.compare_latest(current)
         if comparison is None:
-            payload: dict[str, Any] = {
+            payload = {
                 "schema_version": COMPARISON_VERSION,
                 "status": "no_baseline",
                 "current_session": asdict(current),
@@ -198,6 +209,9 @@ class SessionStore:
             payload["status"] = "ready"
             payload["baseline_session"] = asdict(baseline)
             payload["current_session"] = asdict(current)
+        return self._write_comparison(payload)
+
+    def _write_comparison(self, payload: dict[str, Any]) -> dict[str, Any]:
         destination = self.root / "latest-comparison.v1.json"
         temp = self.root / "latest-comparison.v1.json.tmp"
         temp.write_text(

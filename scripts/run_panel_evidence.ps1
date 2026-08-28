@@ -1,6 +1,6 @@
 param(
     [string]$EngineRoot = "C:\Program Files\Epic Games\UE_5.8",
-    [string]$BuildLabel = "UE_5.8.1-v0.7.0-dev1",
+    [string]$BuildLabel = "UE_5.8.1-v0.8.0-dev3",
     [string]$ReportPath = "",
     [string]$ComparisonPath = "",
     [string]$SessionRootPath = "",
@@ -19,7 +19,7 @@ if (-not $ReportPath) {
     $ReportPath = Join-Path $repoRoot "artifacts\demo\demo-desktop-balanced-v2-report.json"
 }
 if (-not $OutputDirectory) {
-    $OutputDirectory = Join-Path $repoRoot "docs\images\workflow\v0.7"
+    $OutputDirectory = Join-Path $repoRoot "docs\images\workflow\v0.8"
 }
 if (-not $ComparisonPath) {
     $ComparisonPath = Join-Path $repoRoot "artifacts\demo\session-history\latest-comparison.v1.json"
@@ -56,7 +56,7 @@ $env:UABA_PANEL_EVIDENCE_EXPECTED_COMPARISONS = [string]$ExpectedComparisons
 $project = Join-Path $runtime "UnrealAssetBatchAuditorHost.uproject"
 $arguments = @(
     $project,
-    '-ExecCmds="Automation RunTests UnrealAssetBatchAuditor.PanelEvidence"',
+    '-ExecCmds="Automation RunTests UnrealAssetBatchAuditor"',
     '-TestExit="Automation Test Queue Empty"',
     '-unattended', '-nop4', '-nosplash', '-RenderOffscreen'
 )
@@ -91,8 +91,10 @@ if ($timedOut) {
 $finishedAt = [DateTimeOffset]::UtcNow
 $logPath = Join-Path $runtime "Saved\Logs\UnrealAssetBatchAuditorHost.log"
 $log = if (Test-Path -LiteralPath $logPath) { Get-Content -LiteralPath $logPath -Raw } else { "" }
-$automationPassed = $log -match 'Test Completed\. Result=\{Success\} Name=\{PanelEvidence\}'
-$logEvidencePath = Join-Path $repoRoot "artifacts\host-validation\m6\panel-lifecycle-v0.7.0-dev1-log.txt"
+$panelEvidencePassed = $log -match 'Test Completed\. Result=\{Success\} Name=\{PanelEvidence\}'
+$taskLifecyclePassed = $log -match 'Test Completed\. Result=\{Success\} Name=\{PanelTaskLifecycle\}'
+$automationPassed = $panelEvidencePassed -and $taskLifecyclePassed
+$logEvidencePath = Join-Path $repoRoot "artifacts\host-validation\m6\panel-lifecycle-v0.8.0-dev3-log.txt"
 New-Item -ItemType Directory -Path (Split-Path -Parent $logEvidencePath) -Force | Out-Null
 $logPatterns = @(
     'engineversion=', 'Command Line:', 'Found 1 automation', 'Test Started',
@@ -100,6 +102,26 @@ $logPatterns = @(
 )
 @(Select-String -LiteralPath $logPath -Pattern $logPatterns | ForEach-Object { $_.Line }) |
     Set-Content -LiteralPath $logEvidencePath -Encoding utf8
+$taskSource = Join-Path $runtime "Saved\UnrealAssetBatchAuditor\TaskLifecycleEvidence"
+$taskEvidenceRoot = Join-Path $repoRoot "artifacts\host-validation\m6\task-lifecycle-v0.8.0-dev3"
+$resolvedTaskEvidenceRoot = [IO.Path]::GetFullPath($taskEvidenceRoot)
+if (-not $resolvedTaskEvidenceRoot.StartsWith([IO.Path]::GetFullPath($repoRoot), [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Task evidence target escaped repository: $resolvedTaskEvidenceRoot"
+}
+if (Test-Path -LiteralPath $taskEvidenceRoot) {
+    Remove-Item -LiteralPath $taskEvidenceRoot -Recurse -Force
+}
+if (-not (Test-Path -LiteralPath $taskSource)) {
+    throw "Panel task lifecycle artifacts are missing: $taskSource"
+}
+Copy-Item -LiteralPath $taskSource -Destination $taskEvidenceRoot -Recurse
+$taskArtifacts = @(Get-ChildItem -LiteralPath $taskEvidenceRoot -Recurse -File | Sort-Object FullName | ForEach-Object {
+    [ordered]@{
+        path = [IO.Path]::GetRelativePath($repoRoot, $_.FullName).Replace('\', '/')
+        bytes = $_.Length
+        sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+    }
+})
 $after = @(Get-Process UnrealEditor, UnrealEditor-Cmd -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 $existingSurvived = @($existing | Where-Object { $_ -notin $after }).Count -eq 0
 $screenshots = @(Get-ChildItem -LiteralPath $OutputDirectory -Filter '*.png' | Sort-Object Name | ForEach-Object {
@@ -126,8 +148,13 @@ $result = [ordered]@{
     timed_out = $timedOut
     exit_code = $process.ExitCode
     process_exited = $process.HasExited
-    automation_test = "UnrealAssetBatchAuditor.PanelEvidence"
+    automation_tests = @(
+        "UnrealAssetBatchAuditor.PanelEvidence",
+        "UnrealAssetBatchAuditor.PanelTaskLifecycle"
+    )
     automation_passed = $automationPassed
+    panel_evidence_passed = $panelEvidencePassed
+    panel_task_lifecycle_passed = $taskLifecyclePassed
     report_path = [IO.Path]::GetRelativePath($repoRoot, $ReportPath).Replace('\', '/')
     report_sha256 = (Get-FileHash -LiteralPath $ReportPath -Algorithm SHA256).Hash
     comparison_path = [IO.Path]::GetRelativePath($repoRoot, $ComparisonPath).Replace('\', '/')
@@ -137,14 +164,16 @@ $result = [ordered]@{
     committed_log_excerpt_sha256 = (Get-FileHash -LiteralPath $logEvidencePath -Algorithm SHA256).Hash
     screenshot_count = $screenshots.Count
     screenshots = $screenshots
+    task_artifact_count = $taskArtifacts.Count
+    task_artifacts = $taskArtifacts
     claims_user_interaction = $false
     claims_visible_editor_review = $false
 }
-$evidencePath = Join-Path $repoRoot "artifacts\host-validation\m6\panel-lifecycle-v0.7.0-dev1.json"
+$evidencePath = Join-Path $repoRoot "artifacts\host-validation\m6\panel-lifecycle-v0.8.0-dev3.json"
 $result | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $evidencePath -Encoding utf8
 
 if ($timedOut -or $process.ExitCode -ne 0 -or -not $automationPassed -or
-    -not $existingSurvived -or $screenshots.Count -ne 12) {
+    -not $existingSurvived -or $screenshots.Count -ne 14) {
     throw "Panel evidence failed; inspect $evidencePath and $logPath"
 }
 Write-Output "Panel evidence passed: $evidencePath"

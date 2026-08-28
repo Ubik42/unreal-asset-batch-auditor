@@ -5,7 +5,7 @@ import re
 from collections.abc import Callable, Sequence
 
 from .batching import BatchProgress, collect_in_batches
-from .collectors import MetadataCollector
+from .collectors import CollectionBatch, MetadataCollector
 from .contracts import (
     CONTRACT_VERSION,
     AuditProfile,
@@ -319,6 +319,35 @@ def audit_assets(
         cancelled_asset_count = batched.progress.cancelled_count
         completed_batch_count = batched.progress.completed_batch_count
         applied_batch_size = batch_size
+    return build_report_from_collection(
+        profile=profile,
+        collector=collector,
+        batch=batch,
+        requested_asset_paths=list(asset_paths or []),
+        requested_asset_count=requested_asset_count,
+        processed_asset_count=processed_asset_count,
+        cancelled_asset_count=cancelled_asset_count,
+        completed_batch_count=completed_batch_count,
+        batch_size=applied_batch_size,
+        report_id_factory=report_id_factory,
+    )
+
+
+def build_report_from_collection(
+    *,
+    profile: AuditProfile,
+    collector: MetadataCollector,
+    batch: CollectionBatch,
+    requested_asset_paths: Sequence[str],
+    requested_asset_count: int,
+    processed_asset_count: int,
+    cancelled_asset_count: int,
+    completed_batch_count: int,
+    batch_size: int | None,
+    report_id_factory: Callable[[], str] | None = None,
+) -> Report:
+    """Evaluate an already-collected batch without touching Unreal assets again."""
+
     assets = batch.assets
     issues: list[Issue] = []
     evidence: list[Evidence] = []
@@ -335,11 +364,11 @@ def audit_assets(
         else _stable_id(
             "report",
             profile_fingerprint,
-            applied_batch_size,
+            batch_size,
             requested_asset_count,
             processed_asset_count,
             cancelled_asset_count,
-            *(asset_paths or ()),
+            *requested_asset_paths,
             *(a.asset_path for a in assets),
             *(failure.asset_path for failure in batch.failures),
         )
@@ -355,7 +384,7 @@ def audit_assets(
         processed_asset_count=processed_asset_count,
         cancelled_asset_count=cancelled_asset_count,
         completed_batch_count=completed_batch_count,
-        batch_size=applied_batch_size,
+        batch_size=batch_size,
         issues=issues,
         evidence=evidence,
         collection_failures=batch.failures,

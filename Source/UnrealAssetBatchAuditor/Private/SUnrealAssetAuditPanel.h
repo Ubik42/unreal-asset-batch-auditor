@@ -7,7 +7,6 @@ class ITableRow;
 class SEditableTextBox;
 class SSearchBox;
 class STableViewBase;
-class SWidgetSwitcher;
 template <typename OptionType> class SComboBox;
 template <typename ItemType> class SListView;
 
@@ -82,6 +81,9 @@ public:
     bool LoadComparisonForEvidence(const FString& Path, FString& OutError);
     void SetEvidenceView(bool bAssetOverview, const FString& FilterText);
     void SetComparisonEvidenceView(const FString& FilterText);
+    void SetTaskEvidenceState(
+        const FString& State, int32 Processed, int32 Requested, int32 CompletedBatches,
+        int32 TotalBatches);
     int32 GetEvidenceAssetCount() const { return AllAssets.Num(); }
     int32 GetEvidenceIssueCount() const { return AllIssues.Num(); }
     int32 GetEvidenceComparisonCount() const { return AllComparisons.Num(); }
@@ -91,9 +93,12 @@ private:
     FReply RefreshSelection();
     FReply BrowseProfile();
     FReply RunAudit();
+    FReply CancelAudit();
+    FReply ExportHandoff();
     FReply OpenReportFile();
     FReply OpenReportFolder();
     FReply OpenSessionFolder();
+    FReply OpenHandoffFolder();
     FReply RunComparison();
     void HandleProfileChanged(FProfilePtr Item, ESelectInfo::Type SelectInfo);
     TSharedRef<SWidget> GenerateProfileOption(FProfilePtr Item) const;
@@ -105,6 +110,8 @@ private:
     bool LoadReport(const FString& Path, FString& OutError);
     bool LoadSessionIndex(FString& OutError);
     bool LoadComparison(const FString& Path, FString& OutError);
+    bool LoadTaskState(FString& OutError);
+    EActiveTimerReturnType PollAuditTask(double CurrentTime, float DeltaTime);
     TSharedRef<ITableRow> GenerateIssueRow(FIssuePtr Item, const TSharedRef<STableViewBase>& OwnerTable);
     TSharedRef<ITableRow> GenerateAssetRow(FAssetPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
     TSharedRef<ITableRow> GenerateComparisonRow(FComparisonPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
@@ -129,10 +136,16 @@ private:
     FText GetPersistentIssueCountText() const;
     FText GetResolvedIssueCountText() const;
     FText GetFailureChangeCountText() const;
+    FText GetTaskPhaseText() const;
+    FText GetTaskProgressText() const;
+    TOptional<float> GetTaskProgressFraction() const;
     EVisibility GetAssetViewVisibility() const;
     EVisibility GetIssueViewVisibility() const;
     EVisibility GetComparisonViewVisibility() const;
+    EVisibility GetIdleActionVisibility() const;
+    EVisibility GetRunningActionVisibility() const;
     bool CanRunAudit() const;
+    bool CanCancelAudit() const;
     bool CanRunComparison() const;
 
     TArray<FString> SelectedAssetPaths;
@@ -155,6 +168,12 @@ private:
     FString ReportPath;
     FString SessionRoot;
     FString ComparisonPath;
+    FString TaskStatePath;
+    FString CancelRequestPath;
+    FString HandoffRoot;
+    FString LastHandoffPath;
+    FString ActiveTaskId;
+    FString TaskState = TEXT("idle");
     FString CurrentProfileId;
     FString CurrentProfileVersion;
     FString CurrentReportCreatedAt;
@@ -170,6 +189,12 @@ private:
     int32 PersistentIssueCount = 0;
     int32 ResolvedIssueCount = 0;
     int32 FailureChangeCount = 0;
+    int32 TaskRequestedCount = 0;
+    int32 TaskProcessedCount = 0;
+    int32 TaskCompletedBatchCount = 0;
+    int32 TaskTotalBatchCount = 0;
+    float TaskProgressFraction = 0.0f;
     bool bAuditRunning = false;
+    bool bTaskCanCancel = false;
     int32 ResultViewMode = 0;
 };

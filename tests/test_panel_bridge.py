@@ -77,6 +77,10 @@ def test_native_panel_exposes_complete_asset_ledger_and_issue_detail_views() -> 
     assert 'TEXT("回归对比")' in source
     assert 'TEXT("回归基线（同一 Profile）")' in source
     assert 'TEXT("与所选基线比较")' in source
+    assert 'TEXT("批次间取消")' in source
+    assert 'TEXT("导出团队包")' in source
+    assert "current-task-state.json" in source
+    assert "start_panel_task" in source
 
 
 def test_panel_comparison_request_writes_versioned_result(tmp_path: Path) -> None:
@@ -129,3 +133,35 @@ def test_panel_comparison_request_writes_versioned_result(tmp_path: Path) -> Non
     assert result["status"] == "ready"
     assert len(result["new_issues"]) == 1
     assert json.loads(output_path.read_text(encoding="utf-8")) == result
+
+
+def test_panel_handoff_request_exports_without_rescan(tmp_path: Path, monkeypatch) -> None:
+    request_path = tmp_path / "handoff-request.json"
+    request_path.write_text(
+        json.dumps(
+            {
+                "report_path": str(tmp_path / "report.json"),
+                "output_root": str(tmp_path / "handoffs"),
+            }
+        ),
+        encoding="utf-8",
+    )
+    captured: list[tuple[str, str]] = []
+
+    class Result:
+        root = tmp_path / "handoffs" / "report-1"
+        html_path = root / "审计交接报告.html"
+        csv_path = root / "审计问题明细.csv"
+        manifest_path = root / "交接清单.json"
+
+    def fake_export(report_path: str, output_root: str):
+        captured.append((report_path, output_root))
+        return Result()
+
+    monkeypatch.setattr(run_asset_audit, "export_handoff", fake_export)
+
+    result = run_asset_audit.export_handoff_from_request_file(str(request_path))
+
+    assert captured == [(str(tmp_path / "report.json"), str(tmp_path / "handoffs"))]
+    assert result["root"].endswith("report-1")
+    assert result["html_path"].endswith("审计交接报告.html")

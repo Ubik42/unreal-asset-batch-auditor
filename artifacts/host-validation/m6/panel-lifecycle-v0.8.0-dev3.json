@@ -1,0 +1,216 @@
+{
+  "schema_version": "unreal-panel-lifecycle@1.0.0",
+  "created_at": "2026-08-28T04:37:26.2523950+00:00",
+  "engine": "UE 5.8.1",
+  "plugin_build": "UE_5.8.1-v0.8.0-dev3",
+  "execution": "independent hidden UnrealEditor-Cmd -RenderOffscreen",
+  "test_pid": 19224,
+  "created_unreal_pids": [
+    19224
+  ],
+  "existing_unreal_pids_before": [
+    6940
+  ],
+  "existing_unreal_pids_after": [
+    6940
+  ],
+  "existing_processes_survived": true,
+  "started_at": "2026-08-28T04:36:58.3021053+00:00",
+  "finished_at": "2026-08-28T04:37:26.2523950+00:00",
+  "duration_seconds": 27.95,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "automation_tests": [
+    "UnrealAssetBatchAuditor.PanelEvidence",
+    "UnrealAssetBatchAuditor.PanelTaskLifecycle"
+  ],
+  "automation_passed": true,
+  "panel_evidence_passed": true,
+  "panel_task_lifecycle_passed": true,
+  "report_path": "artifacts/demo/demo-desktop-balanced-v2-report.json",
+  "report_sha256": "6700BF18FBF4F9058807D3BAB71AE8A9C7A396D0D142424D322DC07074906170",
+  "comparison_path": "artifacts/demo/session-history/latest-comparison.v1.json",
+  "comparison_sha256": "4C8B5029591D6E47A7983D9398B2823B44E00835ED5DBF2D543BA32DBBE4514F",
+  "log_path": "artifacts/host-runtime/panel-20260827-223658/Saved/Logs/UnrealAssetBatchAuditorHost.log",
+  "committed_log_excerpt": "artifacts/host-validation/m6/panel-lifecycle-v0.8.0-dev3-log.txt",
+  "committed_log_excerpt_sha256": "8B04EAC2FB350DF2DCFC5006012ECA6C4D1A6AF05D7BFCBBF8CDAB2892B7A8EA",
+  "screenshot_count": 15,
+  "screenshots": [
+    {
+      "path": "docs/images/workflow/v0.8/01-empty-state.png",
+      "bytes": 96120,
+      "sha256": "3522E65CB29472219FFF9D8EC57F921C946A9A7F9EB2B7F53646A704255F1B10"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/02-asset-overview.png",
+      "bytes": 177514,
+      "sha256": "3FCA07CFF279506721217CFAF8E0A7B96C9271FE92AB69CBF6B77F8D30AA295B"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/03-passing-assets.png",
+      "bytes": 116102,
+      "sha256": "8A00E90A37DBC3C3E812CFE3F226AA3BC1746FB9869CFE2887D3BCE66B7CCD13"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/04-assets-needing-work.png",
+      "bytes": 181994,
+      "sha256": "06A073D3CEA6470D37828E7ECFB0ECB2B4FF95BD833DCAF96A78F8885B918AD4"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/05-issue-details.png",
+      "bytes": 205216,
+      "sha256": "F3514E48D38177151075BE5065212051251D75DDEDA20F70FBAF68D0808953ED"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/06-collision-evidence.png",
+      "bytes": 158241,
+      "sha256": "19DFD515504EFF5B7D1A23AA43E63954532E90D060EE0D5467860A34CF3DBCA0"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/07-lightmap-uv-evidence.png",
+      "bytes": 137566,
+      "sha256": "58AA7E45502B6E439BF7E06DD26B515F934D2D9C0D3A80E20596023D0975037D"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/08-lightmap-resolution-evidence.png",
+      "bytes": 117646,
+      "sha256": "A770EA72952F636D84661F23EEBD003D73F5CFFA7852CFE462B2D5CE7244FDC2"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/09-object-name-evidence.png",
+      "bytes": 99820,
+      "sha256": "8569CE65A9E017B2ADD60734F4319FCE7E21F3B10432BA2B8AD9E694F07C25DA"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/10-package-path-evidence.png",
+      "bytes": 101141,
+      "sha256": "B0746D8F7C3A89E79AF7EC098424199C993695A73D9A6423F0C237603D0404A4"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/11-regression-overview.png",
+      "bytes": 225275,
+      "sha256": "CFEAF071EA29A4E2EB26A3C503330AD5C96C774E47F2058C52E86004EE33EF95"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/12-resolved-changes.png",
+      "bytes": 156455,
+      "sha256": "84EB5402F6B1733135C921FC78C05865F4CA6E0165186C497DA5656D5D0A63DD"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/13-running-batch-task.png",
+      "bytes": 183040,
+      "sha256": "FF5AAC1D9C8A28B531112F684949625714AB43C5928239E37E797BEE0631082B"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/14-cancelling-task.png",
+      "bytes": 183250,
+      "sha256": "F1FCA61432943593F7CDA057E3AD1F24D99936AAE042181A3947F6F600695CB8"
+    },
+    {
+      "path": "docs/images/workflow/v0.8/15-team-handoff-report.png",
+      "bytes": 89837,
+      "sha256": "049B6964E89D04F201AD843F364A9DE6A8E272B8F6BFA8F7E329BA898004A091"
+    }
+  ],
+  "task_artifact_count": 19,
+  "task_artifacts": [
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/cancel.json",
+      "bytes": 51,
+      "sha256": "B25A1C9B233E27D8FA1E60CDA3F451FE11366ED9DC3C05A308456947DFFF4162"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/Handoffs/report-3940dc7b60e6890f/交接清单.json",
+      "bytes": 1081,
+      "sha256": "B46B7C444DF28F680934734942F8C76E72BEACBB8E818E38E6635D665516A409"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/Handoffs/report-3940dc7b60e6890f/审计交接报告.html",
+      "bytes": 4950,
+      "sha256": "BC970CAB701734082D922A5F43CFAC05C80C51B050E9F695AC70329A11416F8F"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/Handoffs/report-3940dc7b60e6890f/审计问题明细.csv",
+      "bytes": 2042,
+      "sha256": "40BD1FF034D51127925F9D2C5A45315720F64227050DBD2D06968734126F5E7A"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/latest-report.json",
+      "bytes": 5035,
+      "sha256": "12A6152EC9EA4FF5C684E1B4EB16AEBE42218C4A63362F9873A3B1EE50F42E3F"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/request.json",
+      "bytes": 1783,
+      "sha256": "F025C99E03D3B5004CA6A13EC634D2E6E349DCB5E5C615CE37371FA075164ACD"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/Sessions/latest-comparison.v1.json",
+      "bytes": 739,
+      "sha256": "128C6784745CA46FF4090BEF55A9BD66980782D90F4BD7761BF10584EF70D08E"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/Sessions/Reports/20260828043725907292-report-3940dc7b60e6890f-12a6152e.json",
+      "bytes": 5035,
+      "sha256": "12A6152EC9EA4FF5C684E1B4EB16AEBE42218C4A63362F9873A3B1EE50F42E3F"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/Sessions/session-index.v1.json",
+      "bytes": 643,
+      "sha256": "4564EC6F381FD40CD9929A528D02DE0F671C9B7EA27CE4EA6CE807C5850EF7F2"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/task-state.json",
+      "bytes": 946,
+      "sha256": "342A205E72E9473F3DA96E4E834D9701B6EF31ED8227579974158584777A6BA0"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/completed/Handoffs/report-171d9d479ef81e1d/交接清单.json",
+      "bytes": 1079,
+      "sha256": "BA6AF3D239AE12227E0E5CF1EBF91EBDB2D4EE7E0CB6D79D41A4ED424DC2282B"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/completed/Handoffs/report-171d9d479ef81e1d/审计交接报告.html",
+      "bytes": 6585,
+      "sha256": "C43F495DB81C7BD98044AFA58115ECA5575C7988944D55E344AF2A751E66C8C2"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/completed/Handoffs/report-171d9d479ef81e1d/审计问题明细.csv",
+      "bytes": 4002,
+      "sha256": "BD591C772152C52F4DF97E1BD00B3D0231D8F84005EDED0604EB5EFEE15535C6"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/completed/latest-report.json",
+      "bytes": 9407,
+      "sha256": "918EEDA689A5028E9399F1CBAEC2130F145EF194FACFB9E245A4CF02AD6C3D74"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/completed/request.json",
+      "bytes": 1315,
+      "sha256": "7674D1FC7DCA109745DDBEDADD951BBEC4521D5F4EE196A693B766DF383EBAB9"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/completed/Sessions/latest-comparison.v1.json",
+      "bytes": 731,
+      "sha256": "BB8BE98D45531AB11A3EBB235EA60F0463D6234862C2361464DC83CC7F4CE833"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/completed/Sessions/Reports/20260828043725870755-report-171d9d479ef81e1d-918eeda6.json",
+      "bytes": 9407,
+      "sha256": "918EEDA689A5028E9399F1CBAEC2130F145EF194FACFB9E245A4CF02AD6C3D74"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/completed/Sessions/session-index.v1.json",
+      "bytes": 642,
+      "sha256": "1E690697907D36EE16786EF65FB3EF9E57D10E7A58744A9F10DF4361AE3D0150"
+    },
+    {
+      "path": "artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/completed/task-state.json",
+      "bytes": 925,
+      "sha256": "FE18795EEC9C9F82476B5F9035394153971635706B62047FEDC9440E40DCAEAE"
+    }
+  ],
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false
+}

@@ -11,6 +11,7 @@ from unreal_asset_batch_auditor import (
     UnrealCppCollector,
     audit_assets,
     compare_reports,
+    export_handoff,
 )
 
 
@@ -69,3 +70,18 @@ def compare_from_request_file(request_path: str) -> dict:
     temp.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     temp.replace(destination)
     return result
+
+
+def export_handoff_from_request_file(request_path: str) -> dict:
+    """Export a standalone Chinese team package without rescanning Unreal assets."""
+
+    request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+    result = export_handoff(
+        str(request["report_path"]), str(request["output_root"])
+    )
+    return {
+        "root": str(result.root),
+        "html_path": str(result.html_path),
+        "csv_path": str(result.csv_path),
+        "manifest_path": str(result.manifest_path),
+    }

@@ -191,3 +191,38 @@ def test_first_session_writes_localized_no_baseline_state(tmp_path: Path) -> Non
     assert payload["status"] == "no_baseline"
     assert "下一次审计" in payload["message"]
     assert (store.root / "latest-comparison.v1.json").is_file()
+
+
+def test_cancelled_session_is_preserved_but_not_used_as_regression_baseline(
+    tmp_path: Path,
+) -> None:
+    full = tmp_path / "full.json"
+    cancelled = tmp_path / "cancelled.json"
+    _report(
+        full,
+        report_id="full",
+        created_at="2026-08-28T01:00:00+00:00",
+        issues=[("/Game/A.A", "rule.a")],
+        failures=[],
+    )
+    payload = json.loads(full.read_text(encoding="utf-8"))
+    payload.update(
+        {
+            "report_id": "cancelled",
+            "created_at": "2026-08-28T02:00:00+00:00",
+            "requested_asset_count": 3,
+            "processed_asset_count": 1,
+            "cancelled_asset_count": 2,
+        }
+    )
+    cancelled.write_text(json.dumps(payload), encoding="utf-8")
+    store = SessionStore(tmp_path / "Sessions")
+    store.save_report(full)
+    cancelled_session = store.save_report(cancelled)
+
+    state = store.write_latest_comparison(cancelled_session)
+
+    assert cancelled_session.cancelled_asset_count == 2
+    assert len(store.load_index().sessions) == 2
+    assert state["status"] == "incomplete_current"
+    assert "不参与完整回归比较" in state["message"]

@@ -44,9 +44,33 @@ D:\3D\_tools\unreal-asset-batch-auditor\Demo\UABADemo.uproject
 3. 点击“读取当前选择”，确认范围显示 24 个资产；
 4. 在“检查规则”下拉框选择“桌面平衡（推荐演示）”；其下方会直接显示几何预算、简单碰撞、Lightmap UV 与分辨率阈值；
 5. 将单批资产数设为 8，点击“开始只读审计”；
-6. 在“资产总览”确认每个资产的状态、LOD0 三角形、顶点、材质槽、LOD、Nanite、碰撞、LM UV、LM 分辨率与问题数；
-7. 切换“问题明细”，用搜索框筛选规则、证据说明或资产名，并对照实测值与 Profile 阈值；
-8. 点击“打开最新报告”直接查看 JSON，或点击“打开报告目录”进入本次报告所在目录。
+6. 观察左下任务卡：阶段、对象进度、批次进度会随 Editor Tick 更新；面板不会在扫描期间伪装成已完成；
+7. 在“资产总览”确认每个资产的状态、LOD0 三角形、顶点、材质槽、LOD、Nanite、碰撞、LM UV、LM 分辨率与问题数；
+8. 切换“问题明细”，用搜索框筛选规则、证据说明或资产名，并对照实测值与 Profile 阈值；
+9. 点击“打开最新报告”直接查看 JSON，或点击“打开报告目录”进入本次报告所在目录。
+
+### 演示批次间取消
+
+1. 选择足够多的资产，或把单批资产数设为 2；
+2. 开始审计后，在任务卡仍显示运行时点击“批次间取消”；
+3. 面板先显示“正在取消”，等待当前 C++ 批次结束，再写出部分 Report；
+4. 检查 Report 的 `processed_asset_count` 与 `cancelled_asset_count`。已完成批次和采集失败会保留，
+   未处理对象不会伪装成采集失败；
+5. 取消会话不会出现在可选回归基线中，比较文件状态为 `incomplete_current`。
+
+取消不是逐资产抢占：一次 C++ 批次已经开始后不会从中间打断。若要让取消反馈更及时，应调小单批资产数，
+而不是声称 Editor 工作完全异步或永不阻塞。
+
+### 导出给制片、美术或外包
+
+审计完成或保留部分结果后，点击“导出团队包”，再点击“打开交接目录”。插件从现有 Report 生成：
+
+- `审计交接报告.html`：可离线打开的中文单文件报告；
+- `审计问题明细.csv`：UTF-8 BOM，Excel 可直接识别中文；
+- `交接清单.json`：记录源报告身份、验证边界与两个交付文件的 SHA-256。
+
+交接包位于 `<Project>/Saved/UnrealAssetBatchAuditor/Handoffs/<report-id>/`。导出过程不会重新扫描或
+修改资产；HTML/CSV 都保留规则 ID、实测值、期望值、Profile 指针和 Evidence ID，便于技术复核。
 
 ## 4. 展示修复前后回归对比
 
@@ -107,6 +131,8 @@ artifacts/demo/demo-desktop-balanced-v2-report.json
 - `Sessions/session-index.v1.json`：按时间倒序的轻量历史索引和报告 SHA-256；
 - `Sessions/latest-comparison.v1.json`：新增、持续、已解决与失败变化；
 - `requested/processed/cancelled`：本次批次执行统计；
+- `Tasks/current-task-state.json`：原生面板任务阶段、进度、批次计数和最终产物位置；
+- `Handoffs/<report-id>/`：HTML、CSV 与 SHA-256 交接清单；
 - `real_unreal_validation=true`：数据来自真实 Unreal Editor；
 - Session 的 `integrity.unchanged=true`：本次扫描没有改写演示资产。
 

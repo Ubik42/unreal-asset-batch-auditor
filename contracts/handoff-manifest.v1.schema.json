@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://art-pipeline.local/contracts/unreal-audit-handoff.v1.schema.json",
+  "title": "Unreal 资产审计团队交接清单 v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "report_id",
+    "report_created_at",
+    "profile_id",
+    "profile_version",
+    "collection_mode",
+    "real_unreal_validation",
+    "host_engine_version",
+    "validation_label",
+    "validation_boundary",
+    "summary",
+    "files"
+  ],
+  "properties": {
+    "schema_version": {"const": "unreal-audit-handoff@1.0.0"},
+    "report_id": {"type": "string", "minLength": 1},
+    "report_created_at": {"type": "string", "format": "date-time"},
+    "profile_id": {"type": "string", "minLength": 1},
+    "profile_version": {"type": "string", "minLength": 1},
+    "collection_mode": {"type": "string", "minLength": 1},
+    "real_unreal_validation": {"type": "boolean"},
+    "host_engine_version": {"type": ["string", "null"]},
+    "validation_label": {"type": "string", "minLength": 1},
+    "validation_boundary": {"type": "string", "minLength": 1},
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested_asset_count",
+        "processed_asset_count",
+        "cancelled_asset_count",
+        "asset_count",
+        "issue_count",
+        "collection_failure_count"
+      ],
+      "properties": {
+        "requested_asset_count": {"type": "integer", "minimum": 0},
+        "processed_asset_count": {"type": "integer", "minimum": 0},
+        "cancelled_asset_count": {"type": "integer", "minimum": 0},
+        "asset_count": {"type": "integer", "minimum": 0},
+        "issue_count": {"type": "integer", "minimum": 0},
+        "collection_failure_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    }
+  }
+}

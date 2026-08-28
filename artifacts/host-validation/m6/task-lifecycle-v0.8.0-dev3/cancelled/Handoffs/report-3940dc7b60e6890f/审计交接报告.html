@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Unreal 资产审计交接报告</title>
+<style>
+:root{--bg:#0b1014;--panel:#121a20;--line:#24313a;--text:#e7eef2;--muted:#8fa2ad;--cyan:#33c5d5;--green:#58d69a;--amber:#f5bd4f;--red:#ff6b6b}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 "Microsoft YaHei UI","Noto Sans CJK SC",sans-serif}
+.shell{max-width:1440px;margin:auto;padding:34px} .hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;margin-bottom:22px}
+h1{font-size:32px;margin:0 0 6px} h2{font-size:18px;margin:26px 0 12px} .sub,.meta,.note{color:var(--muted)}
+.badge{border:1px solid var(--cyan);color:var(--cyan);padding:7px 12px} .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.metric{background:var(--panel);border-top:2px solid var(--cyan);padding:14px} .metric strong{display:block;font-size:25px;margin-top:4px}
+.note{background:#0e1b20;border-left:3px solid var(--cyan);padding:12px 14px;margin:18px 0}
+.table-wrap{overflow:auto;border:1px solid var(--line)} table{width:100%;table-layout:fixed;border-collapse:collapse;min-width:1100px}
+th{position:sticky;top:0;background:#172229;text-align:left;color:#b7c6ce} th,td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+td{overflow-wrap:anywhere}
+tr:hover td{background:#101a20} .level{font-weight:700} .level.error{color:var(--red)} .level.warning{color:var(--amber)} .level.info{color:var(--cyan)}
+.empty{text-align:center;color:var(--green);padding:36px} footer{margin-top:24px;color:var(--muted);font-size:12px}
+@media(max-width:900px){.shell{padding:18px}.hero{display:block}.badge{display:inline-block;margin-top:12px}.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body><main class="shell">
+<section class="hero"><div><h1>Unreal 资产审计交接报告</h1><div class="sub">Profile 驱动 · 只读证据链 · 可离线查阅</div></div><div class="badge">已取消，保留部分结果</div></section>
+<div class="meta">报告 report-3940dc7b60e6890f · Profile demo-desktop-balanced-v2 / 2.0.0 · 2026-08-28T04:37:25.907292+00:00</div>
+<section class="grid">
+<div class="metric">请求资产<strong>16</strong></div>
+<div class="metric">已处理<strong>2</strong></div>
+<div class="metric">成功采集<strong>2</strong></div>
+<div class="metric">规则问题<strong>4</strong></div>
+<div class="metric">采集失败<strong>0</strong></div>
+<div class="metric">取消未处理<strong>14</strong></div>
+</section>
+<div class="note"><strong>真实 Unreal 宿主采集</strong><br>资产事实由报告记录的 Unreal Editor 宿主采集；导出过程只读取报告，不重新扫描或修改资产。<br>宿主版本：5.8.1-56057345+++UE5+Release-5.8</div>
+<h2>问题与失败明细</h2>
+<div class="table-wrap"><table><thead><tr><th>级别</th><th>资产</th><th>检查项</th><th>实测</th><th>期望</th><th>证据说明</th></tr></thead><tbody><tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Cone.Cone</td><td>资产命名</td><td>Cone</td><td>prefix in [&#x27;SM_UABA_&#x27;] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/</td><td>资产名 Cone 不符合 Profile 命名规则：prefix in [&#x27;SM_UABA_&#x27;] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/。</td></tr>
+<tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Cone.Cone</td><td>目录规范</td><td>/Engine/BasicShapes</td><td>root in [&#x27;/Game/UABADemo&#x27;]; forbidden segments absent [&#x27;Developers&#x27;, &#x27;Temp&#x27;]</td><td>资产目录 /Engine/BasicShapes 不符合 Profile 目录规则：root in [&#x27;/Game/UABADemo&#x27;]; forbidden segments absent [&#x27;Developers&#x27;, &#x27;Temp&#x27;]。</td></tr>
+<tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Cube.Cube</td><td>资产命名</td><td>Cube</td><td>prefix in [&#x27;SM_UABA_&#x27;] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/</td><td>资产名 Cube 不符合 Profile 命名规则：prefix in [&#x27;SM_UABA_&#x27;] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/。</td></tr>
+<tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Cube.Cube</td><td>目录规范</td><td>/Engine/BasicShapes</td><td>root in [&#x27;/Game/UABADemo&#x27;]; forbidden segments absent [&#x27;Developers&#x27;, &#x27;Temp&#x27;]</td><td>资产目录 /Engine/BasicShapes 不符合 Profile 目录规则：root in [&#x27;/Game/UABADemo&#x27;]; forbidden segments absent [&#x27;Developers&#x27;, &#x27;Temp&#x27;]。</td></tr></tbody></table></div>
+<footer>此文件由 Unreal Asset Batch Auditor 从版本化 JSON Report 确定性生成。CSV 文件保留 Profile 指针和证据 ID，便于制作人、TA 与美术负责人筛选交接。</footer>
+</main></body></html>

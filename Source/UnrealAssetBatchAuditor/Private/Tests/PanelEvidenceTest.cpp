@@ -151,6 +151,12 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         Capture(TEXT("08-collection-failures.png"));
     }
 
+    Panel->SetEvidenceView(true, TEXT(""));
+    Panel->SetTaskEvidenceState(TEXT("running"), 16, 64, 2, 8);
+    Capture(TEXT("13-running-batch-task.png"));
+    Panel->SetTaskEvidenceState(TEXT("cancelling"), 24, 64, 3, 8);
+    Capture(TEXT("14-cancelling-task.png"));
+
     FSlateApplication::Get().RequestDestroyWindow(Window);
     return bPassed;
 }

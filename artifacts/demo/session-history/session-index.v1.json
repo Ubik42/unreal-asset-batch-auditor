@@ -11,7 +11,8 @@
       "report_sha256": "6700bf18fbf4f9058807d3bab71ae8a9c7a396d0d142424d322dc07074906170",
       "asset_count": 24,
       "issue_count": 45,
-      "collection_failure_count": 2
+      "collection_failure_count": 2,
+      "cancelled_asset_count": 0
     },
     {
       "session_id": "session-edd51d8b9dd8a5ed",
@@ -23,7 +24,8 @@
       "report_sha256": "edd51d8b9dd8a5ed9a339b090344ecffee47e7b5a966b04cbc722d6ef6b260a9",
       "asset_count": 24,
       "issue_count": 41,
-      "collection_failure_count": 2
+      "collection_failure_count": 2,
+      "cancelled_asset_count": 0
     }
   ]
 }

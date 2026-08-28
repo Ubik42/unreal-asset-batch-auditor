@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 13,
+  "stateRevision": 14,
   "status": "active",
-  "currentMilestone": "M6",
+  "currentMilestone": "M7",
   "milestones": [
     {
       "id": "M0",
@@ -44,33 +44,33 @@
     {
       "id": "M6",
       "title": "Large-batch interaction, saved sessions, and team handoff",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M5"]
     },
     {
       "id": "M7",
       "title": "Release packaging, visual evidence, and portfolio-grade delivery",
-      "status": "pending",
+      "status": "in_progress",
       "dependsOn": ["M6"]
     }
   ],
   "nextSlice": {
-    "id": "M6-S2",
-    "milestoneId": "M6",
-    "title": "Add observable large-batch UX and team-readable exports",
+    "id": "M7-S1",
+    "milestoneId": "M7",
+    "title": "Create a clean-install release package and compatibility evidence",
     "scope": [
-      "Expose explicit pending, running, progress, cancelling, completed, and failed states in the native Chinese panel",
-      "Provide a user cancellation entry point while preserving the existing between-batch cancellation contract",
-      "Generate deterministic Chinese HTML and UTF-8 CSV handoff artifacts from the versioned Report without rescanning assets",
-      "Include Profile identity, host version, summary, issues, evidence, collection failures, and validation boundary in the handoff package",
-      "Extend fixtures, tests, real host lifecycle evidence, tutorial, recording flow, and current screenshots"
+      "Build a deterministic release archive from a clean staged plugin source tree",
+      "Exclude development caches, tests, host runtime, generated Demo assets, and local absolute paths from the distributable",
+      "Generate a version manifest, file inventory, license notice, and SHA-256 checksums",
+      "Validate fresh project installation, plugin enablement, Editor startup, panel registration, and a minimal real-host audit",
+      "Document install, upgrade, uninstall, supported host evidence, and known compatibility boundaries"
     ],
     "nonGoals": [
-      "No cloud service, external database, user account, notification, or telemetry upload",
+      "No Marketplace submission or signing in this slice",
       "No asset mutation or automatic repair",
-      "No claim that synchronous Editor work is non-blocking until independently measured",
-      "No automatic CI gate in this slice",
-      "No compatibility claim beyond hosts actually tested"
+      "No AI or PCG feature expansion",
+      "No compatibility claim beyond hosts actually tested",
+      "No copying generated Engine-derived Demo uasset binaries into the release archive"
     ],
     "allowedPaths": [
       "Source/UnrealAssetBatchAuditor",
@@ -92,19 +92,18 @@
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ],
-    "evidenceCeiling": "Fixtures may prove export determinism; BuildPlugin may prove compilation; only a fresh independent Unreal host lifecycle may prove panel task-state and cancellation wiring. RenderOffscreen evidence does not prove human mouse interaction or absence of Editor stalls.",
+    "evidenceCeiling": "Archive inspection may prove package contents and determinism; only installation into a fresh independent Unreal project followed by Editor startup and a real audit may prove installability. Testing UE 5.8.1 does not prove other engine versions.",
     "realHostRequired": true,
     "acceptance": [
-      "The panel exposes understandable task state, bounded progress, and an honest between-batch cancellation action",
-      "Cancellation preserves already completed batches and produces a valid partial Report",
-      "Chinese HTML and UTF-8 CSV exports are deterministic and readable without Unreal Editor",
-      "Exports trace every issue to observed and expected evidence and clearly label fixture versus real-host provenance",
-      "UE 5.8 BuildPlugin succeeds",
-      "A fresh independent Unreal host lifecycle validates task states and exports without touching existing user sessions",
-      "README, Demo tutorial, recording script, and screenshots show the large-batch and handoff workflow"
+      "Two release builds from the same clean source produce identical inventory and payload hashes",
+      "The distributable contains only runtime-required plugin files plus version, license, and checksum metadata",
+      "UE 5.8 BuildPlugin succeeds from the staged source",
+      "A fresh independent UE 5.8 project loads the packaged plugin, registers the Chinese panel, and completes a minimal real audit",
+      "Install, upgrade, uninstall, supported versions, known limits, and Demo regeneration are documented in Chinese",
+      "README links the verified release artifact and does not overclaim Marketplace readiness or cross-version compatibility"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0013.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0014.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -142,6 +141,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "v0.7 preserves immutable same-Profile sessions, compares new/persistent/resolved/failure changes, packages two real UE reports, passes UE 5.8.1 BuildPlugin, and renders twelve current Slate screenshots in an isolated lifecycle."
+    },
+    {
+      "id": "m6s2-batch-and-handoff",
+      "status": "completed",
+      "blocking": false,
+      "reason": "v0.8 exposes a real tick-driven panel task, between-batch cancellation with valid partial reports, deterministic Chinese HTML/CSV handoff, UE 5.8.1 BuildPlugin, complete/cancelled host evidence, and fifteen current visuals."
     }
   ]
 }

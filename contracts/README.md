@@ -26,3 +26,11 @@ Evidence 是确定性的审计输出；破坏性变更必须新增 schema 文件
 独占创建和 SHA-256 校验，已存在且内容不同的文件会被拒绝覆盖；索引可原子替换，但索引损坏不会删除
 历史文件。`unreal-audit-comparison@1.0.0` 以稳定的 `asset_path + rule_id` 比较两份 Report，分别输出
 新增、持续、已解决 Issue，以及新增、持续、已解决采集失败。
+
+## 面板任务与团队交接
+
+`unreal-audit-task-state@1.0.0` 记录原生面板的 pending、running、cancelling、completed、cancelled、
+failed 状态、对象/批次计数和最终产物路径。状态文件采用原子替换，取消只在批次之间生效。
+
+`unreal-audit-handoff@1.0.0` 是 HTML/CSV 交接目录的清单，固定记录源 Report、Profile、宿主、验证边界、
+统计摘要和文件 SHA-256。导出器只消费已有 Report，不重新采集或修改资产。

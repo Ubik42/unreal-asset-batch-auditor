@@ -100,6 +100,22 @@
 本轮“真实”只指两份源 Report 均由 UE 5.8.1 的 C++ collector 采集；历史归档和差异分类由
 Python 在报告层完成。`-RenderOffscreen` 证据不声明人工鼠标交互通过。
 
+## 2026-08-27 v0.8 可取消任务与团队交接
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| v0.8.0 BuildPlugin | 通过；UE 5.8.1 Win64 Development Editor 完整 UHT、编译、链接和打包 | `artifacts/host-build/UE_5.8.1-v0.8.0-dev3`（本机忽略目录） |
+| 面板与任务自动化 | 通过；`PanelEvidence` 与 `PanelTaskLifecycle` 均返回 Success | `artifacts/host-validation/m6/panel-lifecycle-v0.8.0-dev3.json` |
+| 完整批处理 | 通过；4 个真实 Engine BasicShapes、批大小 2、完成 2 批并生成 Report/Session/HTML/CSV/清单 | `artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/completed/` |
+| 批次间取消 | 通过；真实采集 2 个对象后取消剩余对象，写出合法部分 Report 和 `incomplete_current` 比较状态 | `artifacts/host-validation/m6/task-lifecycle-v0.8.0-dev3/cancelled/` |
+| 任务/交接产物 | 通过；19 个产物逐一记录字节数与 SHA-256 | `artifacts/host-validation/m6/panel-lifecycle-v0.8.0-dev3.json` |
+| 当前视觉证据 | 通过；14 张生产 Slate 图与 1 张独立 HTML 报告图 | `docs/images/workflow/v0.8/` |
+
+本轮运行使用独立隐藏 `UnrealEditor-Cmd -RenderOffscreen` PID；证据记录测试前后已有 Unreal PID 并确认
+其存活，测试退出后没有残留新进程。该自动化实际注册 Slate post-tick 回调并调用 C++ collector，
+但仍明确记录 `claims_user_interaction=false` 与 `claims_visible_editor_review=false`，不能代替录屏者的
+可见点击、停靠和取消时机验收。单个 C++ 批次仍是同步边界，本轮也不证明数千生产资产不会卡顿。
+
 本结果只覆盖记录的 UE 5.8.1 非生产宿主和 Engine 内容，不等价于 UE 5.4/5.5 兼容证明，也不等价于大规模生产性能证明。
 
 哈希证据使用仓库内只读脚本：

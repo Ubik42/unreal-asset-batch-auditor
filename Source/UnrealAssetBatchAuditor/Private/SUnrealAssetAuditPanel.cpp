@@ -20,6 +20,7 @@
 #include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Input/SSearchBox.h"
 #include "Widgets/Input/SSpinBox.h"
+#include "Widgets/Notifications/SProgressBar.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/SOverlay.h"
@@ -325,6 +326,9 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
     ReportPath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Reports/latest-report.json"));
     SessionRoot = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Sessions"));
     ComparisonPath = FPaths::Combine(SessionRoot, TEXT("latest-comparison.v1.json"));
+    TaskStatePath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Tasks/current-task-state.json"));
+    CancelRequestPath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Tasks/cancel-request.json"));
+    HandoffRoot = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Handoffs"));
     StatusMessage = TEXT("选择 Static Mesh，然后开始只读审计");
 
     ChildSlot
@@ -459,13 +463,60 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         + SVerticalBox::Slot().FillHeight(1)
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 16, 0, 0)
                         [
-                            SNew(SButton)
-                            .ButtonStyle(FAppStyle::Get(), TEXT("PrimaryButton"))
-                            .HAlign(HAlign_Center)
-                            .ContentPadding(FMargin(12, 8))
-                            .Text(FText::FromString(TEXT("开始只读审计")))
-                            .IsEnabled(this, &SUnrealAssetAuditPanel::CanRunAudit)
-                            .OnClicked(this, &SUnrealAssetAuditPanel::RunAudit)
+                            SNew(SOverlay)
+                            + SOverlay::Slot()
+                            [
+                                SNew(SButton)
+                                .Visibility(this, &SUnrealAssetAuditPanel::GetIdleActionVisibility)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("PrimaryButton"))
+                                .HAlign(HAlign_Center)
+                                .ContentPadding(FMargin(12, 8))
+                                .Text(FText::FromString(TEXT("开始只读审计")))
+                                .IsEnabled(this, &SUnrealAssetAuditPanel::CanRunAudit)
+                                .OnClicked(this, &SUnrealAssetAuditPanel::RunAudit)
+                            ]
+                            + SOverlay::Slot()
+                            [
+                                SNew(SBorder)
+                                .Visibility(this, &SUnrealAssetAuditPanel::GetRunningActionVisibility)
+                                .BorderImage(FAppStyle::GetBrush(TEXT("Brushes.Header")))
+                                .BorderBackgroundColor(FLinearColor(0.04f, 0.13f, 0.16f, 1.0f))
+                                .Padding(FMargin(10, 8))
+                                [
+                                    SNew(SVerticalBox)
+                                    + SVerticalBox::Slot().AutoHeight()
+                                    [
+                                        SNew(STextBlock)
+                                        .Text(this, &SUnrealAssetAuditPanel::GetTaskPhaseText)
+                                        .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+                                        .ColorAndOpacity(CyanAccent)
+                                    ]
+                                    + SVerticalBox::Slot().AutoHeight().Padding(0, 6, 0, 0)
+                                    [
+                                        SNew(SProgressBar)
+                                        .Percent(this, &SUnrealAssetAuditPanel::GetTaskProgressFraction)
+                                        .FillColorAndOpacity(CyanAccent)
+                                    ]
+                                    + SVerticalBox::Slot().AutoHeight().Padding(0, 6, 0, 0)
+                                    [
+                                        SNew(SHorizontalBox)
+                                        + SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)
+                                        [
+                                            SNew(STextBlock)
+                                            .Text(this, &SUnrealAssetAuditPanel::GetTaskProgressText)
+                                            .Font(FAppStyle::GetFontStyle(TEXT("SmallFont")))
+                                            .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                                        ]
+                                        + SHorizontalBox::Slot().AutoWidth()
+                                        [
+                                            SNew(SButton)
+                                            .Text(FText::FromString(TEXT("批次间取消")))
+                                            .IsEnabled(this, &SUnrealAssetAuditPanel::CanCancelAudit)
+                                            .OnClicked(this, &SUnrealAssetAuditPanel::CancelAudit)
+                                        ]
+                                    ]
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -651,6 +702,20 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                             [
                                 SNew(SButton).Text(FText::FromString(TEXT("打开会话目录"))).OnClicked(this, &SUnrealAssetAuditPanel::OpenSessionFolder)
                             ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .Text(FText::FromString(TEXT("导出团队包")))
+                                .IsEnabled_Lambda([this] { return !bAuditRunning && FPaths::FileExists(ReportPath); })
+                                .OnClicked(this, &SUnrealAssetAuditPanel::ExportHandoff)
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .Text(FText::FromString(TEXT("打开交接目录")))
+                                .IsEnabled_Lambda([this] { return !LastHandoffPath.IsEmpty() && FPaths::DirectoryExists(LastHandoffPath); })
+                                .OnClicked(this, &SUnrealAssetAuditPanel::OpenHandoffFolder)
+                            ]
                         ]
                     ]
                 ]
@@ -736,14 +801,26 @@ FReply SUnrealAssetAuditPanel::RunAudit()
     }
 
     bAuditRunning = true;
-    StatusMessage = TEXT("正在执行只读采集与规则检查…");
+    bTaskCanCancel = true;
+    TaskState = TEXT("pending");
+    TaskRequestedCount = SelectedAssetPaths.Num();
+    TaskProcessedCount = 0;
+    TaskCompletedBatchCount = 0;
+    TaskTotalBatchCount = FMath::DivideAndRoundUp(TaskRequestedCount, BatchSize);
+    TaskProgressFraction = 0.0f;
+    ActiveTaskId = FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower);
+    StatusMessage = TEXT("任务已创建，等待第一个只读采集批次");
+    IFileManager::Get().Delete(*TaskStatePath, false, true, true);
+    IFileManager::Get().Delete(*CancelRequestPath, false, true, true);
 
     TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
     Request->SetStringField(TEXT("profile_path"), ProfilePath);
     Request->SetStringField(TEXT("output_path"), ReportPath);
-    Request->SetStringField(
-        TEXT("session_root"),
-        SessionRoot);
+    Request->SetStringField(TEXT("session_root"), SessionRoot);
+    Request->SetStringField(TEXT("handoff_root"), HandoffRoot);
+    Request->SetStringField(TEXT("state_path"), TaskStatePath);
+    Request->SetStringField(TEXT("cancel_path"), CancelRequestPath);
+    Request->SetStringField(TEXT("task_id"), ActiveTaskId);
     Request->SetNumberField(TEXT("batch_size"), BatchSize);
     TArray<TSharedPtr<FJsonValue>> Paths;
     for (const FString& Path : SelectedAssetPaths)
@@ -775,26 +852,119 @@ FReply SUnrealAssetAuditPanel::RunAudit()
     FString PythonPath = RequestPath.Replace(TEXT("\\"), TEXT("/"));
     PythonPath.ReplaceInline(TEXT("'"), TEXT("\\'"));
     const FString Command = FString::Printf(
-        TEXT("import run_asset_audit; run_asset_audit.run_from_request_file(r'%s')"), *PythonPath);
+        TEXT("from unreal_asset_batch_auditor import start_panel_task; start_panel_task(r'%s')"),
+        *PythonPath);
     const bool bSucceeded = Python->ExecPythonCommand(*Command);
-    bAuditRunning = false;
     if (!bSucceeded)
     {
+        bAuditRunning = false;
+        bTaskCanCancel = false;
+        TaskState = TEXT("failed");
         StatusMessage = TEXT("审计执行失败；详细堆栈已写入 Output Log");
         return FReply::Handled();
     }
+    RegisterActiveTimer(
+        0.10f,
+        FWidgetActiveTimerDelegate::CreateSP(this, &SUnrealAssetAuditPanel::PollAuditTask));
+    return FReply::Handled();
+}
 
-    FString Error;
-    if (!LoadReport(ReportPath, Error))
+FReply SUnrealAssetAuditPanel::CancelAudit()
+{
+    if (!CanCancelAudit()) return FReply::Handled();
+    IPythonScriptPlugin* Python = IPythonScriptPlugin::Get();
+    if (!Python)
     {
-        StatusMessage = FString::Printf(TEXT("报告读取失败：%s"), *Error);
+        StatusMessage = TEXT("无法提交取消请求：Python Script Plugin 未就绪");
         return FReply::Handled();
     }
-    FString SessionError;
-    LoadSessionIndex(SessionError);
-    if (FPaths::FileExists(ComparisonPath)) LoadComparison(ComparisonPath, SessionError);
-    StatusMessage = FString::Printf(TEXT("审计完成 · %d 个资产 · %d 个问题"), AssetCount, IssueCount);
+    FString PythonPath = CancelRequestPath.Replace(TEXT("\\"), TEXT("/"));
+    PythonPath.ReplaceInline(TEXT("'"), TEXT("\\'"));
+    const FString Command = FString::Printf(
+        TEXT("from unreal_asset_batch_auditor import request_panel_cancel; request_panel_cancel(r'%s')"),
+        *PythonPath);
+    if (!Python->ExecPythonCommand(*Command))
+    {
+        StatusMessage = TEXT("无法提交取消请求；当前批次会继续完成");
+        return FReply::Handled();
+    }
+    TaskState = TEXT("cancelling");
+    bTaskCanCancel = false;
+    StatusMessage = TEXT("已请求取消；当前批次完成后保留部分报告");
     return FReply::Handled();
+}
+
+bool SUnrealAssetAuditPanel::LoadTaskState(FString& OutError)
+{
+    FString Json;
+    if (!FFileHelper::LoadFileToString(Json, *TaskStatePath))
+    {
+        OutError = TEXT("任务状态尚未写入");
+        return false;
+    }
+    TSharedPtr<FJsonObject> Root;
+    const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
+    if (!FJsonSerializer::Deserialize(Reader, Root) || !Root.IsValid())
+    {
+        OutError = TEXT("任务状态 JSON 无效");
+        return false;
+    }
+    FString SchemaVersion;
+    FString StateTaskId;
+    if (!Root->TryGetStringField(TEXT("schema_version"), SchemaVersion)
+        || SchemaVersion != TEXT("unreal-audit-task-state@1.0.0")
+        || !Root->TryGetStringField(TEXT("task_id"), StateTaskId)
+        || StateTaskId != ActiveTaskId)
+    {
+        OutError = TEXT("任务状态版本或任务 ID 不匹配");
+        return false;
+    }
+    Root->TryGetStringField(TEXT("state"), TaskState);
+    Root->TryGetStringField(TEXT("message"), StatusMessage);
+    Root->TryGetBoolField(TEXT("can_cancel"), bTaskCanCancel);
+    double Number = 0.0;
+    if (Root->TryGetNumberField(TEXT("requested_count"), Number)) TaskRequestedCount = FMath::RoundToInt(Number);
+    if (Root->TryGetNumberField(TEXT("processed_count"), Number)) TaskProcessedCount = FMath::RoundToInt(Number);
+    if (Root->TryGetNumberField(TEXT("completed_batch_count"), Number)) TaskCompletedBatchCount = FMath::RoundToInt(Number);
+    if (Root->TryGetNumberField(TEXT("total_batch_count"), Number)) TaskTotalBatchCount = FMath::RoundToInt(Number);
+    if (Root->TryGetNumberField(TEXT("progress_fraction"), Number)) TaskProgressFraction = FMath::Clamp(static_cast<float>(Number), 0.0f, 1.0f);
+    Root->TryGetStringField(TEXT("handoff_path"), LastHandoffPath);
+    OutError.Reset();
+    return true;
+}
+
+EActiveTimerReturnType SUnrealAssetAuditPanel::PollAuditTask(double CurrentTime, float DeltaTime)
+{
+    FString Error;
+    if (!LoadTaskState(Error))
+    {
+        return bAuditRunning
+            ? EActiveTimerReturnType::Continue
+            : EActiveTimerReturnType::Stop;
+    }
+    if (TaskState != TEXT("completed") && TaskState != TEXT("cancelled") && TaskState != TEXT("failed"))
+    {
+        return EActiveTimerReturnType::Continue;
+    }
+    bAuditRunning = false;
+    bTaskCanCancel = false;
+    if (TaskState == TEXT("failed"))
+    {
+        return EActiveTimerReturnType::Stop;
+    }
+    if (FPaths::FileExists(ReportPath))
+    {
+        FString LoadError;
+        if (!LoadReport(ReportPath, LoadError))
+        {
+            StatusMessage = FString::Printf(TEXT("部分结果已写入，但报告读取失败：%s"), *LoadError);
+            return EActiveTimerReturnType::Stop;
+        }
+        FString SessionError;
+        LoadSessionIndex(SessionError);
+        if (FPaths::FileExists(ComparisonPath)) LoadComparison(ComparisonPath, SessionError);
+    }
+    return EActiveTimerReturnType::Stop;
 }
 
 bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
@@ -960,9 +1130,15 @@ bool SUnrealAssetAuditPanel::LoadSessionIndex(FString& OutError)
     for (const TSharedPtr<FJsonValue>& Value : Root->GetArrayField(TEXT("sessions")))
     {
         const TSharedPtr<FJsonObject> Session = Value->AsObject();
+        double CancelledCount = 0.0;
+        if (Session.IsValid())
+        {
+            Session->TryGetNumberField(TEXT("cancelled_asset_count"), CancelledCount);
+        }
         if (!Session.IsValid()
             || Session->GetStringField(TEXT("profile_id")) != CurrentProfileId
             || Session->GetStringField(TEXT("profile_version")) != CurrentProfileVersion
+            || CancelledCount > 0.0
             || Session->GetStringField(TEXT("created_at")) == CurrentReportCreatedAt)
         {
             continue;
@@ -1011,7 +1187,8 @@ bool SUnrealAssetAuditPanel::LoadComparison(const FString& Path, FString& OutErr
     PersistentIssueCount = 0;
     ResolvedIssueCount = 0;
     FailureChangeCount = 0;
-    if (Root->GetStringField(TEXT("status")) == TEXT("no_baseline"))
+    const FString ComparisonStatus = Root->GetStringField(TEXT("status"));
+    if (ComparisonStatus == TEXT("no_baseline") || ComparisonStatus == TEXT("incomplete_current"))
     {
         ComparisonBaselineLabel = Root->GetStringField(TEXT("message"));
         RebuildFilteredComparisons();
@@ -1112,6 +1289,25 @@ void SUnrealAssetAuditPanel::SetComparisonEvidenceView(const FString& FilterText
     {
         RebuildFilteredComparisons();
     }
+}
+
+void SUnrealAssetAuditPanel::SetTaskEvidenceState(
+    const FString& State, int32 Processed, int32 Requested, int32 CompletedBatches,
+    int32 TotalBatches)
+{
+    TaskState = State;
+    bAuditRunning = State != TEXT("completed") && State != TEXT("cancelled") && State != TEXT("failed");
+    bTaskCanCancel = State == TEXT("pending") || State == TEXT("running");
+    TaskProcessedCount = Processed;
+    TaskRequestedCount = Requested;
+    TaskCompletedBatchCount = CompletedBatches;
+    TaskTotalBatchCount = TotalBatches;
+    TaskProgressFraction = Requested > 0
+        ? FMath::Clamp(static_cast<float>(Processed) / Requested, 0.0f, 1.0f)
+        : 1.0f;
+    StatusMessage = State == TEXT("cancelling")
+        ? TEXT("已请求取消；当前批次完成后保留部分报告")
+        : TEXT("正在逐批只读采集；面板可在批次之间响应取消");
 }
 #endif
 
@@ -1229,6 +1425,62 @@ FReply SUnrealAssetAuditPanel::OpenSessionFolder()
 {
     IFileManager::Get().MakeDirectory(*SessionRoot, true);
     FPlatformProcess::ExploreFolder(*SessionRoot);
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::ExportHandoff()
+{
+    if (bAuditRunning || !FPaths::FileExists(ReportPath)) return FReply::Handled();
+    const FString RequestPath = FPaths::Combine(
+        FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/handoff-request.json"));
+    TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
+    Request->SetStringField(TEXT("report_path"), ReportPath);
+    Request->SetStringField(TEXT("output_root"), HandoffRoot);
+    FString Json;
+    const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Json);
+    FJsonSerializer::Serialize(Request, Writer);
+    if (!FFileHelper::SaveStringToFile(
+        Json, *RequestPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
+    {
+        StatusMessage = TEXT("无法写入团队交接导出请求");
+        return FReply::Handled();
+    }
+    IPythonScriptPlugin* Python = IPythonScriptPlugin::Get();
+    if (!Python || (!Python->IsPythonInitialized() && !Python->ForceEnablePythonAtRuntime()))
+    {
+        StatusMessage = TEXT("Python Script Plugin 未就绪");
+        return FReply::Handled();
+    }
+    FString PythonPath = RequestPath.Replace(TEXT("\\"), TEXT("/"));
+    PythonPath.ReplaceInline(TEXT("'"), TEXT("\\'"));
+    const FString Command = FString::Printf(
+        TEXT("import run_asset_audit; run_asset_audit.export_handoff_from_request_file(r'%s')"),
+        *PythonPath);
+    if (!Python->ExecPythonCommand(*Command))
+    {
+        StatusMessage = TEXT("团队交接包导出失败；最新 JSON 报告未被修改");
+        return FReply::Handled();
+    }
+    FString ReportJson;
+    TSharedPtr<FJsonObject> ReportRoot;
+    if (FFileHelper::LoadFileToString(ReportJson, *ReportPath)
+        && FJsonSerializer::Deserialize(
+            TJsonReaderFactory<>::Create(ReportJson), ReportRoot)
+        && ReportRoot.IsValid())
+    {
+        LastHandoffPath = FPaths::Combine(
+            HandoffRoot, ReportRoot->GetStringField(TEXT("report_id")));
+    }
+    StatusMessage = TEXT("团队交接包已导出：中文 HTML、CSV 与 SHA-256 清单");
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::OpenHandoffFolder()
+{
+    if (!LastHandoffPath.IsEmpty() && FPaths::DirectoryExists(LastHandoffPath))
+    {
+        FPlatformProcess::ExploreFolder(*LastHandoffPath);
+    }
     return FReply::Handled();
 }
 
@@ -1383,6 +1635,28 @@ FText SUnrealAssetAuditPanel::GetPersistentIssueCountText() const { return FText
 FText SUnrealAssetAuditPanel::GetResolvedIssueCountText() const { return FText::AsNumber(ResolvedIssueCount); }
 FText SUnrealAssetAuditPanel::GetFailureChangeCountText() const { return FText::AsNumber(FailureChangeCount); }
 
+FText SUnrealAssetAuditPanel::GetTaskPhaseText() const
+{
+    if (TaskState == TEXT("pending")) return FText::FromString(TEXT("等待开始"));
+    if (TaskState == TEXT("running")) return FText::FromString(TEXT("逐批只读审计中"));
+    if (TaskState == TEXT("cancelling")) return FText::FromString(TEXT("正在批次间取消"));
+    if (TaskState == TEXT("cancelled")) return FText::FromString(TEXT("已取消并保留部分结果"));
+    if (TaskState == TEXT("failed")) return FText::FromString(TEXT("任务失败"));
+    return FText::FromString(TEXT("审计完成"));
+}
+
+FText SUnrealAssetAuditPanel::GetTaskProgressText() const
+{
+    return FText::Format(
+        FText::FromString(TEXT("{0}/{1} 个对象 · {2}/{3} 个批次")),
+        TaskProcessedCount, TaskRequestedCount, TaskCompletedBatchCount, TaskTotalBatchCount);
+}
+
+TOptional<float> SUnrealAssetAuditPanel::GetTaskProgressFraction() const
+{
+    return TaskProgressFraction;
+}
+
 FText SUnrealAssetAuditPanel::GetResultViewHint() const
 {
     if (ResultViewMode == 0)
@@ -1410,4 +1684,19 @@ EVisibility SUnrealAssetAuditPanel::GetIssueViewVisibility() const
 EVisibility SUnrealAssetAuditPanel::GetComparisonViewVisibility() const
 {
     return ResultViewMode == 2 ? EVisibility::Visible : EVisibility::Collapsed;
+}
+
+EVisibility SUnrealAssetAuditPanel::GetIdleActionVisibility() const
+{
+    return bAuditRunning ? EVisibility::Collapsed : EVisibility::Visible;
+}
+
+EVisibility SUnrealAssetAuditPanel::GetRunningActionVisibility() const
+{
+    return bAuditRunning ? EVisibility::Visible : EVisibility::Collapsed;
+}
+
+bool SUnrealAssetAuditPanel::CanCancelAudit() const
+{
+    return bAuditRunning && bTaskCanCancel;
 }

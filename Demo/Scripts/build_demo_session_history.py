@@ -9,7 +9,7 @@ from pathlib import Path
 def main() -> None:
     repo_root = Path(__file__).resolve().parents[2]
     sys.path.insert(0, str(repo_root / "Content" / "Python"))
-    from unreal_asset_batch_auditor import SessionStore
+    from unreal_asset_batch_auditor import SessionStore, export_handoff
 
     artifact_root = repo_root / "artifacts" / "demo"
     session_root = repo_root / "Demo" / "Saved" / "UnrealAssetBatchAuditor" / "Sessions"
@@ -21,6 +21,12 @@ def main() -> None:
     )
     current = store.save_report(artifact_root / "demo-desktop-balanced-v2-report.json")
     comparison = store.write_latest_comparison(current)
+    handoff_root = artifact_root / "handoff"
+    if handoff_root.exists():
+        shutil.rmtree(handoff_root)
+    handoff = export_handoff(
+        artifact_root / "demo-desktop-balanced-v2-report.json", handoff_root
+    )
 
     committed = artifact_root / "session-history"
     committed.mkdir(parents=True, exist_ok=True)
@@ -39,6 +45,7 @@ def main() -> None:
         "new_failure_count": len(comparison.get("new_failures", [])),
         "persistent_failure_count": len(comparison.get("persistent_failures", [])),
         "resolved_failure_count": len(comparison.get("resolved_failures", [])),
+        "handoff_path": handoff.root.relative_to(repo_root).as_posix(),
         "evidence_boundary": (
             "Both source reports were collected in UE; this script only archives and compares them."
         ),

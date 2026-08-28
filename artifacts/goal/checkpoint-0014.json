@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0014",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 14,
+  "completedSlice": "M6-S2",
+  "summary": "M6-S2 is complete. Version 0.8 adds a tick-driven native panel task, observable bounded progress, honest between-batch cancellation, valid partial reports, baseline isolation, and deterministic Chinese HTML/CSV team handoff artifacts.",
+  "evidence": [
+    "The native panel exposes pending, running, cancelling, completed, cancelled, and failed states with object and batch progress",
+    "One collection batch is advanced per Slate post-tick callback; cancellation is checked between batches and preserves completed work",
+    "Cancelled tasks write valid partial Reports and immutable sessions, while incomplete current sessions are excluded from regression baselines",
+    "Each Report can produce a standalone Chinese HTML report, UTF-8 BOM CSV, and a manifest containing SHA-256 hashes without rescanning assets",
+    "Every exported issue retains rule ID, localized description, observed value, expected value, Profile JSON Pointer, and Evidence ID",
+    "60 offline tests and Ruff pass",
+    "UE_5.8.1-v0.8.0-dev3 BuildPlugin completed UHT, C++ compilation, linking, and Win64 packaging",
+    "PanelEvidence and PanelTaskLifecycle passed in an independent hidden UE 5.8.1 process without terminating the pre-existing user Unreal process",
+    "Real host evidence preserves 19 complete and cancelled task artifacts with hashes, including Reports, sessions, task states, HTML, CSV, and manifests",
+    "Fourteen current production Slate screenshots plus one independently reviewed standalone HTML screenshot document the workflow"
+  ],
+  "nextSlice": "M7-S1",
+  "unresolvedRisks": [
+    "Visible mouse-click, docking, and cancellation timing remain manual recording evidence",
+    "A single C++ collection batch is still synchronous and the plugin does not claim that large production projects never stall",
+    "Only UE 5.8.1 is currently supported by recorded host evidence",
+    "A clean end-user release archive and fresh-project installation proof remain for M7",
+    "No asset mutation, automatic repair, AI, or PCG capability is authorized"
+  ]
+}

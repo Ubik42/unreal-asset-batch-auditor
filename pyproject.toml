@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "unreal-asset-batch-auditor"
-version = "0.6.0"
-description = "Profile-driven, read-only Static Mesh geometry, collision, and Lightmap auditing for Unreal Editor."
+version = "0.8.0"
+description = "Profile-driven Unreal Static Mesh auditing with cancellable batches, history, and team handoff exports."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []

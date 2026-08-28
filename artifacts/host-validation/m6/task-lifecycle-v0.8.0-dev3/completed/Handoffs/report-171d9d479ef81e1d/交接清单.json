@@ -1,0 +1,30 @@
+{
+  "schema_version": "unreal-audit-handoff@1.0.0",
+  "report_id": "report-171d9d479ef81e1d",
+  "report_created_at": "2026-08-28T04:37:25.870755+00:00",
+  "profile_id": "demo-desktop-balanced-v2",
+  "profile_version": "2.0.0",
+  "collection_mode": "unreal_editor",
+  "real_unreal_validation": true,
+  "host_engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "validation_label": "真实 Unreal 宿主采集",
+  "validation_boundary": "资产事实由报告记录的 Unreal Editor 宿主采集；导出过程只读取报告，不重新扫描或修改资产。",
+  "summary": {
+    "requested_asset_count": 4,
+    "processed_asset_count": 4,
+    "cancelled_asset_count": 0,
+    "asset_count": 4,
+    "issue_count": 8,
+    "collection_failure_count": 0
+  },
+  "files": [
+    {
+      "path": "审计交接报告.html",
+      "sha256": "c43f495db81c7bd98044afa58115eca5575c7988944d55e344af2a751e66c8c2"
+    },
+    {
+      "path": "审计问题明细.csv",
+      "sha256": "bd591c772152c52f4df97e1bd00b3d0231d8f84005eded0604eb5efee15535c6"
+    }
+  ]
+}

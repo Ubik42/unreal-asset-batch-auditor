@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://art-pipeline.local/contracts/unreal-audit-task-state.v1.schema.json",
+  "title": "Unreal 资产审计面板任务状态 v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "state",
+    "message",
+    "can_cancel",
+    "started_at",
+    "updated_at",
+    "requested_count",
+    "processed_count",
+    "collected_count",
+    "failed_count",
+    "cancelled_count",
+    "completed_batch_count",
+    "total_batch_count",
+    "progress_fraction"
+  ],
+  "properties": {
+    "schema_version": {"const": "unreal-audit-task-state@1.0.0"},
+    "task_id": {"type": "string", "minLength": 1},
+    "state": {
+      "enum": ["pending", "running", "cancelling", "completed", "cancelled", "failed"]
+    },
+    "message": {"type": "string", "minLength": 1},
+    "can_cancel": {"type": "boolean"},
+    "started_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "requested_count": {"type": "integer", "minimum": 0},
+    "processed_count": {"type": "integer", "minimum": 0},
+    "collected_count": {"type": "integer", "minimum": 0},
+    "failed_count": {"type": "integer", "minimum": 0},
+    "cancelled_count": {"type": "integer", "minimum": 0},
+    "completed_batch_count": {"type": "integer", "minimum": 0},
+    "total_batch_count": {"type": "integer", "minimum": 0},
+    "progress_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+    "error_code": {"type": "string", "minLength": 1},
+    "error_message": {"type": "string"},
+    "report_path": {"type": "string", "minLength": 1},
+    "handoff_path": {"type": "string", "minLength": 1}
+  }
+}
