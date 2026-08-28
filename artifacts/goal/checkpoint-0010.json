@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0010",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 10,
+  "completedSlice": "M4-S1",
+  "summary": "M4 is complete. The native Chinese panel now renders a complete asset ledger and traceable issue view, shares localized search, opens the latest report directly, and has current UE 5.8.1 Slate rendering evidence across eight realistic states.",
+  "evidence": [
+    "36 offline tests, Ruff, goal-state doctor, and PNG integrity checks pass",
+    "UE 5.8.1 Win64 Development Editor BuildPlugin succeeded with the PanelEvidence automation source",
+    "UnrealAssetBatchAuditor.PanelEvidence returned Success in an independent -RenderOffscreen Editor session",
+    "The test loaded a real_unreal_validation=true 24-asset Demo report and asserted 26 ledger rows plus 23 issue/failure rows",
+    "Eight current 1280x688 production Slate screenshots cover empty, mixed, pass, issue, filtered rule, and collection-failure states",
+    "artifacts/host-validation/m4/panel-evidence-v0.4.0-dev9.json records source-report and screenshot SHA-256 values",
+    "README, Demo tutorial, screenshot checklist, host plan, and recoverable Codex goal are updated in Chinese",
+    "Automation evidence explicitly does not claim mouse-click interaction"
+  ],
+  "nextSlice": "M5-S1",
+  "unresolvedRisks": [
+    "Collision and Lightmap UV readiness are not yet collected or evaluated",
+    "Naming and directory policy remain for M5-S2",
+    "Cross-version UE compatibility is not claimed",
+    "No asset mutation or automatic repair is authorized"
+  ]
+}

@@ -55,6 +55,13 @@ public:
 
     void Construct(const FArguments& InArgs);
 
+#if WITH_DEV_AUTOMATION_TESTS
+    bool LoadReportForEvidence(const FString& Path, FString& OutError);
+    void SetEvidenceView(bool bAssetOverview, const FString& FilterText);
+    int32 GetEvidenceAssetCount() const { return AllAssets.Num(); }
+    int32 GetEvidenceIssueCount() const { return AllIssues.Num(); }
+#endif
+
 private:
     FReply RefreshSelection();
     FReply BrowseProfile();

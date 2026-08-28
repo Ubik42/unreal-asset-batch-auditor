@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 9,
+  "stateRevision": 10,
   "status": "active",
-  "currentMilestone": "M4",
+  "currentMilestone": "M5",
   "milestones": [
     {
       "id": "M0",
@@ -32,13 +32,13 @@
     {
       "id": "M4",
       "title": "Audit ledger and production-facing result exploration",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M3"]
     },
     {
       "id": "M5",
       "title": "Collision, Lightmap UV, naming, and project-structure policies",
-      "status": "pending",
+      "status": "in_progress",
       "dependsOn": ["M4"]
     },
     {
@@ -55,22 +55,28 @@
     }
   ],
   "nextSlice": {
-    "id": "M4-S1",
-    "milestoneId": "M4",
-    "title": "Expose the complete audit ledger in the native Chinese panel",
+    "id": "M5-S1",
+    "milestoneId": "M5",
+    "title": "Add versioned collision and Lightmap readiness audits",
     "scope": [
-      "Render every collected asset, including passing assets, from Report v1",
-      "Provide asset-overview and issue-detail views with shared search",
-      "Preserve the existing profile-driven read-only evidence chain",
-      "Add regression tests, build evidence, Chinese documentation, and fresh screenshots"
+      "Define backward-aware Profile and Report contracts for new Static Mesh metadata",
+      "Collect simple collision primitives, collision complexity, UV channel count, Lightmap coordinate index, and Lightmap resolution in C++",
+      "Evaluate Profile-driven simple collision, valid Lightmap UV, and minimum Lightmap resolution rules in Python",
+      "Expose the new facts and localized evidence in the native Chinese panel",
+      "Extend fixtures, Demo profiles, tests, real-host evidence, documentation, and screenshots"
     ],
     "nonGoals": [
       "No asset mutation or automatic repair",
-      "No new collision or Lightmap contract fields in this slice",
+      "No collision generation, UV unwrapping, or mesh rebuild",
+      "Naming and directory policy are reserved for M5-S2",
       "No compatibility claim beyond hosts actually tested"
     ],
     "allowedPaths": [
       "Source/UnrealAssetBatchAuditor",
+      "Content/Python",
+      "contracts",
+      "Resources/Profiles",
+      "Demo",
       "tests",
       "scripts",
       "config",
@@ -84,30 +90,44 @@
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ],
-    "evidenceCeiling": "Offline tests may prove parsing and deterministic behavior; only BuildPlugin may prove compilation; only a fresh Unreal Editor host session may prove panel behavior.",
+    "evidenceCeiling": "Fixtures may prove contract and rule determinism; BuildPlugin may prove compilation; only fresh Unreal host metadata and Slate evidence may prove collision, Lightmap, and panel behavior.",
     "realHostRequired": true,
     "acceptance": [
-      "Asset overview includes pass, issue, and collection-failure rows",
-      "Issue detail remains searchable and traceable to observed and expected values",
+      "Existing v1 Profiles and reports remain readable",
+      "A v2 Profile controls collision and Lightmap thresholds without hard-coded project policy",
+      "Real UE metadata includes collision and Lightmap facts for explicit Static Mesh paths",
+      "New issue evidence remains searchable and localized in the panel",
       "UE 5.8 BuildPlugin succeeds",
-      "A fresh independent Unreal host session validates the panel without touching existing user sessions",
-      "README and recording tutorial show the expanded workflow"
+      "A fresh independent Unreal host session validates facts and the panel without touching existing user sessions",
+      "README, Demo tutorial, and screenshots show the expanded workflow"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0009.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0010.json",
   "currentBlocker": null,
   "manualTracks": [
     {
-      "id": "real-unreal-host",
-      "status": "in_progress",
+      "id": "m4-real-unreal-host",
+      "status": "completed",
       "blocking": false,
-      "reason": "The expanded module passed UE 5.8.1 BuildPlugin and independent command-line host collection; visible panel interaction still needs a fresh Editor review."
+      "reason": "M4 passed UE 5.8.1 BuildPlugin, independent command-line collection, and independent -RenderOffscreen Slate automation without touching user sessions."
     },
     {
-      "id": "visual-evidence",
+      "id": "m4-visual-evidence",
+      "status": "completed",
+      "blocking": false,
+      "reason": "Eight current-version 1280x688 Slate screenshots cover empty, mixed, pass, issue, filtered evidence, and failure states; hashes are recorded in the M4 host evidence manifest."
+    },
+    {
+      "id": "m5-real-unreal-host",
       "status": "pending",
       "blocking": false,
-      "reason": "The current README has three workflow screenshots; the productization goal requires six to ten current screenshots covering core, batch, success, issue, and failure states."
+      "reason": "Collision and Lightmap facts require fresh UE 5.8.1 metadata comparison and read-only integrity evidence."
+    },
+    {
+      "id": "m5-visual-evidence",
+      "status": "pending",
+      "blocking": false,
+      "reason": "The new M5 columns and localized evidence need fresh current-version Slate screenshots."
     }
   ]
 }

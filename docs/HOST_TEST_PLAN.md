@@ -54,7 +54,8 @@
 - 资产总览、问题明细、共享搜索与直接打开最新报告已通过 UE 5.8.1 Win64 Development Editor BuildPlugin（`UE_5.8.1-v0.4.0-dev6`）；
 - 独立 `UnrealEditor-Cmd` 宿主成功加载打包插件，真实采集 Cube、Sphere，并隔离一个缺失路径；
 - 证据环境明确记录 `claims_visible_editor_review=false`，因此不能把本次无界面回归写成可见面板验收；
-- 新版面板的 8 张真实截图与人工交互验收仍属于 M4 待办，不沿用旧图冒充完成。
+- `UnrealAssetBatchAuditor.PanelEvidence` 在独立 `-RenderOffscreen` Editor 中返回 Success，并从真实 Demo Report 渲染 8 张当前版本 Slate 截图；
+- 图片、源报告与 SHA-256 记录于 `artifacts/host-validation/m4/panel-evidence-v0.4.0-dev9.json`；该证据证明渲染和解析，不冒充鼠标点击人工测试。
 | 面板依赖宿主回归 | 通过；最终二进制加载，24 个真实网格完成采集，21 条 Issue、2 条脚本注入失败 | `artifacts/demo/demo-desktop-balanced-report.json` |
 
 面板的像素级布局、停靠和交互点击仍应由录制者在可见 Editor 中按上方七项做一次人工验收；

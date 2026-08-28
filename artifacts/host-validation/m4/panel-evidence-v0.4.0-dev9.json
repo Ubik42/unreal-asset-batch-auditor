@@ -1,0 +1,30 @@
+{
+  "schema_version": "unreal-asset-auditor-panel-evidence@1.0.0",
+  "created_at": "2026-08-28T02:50:59Z",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "plugin_build": "UE_5.8.1-v0.4.0-dev9",
+  "execution": "independent UnrealEditor -RenderOffscreen automation",
+  "automation_test": "UnrealAssetBatchAuditor.PanelEvidence",
+  "result": "Success",
+  "claims_user_interaction": false,
+  "claims_slate_rendering": true,
+  "source_report": {
+    "path": "artifacts/demo/demo-desktop-balanced-report.json",
+    "sha256": "704829d72c8478a2c8a47552131ebd6db9125d3942f921e5a5b2ca58e35a00ac",
+    "collection_mode": "unreal_editor",
+    "real_unreal_validation": true,
+    "asset_count": 24,
+    "issue_count": 21,
+    "collection_failure_count": 2
+  },
+  "screenshots": [
+    { "name": "01-empty-state.png", "bytes": 82676, "sha256": "692082756b2e2557dbc009959d409fc503611e5becd78bf8d9bffad796a22e82" },
+    { "name": "02-asset-overview.png", "bytes": 153943, "sha256": "fac6cdb841cade7352ec9fa7f33a6277befa895839445afcc986302f5c94fdd5" },
+    { "name": "03-passing-assets.png", "bytes": 136640, "sha256": "0d89772d53d786bc792b44dc5813f06b70dc73732207cd460e99657959c71b37" },
+    { "name": "04-assets-needing-work.png", "bytes": 121739, "sha256": "46dbc65a633fa18c4b43cf11f4073e5e49f078bdb12d6e3038c290489fd7d2b2" },
+    { "name": "05-issue-details.png", "bytes": 192771, "sha256": "da6fb437a9f3ce7500cb131f27d0136f6be4deb7255e566056c5f0c33e11a027" },
+    { "name": "06-triangle-evidence.png", "bytes": 133034, "sha256": "0a7efa810633d0f1c6457567496360d408558642cd78308de4a9cac80932b039" },
+    { "name": "07-material-evidence.png", "bytes": 94977, "sha256": "dce4f669c425bb7734598f87ad78e8422b3a4f6a7b59ffbc4051cac596e3ad93" },
+    { "name": "08-collection-failures.png", "bytes": 94838, "sha256": "3f29f8196bff22a78e01b0c68be1e79b2ea994513bb1f10cc3137e26e2c72218" }
+  ]
+}

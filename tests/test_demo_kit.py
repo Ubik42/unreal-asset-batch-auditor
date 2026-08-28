@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import struct
 from pathlib import Path
 
 from unreal_asset_batch_auditor import AuditProfile
@@ -57,3 +58,25 @@ def test_recorded_demo_sessions_cover_real_mixed_and_strict_scenarios() -> None:
             "unchanged": True,
             "changed": [],
         }
+
+
+def test_current_panel_evidence_contains_eight_real_slate_pngs() -> None:
+    image_root = ROOT / "docs" / "images" / "workflow" / "v0.4"
+    expected = [
+        "01-empty-state.png",
+        "02-asset-overview.png",
+        "03-passing-assets.png",
+        "04-assets-needing-work.png",
+        "05-issue-details.png",
+        "06-triangle-evidence.png",
+        "07-material-evidence.png",
+        "08-collection-failures.png",
+    ]
+
+    assert [path.name for path in sorted(image_root.glob("*.png"))] == expected
+    for filename in expected:
+        payload = (image_root / filename).read_bytes()
+        assert payload.startswith(b"\x89PNG\r\n\x1a\n")
+        width, height = struct.unpack(">II", payload[16:24])
+        assert (width, height) == (1280, 688)
+        assert len(payload) > 50_000

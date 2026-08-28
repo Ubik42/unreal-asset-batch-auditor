@@ -8,21 +8,41 @@
 
 从插件内置的规则下拉框选择审计 Profile，界面直接展示三角形、顶点、材质槽、LOD 与 Nanite 阈值。普通用户无需接触 JSON 路径；项目可以通过“导入自定义规则”接入自己的标准。
 
-![选择项目检查规则](docs/images/workflow/01-select-profile.png)
+![选择项目检查规则与空状态](docs/images/workflow/v0.4/01-empty-state.png)
 
 ### 2. 选择资源并执行批量审计
 
-在 Content Browser 中选择资产，读取当前选择后执行只读审计。下图使用“桌面平衡”规则检查 8 个 Heavy Static Mesh，得到 19 条问题；每条结果都显示资产、检查项、实测值、阈值和证据说明。
+在 Content Browser 中选择资产，读取当前选择后执行只读审计。资产总览不会隐藏通过项：同一批次内可以直接对比通过、需处理和采集失败对象，以及三角形、顶点、材质槽、LOD、Nanite 与问题数。
 
-![选择资源并执行批量审计](docs/images/workflow/02-audit-assets.png)
+![完整资产审计台账](docs/images/workflow/v0.4/02-asset-overview.png)
 
 ### 3. 查看可追溯报告
 
-面板汇总通过、问题与采集失败数量，并把本次运行写入版本化 JSON Report。报告保留宿主版本、资产元数据、Issue、Evidence、Profile 阈值和批次统计，可用于复核、自动化或后续质量门禁。
+切换“问题明细”即可看到严重度、规则、实测值、Profile 阈值和中文证据说明。面板把本次运行写入版本化 JSON Report，保留宿主版本、资产元数据、Issue、Evidence 与批次统计。
 
-![查看 JSON 审计报告](docs/images/workflow/03-review-report.png)
+![可追溯问题明细](docs/images/workflow/v0.4/05-issue-details.png)
 
-以上截图来自 UE 5.8.1 中的真实插件运行与仓库 Demo 资产。演示 Profile 使用模拟项目阈值，仅用于说明规则驱动流程，不代表行业统一标准。
+以上 v0.4 截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 面板，数据来自 24 个真实 Demo `.uasset` 的已记录 Unreal Report；不是网页复刻或设计稿。自动化证明面板渲染和报告解析，不冒充鼠标点击人工测试。演示 Profile 使用模拟项目阈值，不代表行业统一标准。
+
+## 真实状态画廊
+
+### 只看通过资产
+
+![15 个通过资产](docs/images/workflow/v0.4/03-passing-assets.png)
+
+### 只看需处理资产
+
+![9 个需处理资产](docs/images/workflow/v0.4/04-assets-needing-work.png)
+
+### 三角形预算证据
+
+![三角形预算筛选](docs/images/workflow/v0.4/06-triangle-evidence.png)
+
+### 材质槽与失败隔离
+
+![材质槽证据](docs/images/workflow/v0.4/07-material-evidence.png)
+
+![采集失败隔离](docs/images/workflow/v0.4/08-collection-failures.png)
 
 ## 当前已实现
 
@@ -113,7 +133,7 @@ report = run(
 - 扫描前后 Engine BasicShapes 的 9 个 `.uasset` SHA-256 全部不变；证据位于 `artifacts/host-validation/`；
 - 已建立 64 个 Engine Static Mesh、2 次预热、7 次重复的真实宿主热缓存基线；结果只用于回归，不外推到生产项目或数千资产；
 - 有界分批、进度、批次间取消和部分失败汇总已在真实 UE 5.8.1 宿主验证；完整场景调用尺寸为 `[2,2,1]`，取消场景只执行首批 `[2]`；
-- M4 产品化切片已完成资产总览/问题明细代码与 UE 5.8.1 BuildPlugin；新的可见面板截图仍需在独立 Editor 会话中刷新，旧截图不冒充新界面证据；
+- M4 产品化切片已完成资产总览/问题明细、UE 5.8.1 BuildPlugin、独立 Slate 自动化与 8 张当前版本截图；证据清单保留图片和源报告 SHA-256；
 - M5 将扩展碰撞、Lightmap UV、命名和目录政策，所有阈值继续来自版本化 Profile；
 - M6–M7 继续处理大批量交互、保存会话、团队交接、发布包与完整视觉证据，不为了复杂度强行加入 AI/PCG。
 

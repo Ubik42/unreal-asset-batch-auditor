@@ -693,8 +693,32 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
     PassingAssetCount = FMath::Max(0, AssetCount - AssetsWithIssues.Num());
     RebuildFilteredIssues();
     RebuildFilteredAssets();
+    StatusMessage = FString::Printf(TEXT("已载入报告 · %d 个资产 · %d 个问题"), AssetCount, IssueCount);
     return true;
 }
+
+#if WITH_DEV_AUTOMATION_TESTS
+bool SUnrealAssetAuditPanel::LoadReportForEvidence(const FString& Path, FString& OutError)
+{
+    ReportPath = Path;
+    return LoadReport(Path, OutError);
+}
+
+void SUnrealAssetAuditPanel::SetEvidenceView(bool bAssetOverview, const FString& FilterText)
+{
+    bShowingAssetOverview = bAssetOverview;
+    SearchText = FilterText;
+    if (SearchInput.IsValid())
+    {
+        SearchInput->SetText(FText::FromString(FilterText));
+    }
+    else
+    {
+        RebuildFilteredIssues();
+        RebuildFilteredAssets();
+    }
+}
+#endif
 
 void SUnrealAssetAuditPanel::HandleSearchChanged(const FText& Text)
 {
@@ -708,9 +732,13 @@ void SUnrealAssetAuditPanel::RebuildFilteredIssues()
     FilteredIssues.Reset();
     for (const FIssuePtr& Item : AllIssues)
     {
+        const FString LocalRule = RuleLabel(Item->RuleId).ToString();
+        const FString LocalSeverity = SeverityLabel(Item->Severity).ToString();
         if (SearchText.IsEmpty()
             || Item->AssetPath.Contains(SearchText, ESearchCase::IgnoreCase)
             || Item->RuleId.Contains(SearchText, ESearchCase::IgnoreCase)
+            || LocalRule.Contains(SearchText, ESearchCase::IgnoreCase)
+            || LocalSeverity.Contains(SearchText, ESearchCase::IgnoreCase)
             || Item->Message.Contains(SearchText, ESearchCase::IgnoreCase))
         {
             FilteredIssues.Add(Item);
