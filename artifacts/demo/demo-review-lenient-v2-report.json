@@ -1,0 +1,796 @@
+{
+  "schema_version": "unreal-asset-audit@2.0.0",
+  "report_id": "report-d0dd16036d1ed4e4",
+  "created_at": "2026-08-28T03:11:50.296436+00:00",
+  "profile_id": "demo-review-lenient-v2",
+  "profile_version": "2.0.0",
+  "profile_schema_version": "unreal-static-mesh-profile@2.0.0",
+  "collection_mode": "unreal_editor",
+  "real_unreal_validation": true,
+  "host_engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "asset_count": 24,
+  "issue_count": 17,
+  "collection_failure_count": 2,
+  "requested_asset_count": 26,
+  "processed_asset_count": 26,
+  "cancelled_asset_count": 0,
+  "completed_batch_count": 4,
+  "batch_size": 8,
+  "assets": [
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_01_LineSegmentCylinder.SM_UABA_01_LineSegmentCylinder",
+      "asset_name": "SM_UABA_01_LineSegmentCylinder",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 40,
+          "vertices": 67
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 1,
+      "lightmap_coordinate_index": 0,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_02_DemoBoxMesh.SM_UABA_02_DemoBoxMesh",
+      "asset_name": "SM_UABA_02_DemoBoxMesh",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 48,
+          "vertices": 54
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_03_GizmoCornerHandle.SM_UABA_03_GizmoCornerHandle",
+      "asset_name": "SM_UABA_03_GizmoCornerHandle",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 80,
+          "vertices": 158
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "use_complex_as_simple",
+      "uv_channel_count": 1,
+      "lightmap_coordinate_index": 0,
+      "lightmap_resolution": 4
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_04_StretchingHandle.SM_UABA_04_StretchingHandle",
+      "asset_name": "SM_UABA_04_StretchingHandle",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 120,
+          "vertices": 112
+        }
+      ],
+      "material_slot_count": 2,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "use_simple_as_complex",
+      "uv_channel_count": 1,
+      "lightmap_coordinate_index": 0,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_05_TranslateArrowHandle.SM_UABA_05_TranslateArrowHandle",
+      "asset_name": "SM_UABA_05_TranslateArrowHandle",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 172,
+          "vertices": 203
+        }
+      ],
+      "material_slot_count": 2,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "use_simple_as_complex",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_06_BackgroundCube.SM_UABA_06_BackgroundCube",
+      "asset_name": "SM_UABA_06_BackgroundCube",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 204,
+          "vertices": 138
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 1,
+      "lightmap_coordinate_index": 0,
+      "lightmap_resolution": 4
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_07_SM_Dialog_Move.SM_UABA_07_SM_Dialog_Move",
+      "asset_name": "SM_UABA_07_SM_Dialog_Move",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 240,
+          "vertices": 112
+        }
+      ],
+      "material_slot_count": 2,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 3,
+      "lightmap_coordinate_index": 2,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_08_RotationHandleIndicator.SM_UABA_08_RotationHandleIndicator",
+      "asset_name": "SM_UABA_08_RotationHandleIndicator",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 272,
+          "vertices": 156
+        }
+      ],
+      "material_slot_count": 2,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_09_RotationHandle.SM_UABA_09_RotationHandle",
+      "asset_name": "SM_UABA_09_RotationHandle",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 352,
+          "vertices": 354
+        }
+      ],
+      "material_slot_count": 2,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "use_simple_as_complex",
+      "uv_channel_count": 1,
+      "lightmap_coordinate_index": 0,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_10_Cylinder.SM_UABA_10_Cylinder",
+      "asset_name": "SM_UABA_10_Cylinder",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 512,
+          "vertices": 334
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_11_SM_ContentWindow_01.SM_UABA_11_SM_ContentWindow_01",
+      "asset_name": "SM_UABA_11_SM_ContentWindow_01",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 670,
+          "vertices": 376
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 1,
+      "lightmap_coordinate_index": 0,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_12_RotationHandleQuarter.SM_UABA_12_RotationHandleQuarter",
+      "asset_name": "SM_UABA_12_RotationHandleQuarter",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 952,
+          "vertices": 760
+        }
+      ],
+      "material_slot_count": 2,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "use_simple_as_complex",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_13_SM_CraneRig_Base.SM_UABA_13_SM_CraneRig_Base",
+      "asset_name": "SM_UABA_13_SM_CraneRig_Base",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 1068,
+          "vertices": 738
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_14_SM_Cube_01.SM_UABA_14_SM_Cube_01",
+      "asset_name": "SM_UABA_14_SM_Cube_01",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 1404,
+          "vertices": 816
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 1,
+      "lightmap_coordinate_index": 0,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_15_SM_Radial_Disk.SM_UABA_15_SM_Radial_Disk",
+      "asset_name": "SM_UABA_15_SM_Radial_Disk",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 1728,
+          "vertices": 1152
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01",
+      "asset_name": "SM_UABA_16_S_EV_FogVolume_Sphere_01",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 3968,
+          "vertices": 2143
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 1,
+      "lightmap_coordinate_index": 0,
+      "lightmap_resolution": 4
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_17_SimplePivotPainterExample.SM_UABA_17_SimplePivotPainterExample",
+      "asset_name": "SM_UABA_17_SimplePivotPainterExample",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 4080,
+          "vertices": 4590
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_18_SM_CineCam.SM_UABA_18_SM_CineCam",
+      "asset_name": "SM_UABA_18_SM_CineCam",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 6252,
+          "vertices": 4174
+        }
+      ],
+      "material_slot_count": 2,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+      "asset_name": "SM_UABA_19_VivePreController_Trimlines",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 17912,
+          "vertices": 10587
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 0,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
+      "asset_name": "SM_UABA_20_TransformGizmoFreeRotation",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 32256,
+          "vertices": 32512
+        }
+      ],
+      "material_slot_count": 2,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 0,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "asset_name": "SM_UABA_21_SM_ColorCalibrator",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 37472,
+          "vertices": 21422
+        }
+      ],
+      "material_slot_count": 5,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+      "asset_name": "SM_UABA_22_EditorShaderBall",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 58540,
+          "vertices": 32470
+        }
+      ],
+      "material_slot_count": 3,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 3,
+      "lightmap_coordinate_index": 2,
+      "lightmap_resolution": 512
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "asset_name": "SM_UABA_23_SM_MatPreviewMesh_01",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 58540,
+          "vertices": 32470
+        }
+      ],
+      "material_slot_count": 3,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 3,
+      "lightmap_coordinate_index": 2,
+      "lightmap_resolution": 512
+    },
+    {
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "asset_name": "SM_UABA_24_SM_Room_01",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 63774,
+          "vertices": 41436
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 8
+    }
+  ],
+  "issues": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-c525790c31d379c3",
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_03_GizmoCornerHandle.SM_UABA_03_GizmoCornerHandle",
+      "rule_id": "static_mesh.lightmap_resolution",
+      "severity": "info",
+      "message": "Lightmap resolution 4 is below profile minimum 16.",
+      "evidence_id": "ev-4e052c9835e213c5"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-f3240b3ef164b2ff",
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_06_BackgroundCube.SM_UABA_06_BackgroundCube",
+      "rule_id": "static_mesh.lightmap_resolution",
+      "severity": "info",
+      "message": "Lightmap resolution 4 is below profile minimum 16.",
+      "evidence_id": "ev-ac81ddc0a031dda9"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-5b8ea12b97df5012",
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01",
+      "rule_id": "static_mesh.lightmap_resolution",
+      "severity": "info",
+      "message": "Lightmap resolution 4 is below profile minimum 16.",
+      "evidence_id": "ev-e31a254127a8b5ff"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-9a6a4805bd7f2935",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 17912 exceed profile limit 10000.",
+      "evidence_id": "ev-f2c2448667ed17fd"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-c7fe92bb5ad82564",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 10587 exceed profile limit 7000.",
+      "evidence_id": "ev-a68b08c7917a908e"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-75678da0d72d224a",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 32256 exceed profile limit 10000.",
+      "evidence_id": "ev-7fda6996647ea479"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-6091d56e92d610f1",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 32512 exceed profile limit 7000.",
+      "evidence_id": "ev-5b0565a03fcbda5d"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-2084b140f1c7e62a",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 37472 exceed profile limit 10000.",
+      "evidence_id": "ev-3a04aa54aee84e69"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-f06ae89910c6f89b",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 21422 exceed profile limit 7000.",
+      "evidence_id": "ev-7a873acc7d3fa223"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-43faa3ff46506a90",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "rule_id": "static_mesh.material_slots",
+      "severity": "warning",
+      "message": "Material slots 5 exceed profile limit 4.",
+      "evidence_id": "ev-23f1392b8a9af52f"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-6e054b35a1b9b7e5",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 58540 exceed profile limit 10000.",
+      "evidence_id": "ev-88c593393a80d0ba"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-51e4bc5b52b4703c",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 32470 exceed profile limit 7000.",
+      "evidence_id": "ev-5a46169990b3c9d5"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-d6a73a293f878533",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 58540 exceed profile limit 10000.",
+      "evidence_id": "ev-47bf99d0294173ab"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-066849e53815f186",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 32470 exceed profile limit 7000.",
+      "evidence_id": "ev-03e67caed267c1b2"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-39c304d85e16fcaa",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "rule_id": "static_mesh.triangle_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 triangles 63774 exceed profile limit 10000.",
+      "evidence_id": "ev-1eff2a0e3b0ed84e"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-608c5fe1c5e253bb",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "rule_id": "static_mesh.vertex_budget.lod0",
+      "severity": "error",
+      "message": "LOD0 vertices 41436 exceed profile limit 7000.",
+      "evidence_id": "ev-0ab4e2bcda547276"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-fd19644a46e81b23",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "rule_id": "static_mesh.lightmap_resolution",
+      "severity": "info",
+      "message": "Lightmap resolution 8 is below profile minimum 16.",
+      "evidence_id": "ev-0e93ccdfb4c378e4"
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-4e052c9835e213c5",
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_03_GizmoCornerHandle.SM_UABA_03_GizmoCornerHandle",
+      "metric": "lightmap_resolution",
+      "observed": 4,
+      "expected": 16,
+      "profile_pointer": "/rules/lightmap_resolution/min_resolution",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-ac81ddc0a031dda9",
+      "asset_path": "/Game/UABADemo/01_Light/SM_UABA_06_BackgroundCube.SM_UABA_06_BackgroundCube",
+      "metric": "lightmap_resolution",
+      "observed": 4,
+      "expected": 16,
+      "profile_pointer": "/rules/lightmap_resolution/min_resolution",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-e31a254127a8b5ff",
+      "asset_path": "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01",
+      "metric": "lightmap_resolution",
+      "observed": 4,
+      "expected": 16,
+      "profile_pointer": "/rules/lightmap_resolution/min_resolution",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-f2c2448667ed17fd",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+      "metric": "lod0.triangles",
+      "observed": 17912,
+      "expected": 10000,
+      "profile_pointer": "/rules/triangle_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-a68b08c7917a908e",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+      "metric": "lod0.vertices",
+      "observed": 10587,
+      "expected": 7000,
+      "profile_pointer": "/rules/vertex_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-7fda6996647ea479",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
+      "metric": "lod0.triangles",
+      "observed": 32256,
+      "expected": 10000,
+      "profile_pointer": "/rules/triangle_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-5b0565a03fcbda5d",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
+      "metric": "lod0.vertices",
+      "observed": 32512,
+      "expected": 7000,
+      "profile_pointer": "/rules/vertex_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-3a04aa54aee84e69",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "metric": "lod0.triangles",
+      "observed": 37472,
+      "expected": 10000,
+      "profile_pointer": "/rules/triangle_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-7a873acc7d3fa223",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "metric": "lod0.vertices",
+      "observed": 21422,
+      "expected": 7000,
+      "profile_pointer": "/rules/vertex_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-23f1392b8a9af52f",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+      "metric": "material_slot_count",
+      "observed": 5,
+      "expected": 4,
+      "profile_pointer": "/rules/material_slots/max_count",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-88c593393a80d0ba",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+      "metric": "lod0.triangles",
+      "observed": 58540,
+      "expected": 10000,
+      "profile_pointer": "/rules/triangle_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-5a46169990b3c9d5",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+      "metric": "lod0.vertices",
+      "observed": 32470,
+      "expected": 7000,
+      "profile_pointer": "/rules/vertex_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-47bf99d0294173ab",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "metric": "lod0.triangles",
+      "observed": 58540,
+      "expected": 10000,
+      "profile_pointer": "/rules/triangle_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-03e67caed267c1b2",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "metric": "lod0.vertices",
+      "observed": 32470,
+      "expected": 7000,
+      "profile_pointer": "/rules/vertex_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-1eff2a0e3b0ed84e",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "metric": "lod0.triangles",
+      "observed": 63774,
+      "expected": 10000,
+      "profile_pointer": "/rules/triangle_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-0ab4e2bcda547276",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "metric": "lod0.vertices",
+      "observed": 41436,
+      "expected": 7000,
+      "profile_pointer": "/rules/vertex_budget/max_lod0",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-0e93ccdfb4c378e4",
+      "asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01",
+      "metric": "lightmap_resolution",
+      "observed": 8,
+      "expected": 16,
+      "profile_pointer": "/rules/lightmap_resolution/min_resolution",
+      "collector": "unreal_editor"
+    }
+  ],
+  "collection_failures": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "asset_path": "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial",
+      "code": "NOT_STATIC_MESH",
+      "message": "Object could not be loaded as UStaticMesh.",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "asset_path": "/Game/UABADemo/Missing/SM_DoesNotExist.SM_DoesNotExist",
+      "code": "NOT_STATIC_MESH",
+      "message": "Object could not be loaded as UStaticMesh.",
+      "collector": "unreal_editor"
+    }
+  ]
+}

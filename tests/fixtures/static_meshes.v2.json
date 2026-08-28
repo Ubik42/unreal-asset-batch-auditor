@@ -1,0 +1,50 @@
+{
+  "schema_version": "unreal-static-mesh-fixture@1.0.0",
+  "source": "synthetic_offline_fixture_with_collision_and_lightmap",
+  "assets": [
+    {
+      "asset_path": "/Game/Props/SM_Healthy.SM_Healthy",
+      "asset_name": "SM_Healthy",
+      "lods": [
+        { "index": 0, "triangles": 24000, "vertices": 18000 },
+        { "index": 1, "triangles": 12000, "vertices": 9000 },
+        { "index": 2, "triangles": 6000, "vertices": 4500 }
+      ],
+      "material_slot_count": 2,
+      "nanite_enabled": true,
+      "simple_collision_primitive_count": 2,
+      "collision_complexity": "simple_and_complex",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Game/Props/SM_Problem.SM_Problem",
+      "asset_name": "SM_Problem",
+      "lods": [
+        { "index": 0, "triangles": 90000, "vertices": 65000 }
+      ],
+      "material_slot_count": 7,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "simple_and_complex",
+      "uv_channel_count": 1,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 16
+    },
+    {
+      "asset_path": "/Game/Props/SM_ComplexCollision.SM_ComplexCollision",
+      "asset_name": "SM_ComplexCollision",
+      "lods": [
+        { "index": 0, "triangles": 1000, "vertices": 800 }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": true,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "use_complex_as_simple",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32
+    }
+  ]
+}

@@ -42,6 +42,11 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
 {
     const FString ReportPath = FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_REPORT"));
     const FString OutputDirectory = FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_OUTPUT"));
+    const FString EvidenceMode = FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_MODE"));
+    const int32 ExpectedAssets = FCString::Atoi(
+        *FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_EXPECTED_ASSETS")));
+    const int32 ExpectedIssues = FCString::Atoi(
+        *FPlatformMisc::GetEnvironmentVariable(TEXT("UABA_PANEL_EVIDENCE_EXPECTED_ISSUES")));
     if (!FPaths::FileExists(ReportPath))
     {
         AddError(FString::Printf(TEXT("Evidence report does not exist: %s"), *ReportPath));
@@ -84,8 +89,14 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         FSlateApplication::Get().RequestDestroyWindow(Window);
         return false;
     }
-    TestEqual(TEXT("Asset rows include successes and failures"), Panel->GetEvidenceAssetCount(), 26);
-    TestEqual(TEXT("Issue rows include rules and collection failures"), Panel->GetEvidenceIssueCount(), 23);
+    TestEqual(
+        TEXT("Asset rows include successes and failures"),
+        Panel->GetEvidenceAssetCount(),
+        ExpectedAssets > 0 ? ExpectedAssets : 26);
+    TestEqual(
+        TEXT("Issue rows include rules and collection failures"),
+        Panel->GetEvidenceIssueCount(),
+        ExpectedIssues > 0 ? ExpectedIssues : 23);
 
     Panel->SetEvidenceView(true, TEXT(""));
     Capture(TEXT("02-asset-overview.png"));
@@ -95,12 +106,24 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
     Capture(TEXT("04-assets-needing-work.png"));
     Panel->SetEvidenceView(false, TEXT(""));
     Capture(TEXT("05-issue-details.png"));
-    Panel->SetEvidenceView(false, TEXT("三角形"));
-    Capture(TEXT("06-triangle-evidence.png"));
-    Panel->SetEvidenceView(false, TEXT("材质槽"));
-    Capture(TEXT("07-material-evidence.png"));
-    Panel->SetEvidenceView(false, TEXT("采集失败"));
-    Capture(TEXT("08-collection-failures.png"));
+    if (EvidenceMode == TEXT("v2"))
+    {
+        Panel->SetEvidenceView(false, TEXT("简单碰撞"));
+        Capture(TEXT("06-collision-evidence.png"));
+        Panel->SetEvidenceView(false, TEXT("Lightmap UV"));
+        Capture(TEXT("07-lightmap-uv-evidence.png"));
+        Panel->SetEvidenceView(false, TEXT("Lightmap 分辨率"));
+        Capture(TEXT("08-lightmap-resolution-evidence.png"));
+    }
+    else
+    {
+        Panel->SetEvidenceView(false, TEXT("三角形"));
+        Capture(TEXT("06-triangle-evidence.png"));
+        Panel->SetEvidenceView(false, TEXT("材质槽"));
+        Capture(TEXT("07-material-evidence.png"));
+        Panel->SetEvidenceView(false, TEXT("采集失败"));
+        Capture(TEXT("08-collection-failures.png"));
+    }
 
     FSlateApplication::Get().RequestDestroyWindow(Window);
     return bPassed;

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 10,
+  "stateRevision": 11,
   "status": "active",
   "currentMilestone": "M5",
   "milestones": [
@@ -55,20 +55,20 @@
     }
   ],
   "nextSlice": {
-    "id": "M5-S1",
+    "id": "M5-S2",
     "milestoneId": "M5",
-    "title": "Add versioned collision and Lightmap readiness audits",
+    "title": "Add Profile-driven naming and project-structure policies",
     "scope": [
-      "Define backward-aware Profile and Report contracts for new Static Mesh metadata",
-      "Collect simple collision primitives, collision complexity, UV channel count, Lightmap coordinate index, and Lightmap resolution in C++",
-      "Evaluate Profile-driven simple collision, valid Lightmap UV, and minimum Lightmap resolution rules in Python",
-      "Expose the new facts and localized evidence in the native Chinese panel",
+      "Extend Profile and Report contracts with optional naming and package-path policies",
+      "Collect object name and package path as read-only facts without loading unrelated project assets",
+      "Evaluate configurable prefix, regular-expression, allowed-root, and forbidden-segment rules in Python",
+      "Expose localized naming and directory evidence in the native Chinese panel",
       "Extend fixtures, Demo profiles, tests, real-host evidence, documentation, and screenshots"
     ],
     "nonGoals": [
       "No asset mutation or automatic repair",
-      "No collision generation, UV unwrapping, or mesh rebuild",
-      "Naming and directory policy are reserved for M5-S2",
+      "No asset rename, move, redirector creation, or package save",
+      "No project-wide crawl; only explicitly selected object paths are evaluated",
       "No compatibility claim beyond hosts actually tested"
     ],
     "allowedPaths": [
@@ -90,19 +90,19 @@
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ],
-    "evidenceCeiling": "Fixtures may prove contract and rule determinism; BuildPlugin may prove compilation; only fresh Unreal host metadata and Slate evidence may prove collision, Lightmap, and panel behavior.",
+    "evidenceCeiling": "Fixtures may prove naming and path rule determinism; BuildPlugin may prove compilation; only fresh Unreal host object paths and Slate evidence may prove Editor integration.",
     "realHostRequired": true,
     "acceptance": [
-      "Existing v1 Profiles and reports remain readable",
-      "A v2 Profile controls collision and Lightmap thresholds without hard-coded project policy",
-      "Real UE metadata includes collision and Lightmap facts for explicit Static Mesh paths",
-      "New issue evidence remains searchable and localized in the panel",
+      "Existing v1 and v2 Profiles and reports remain readable",
+      "Naming and directory policy is optional, versioned, and fully Profile-driven",
+      "Only explicitly selected Unreal object paths are evaluated",
+      "Naming and path issue evidence remains searchable and localized in the panel",
       "UE 5.8 BuildPlugin succeeds",
-      "A fresh independent Unreal host session validates facts and the panel without touching existing user sessions",
-      "README, Demo tutorial, and screenshots show the expanded workflow"
+      "A fresh independent Unreal host session validates object-path facts and the panel without touching existing user sessions",
+      "README, Demo tutorial, and screenshots show the naming and directory workflow"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0010.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0011.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -119,15 +119,15 @@
     },
     {
       "id": "m5-real-unreal-host",
-      "status": "pending",
+      "status": "completed",
       "blocking": false,
-      "reason": "Collision and Lightmap facts require fresh UE 5.8.1 metadata comparison and read-only integrity evidence."
+      "reason": "UE 5.8.1 dev3 collected collision and Lightmap facts for four Engine Static Meshes; all source asset SHA-256 values remained unchanged."
     },
     {
       "id": "m5-visual-evidence",
-      "status": "pending",
+      "status": "completed",
       "blocking": false,
-      "reason": "The new M5 columns and localized evidence need fresh current-version Slate screenshots."
+      "reason": "Eight v0.5 production Slate screenshots cover the expanded ledger plus collision and Lightmap evidence; hashes are recorded in the M5 manifest."
     }
   ]
 }

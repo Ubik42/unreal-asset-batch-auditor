@@ -1,0 +1,56 @@
+{
+  "schema_version": "unreal-host-v2-validation@1.0.0",
+  "created_at": "2026-08-28T03:19:24.109456+00:00",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "plugin_build": "UE_5.8.1-v0.5.0-dev3",
+  "execution": "independent UnrealEditor-Cmd ExecutePythonScript",
+  "profile_path": "D:\\3D\\_tools\\unreal-asset-batch-auditor\\config\\Profiles\\default-static-mesh-profile.v2.json",
+  "report_path": "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\host-validation\\m5\\ue-5.8.1-v0.5.0-dev3-report.json",
+  "asset_count": 4,
+  "issue_count": 8,
+  "metadata": [
+    {
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "simple_collision_primitive_count": 4,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32,
+      "lightmap_uv_valid": true
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64,
+      "lightmap_uv_valid": true
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32,
+      "lightmap_uv_valid": true
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32,
+      "lightmap_uv_valid": true
+    }
+  ],
+  "integrity": {
+    "algorithm": "sha256",
+    "hashed_asset_count": 4,
+    "unchanged": true,
+    "changed": []
+  },
+  "claims_visible_editor_review": false
+}

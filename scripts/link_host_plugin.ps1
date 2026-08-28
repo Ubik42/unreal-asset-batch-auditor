@@ -1,5 +1,5 @@
 param(
-    [string]$BuildLabel = "UE_5.8.1-v0.3.0"
+    [string]$BuildLabel = "UE_5.8.1-v0.5.0-dev3"
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,9 +12,19 @@ if (-not (Test-Path -LiteralPath (Join-Path $target "UnrealAssetBatchAuditor.upl
     throw "Packaged plugin not found: $target"
 }
 if (Test-Path -LiteralPath $link) {
-    $resolved = (Get-Item -LiteralPath $link).Target
+    $item = Get-Item -LiteralPath $link
+    $resolved = $item.Target
     if ($resolved -ne $target) {
-        throw "Existing host plugin link targets a different build: $resolved"
+        $allowedRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "artifacts\host-build"))
+        $resolvedTarget = [System.IO.Path]::GetFullPath([string]$resolved)
+        if ($item.LinkType -ne "Junction" -or
+            -not $resolvedTarget.StartsWith($allowedRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to replace non-generated host plugin path: $link -> $resolved"
+        }
+        Remove-Item -LiteralPath $link -Force
+        New-Item -ItemType Junction -Path $link -Target $target | Out-Null
+        Write-Output "Updated host plugin link: $link -> $target"
+        return
     }
     Write-Output "Host plugin link already ready: $link"
     return

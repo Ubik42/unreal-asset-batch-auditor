@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0011",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 11,
+  "completedSlice": "M5-S1",
+  "summary": "M5-S1 is complete. Profile and Report v2 add Profile-driven simple collision and Lightmap readiness auditing while v1 remains readable; the Chinese production panel, realistic Demo, real UE host evidence, screenshots, and documentation all cover the expanded workflow.",
+  "evidence": [
+    "Profile and Report v2 schemas add simple collision primitives, collision complexity, UV channel count, Lightmap coordinate index, and Lightmap resolution",
+    "Python retains v1 compatibility and evaluates three new rules exclusively from project Profile values",
+    "UE 5.8.1 Win64 Development Editor BuildPlugin succeeded for UE_5.8.1-v0.5.0-dev3",
+    "A fresh independent UnrealEditor-Cmd session collected v2 metadata for four Engine BasicShapes with zero collection failures",
+    "SHA-256 remained unchanged for all four real host assets",
+    "The 24-asset Demo produces 43, 111, and 17 issues under the three v2 training Profiles, with two isolated diagnostic failures",
+    "UnrealAssetBatchAuditor.PanelEvidence returned Success and generated eight 1280x688 v0.5 production Slate screenshots",
+    "The M5 evidence manifest records source-report and screenshot SHA-256 values and does not claim mouse-click interaction",
+    "README, contract notes, setup tutorial, recording script, asset matrix, screenshot plan, and host test plan are updated in Chinese"
+  ],
+  "nextSlice": "M5-S2",
+  "unresolvedRisks": [
+    "Naming and directory policies are not yet implemented",
+    "Cross-version UE compatibility is not claimed",
+    "Visible mouse-click and docking interaction remains a manual recording step",
+    "No asset mutation or automatic repair is authorized"
+  ]
+}

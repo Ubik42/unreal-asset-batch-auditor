@@ -42,17 +42,17 @@ def test_panel_request_file_forwards_explicit_inputs(tmp_path: Path, monkeypatch
 
 
 def test_all_packaged_panel_profiles_are_valid() -> None:
-    profiles = sorted((ROOT / "Resources" / "Profiles").glob("*.json"))
+    profiles = sorted((ROOT / "Resources" / "Profiles").glob("*.v2.json"))
 
     assert [path.name for path in profiles] == [
-        "desktop-balanced.v1.json",
-        "mobile-strict.v1.json",
-        "review-lenient.v1.json",
+        "desktop-balanced.v2.json",
+        "mobile-strict.v2.json",
+        "review-lenient.v2.json",
     ]
     assert {AuditProfile.load(path).profile_id for path in profiles} == {
-        "demo-desktop-balanced",
-        "demo-mobile-strict",
-        "demo-review-lenient",
+        "demo-desktop-balanced-v2",
+        "demo-mobile-strict-v2",
+        "demo-review-lenient-v2",
     }
 
 

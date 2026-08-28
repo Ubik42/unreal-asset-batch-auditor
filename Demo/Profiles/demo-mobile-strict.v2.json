@@ -1,0 +1,16 @@
+{
+  "schema_version": "unreal-static-mesh-profile@2.0.0",
+  "profile_id": "demo-mobile-strict-v2",
+  "profile_version": "2.0.0",
+  "description": "Recording demo training profile with strict mobile geometry, collision, and Lightmap readiness values.",
+  "rules": {
+    "triangle_budget": { "enabled": true, "max_lod0": 500, "severity": "error" },
+    "vertex_budget": { "enabled": true, "max_lod0": 400, "severity": "error" },
+    "material_slots": { "enabled": true, "max_count": 1, "severity": "warning" },
+    "lod_count": { "enabled": true, "min_count": 2, "severity": "warning" },
+    "nanite": { "enabled": true, "expected": "enabled", "severity": "warning" },
+    "simple_collision": { "enabled": true, "min_primitive_count": 1, "allow_complex_as_simple": false, "severity": "error" },
+    "lightmap_uv": { "enabled": true, "required": true, "min_uv_channel_count": 2, "severity": "error" },
+    "lightmap_resolution": { "enabled": true, "min_resolution": 64, "severity": "warning" }
+  }
+}

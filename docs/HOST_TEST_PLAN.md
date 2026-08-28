@@ -1,6 +1,6 @@
 # Unreal 宿主测试清单
 
-状态：**UE 5.8.1 的 M2 只读宿主验证已通过**。本文件同时保留可重复步骤和本次证据索引。
+状态：**UE 5.8.1 的 M2–M5-S1 只读宿主验证已通过**。本文件同时保留可重复步骤和本次证据索引。
 
 ## 环境记录
 
@@ -25,6 +25,7 @@
 4. 传入错误路径和非 Static Mesh 路径，确认批次返回可诊断失败且 Editor 不崩溃；
 5. 记录扫描前后 `.uasset` 文件哈希或时间戳，确认没有修改；
 6. 确认真实报告为 `collection_mode=unreal_editor`、`real_unreal_validation=true`。
+7. v2 Profile 下复核简单碰撞体数量、碰撞复杂度、UV 通道、Lightmap Coordinate Index 与分辨率。
 
 ## 面板门禁（0.2.0）
 
@@ -60,6 +61,18 @@
 
 面板的像素级布局、停靠和交互点击仍应由录制者在可见 Editor 中按上方七项做一次人工验收；
 编译和无界面宿主回归不能替代可见 UI 验收。
+
+## 2026-08-27 M5-S1 碰撞与 Lightmap 回归
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| v0.5.0 Development Editor BuildPlugin | 通过；UE 5.8.1 Win64 完整编译、链接、打包 | `artifacts/host-build/UE_5.8.1-v0.5.0-dev3`（本机忽略目录） |
+| Report v2 真实采集 | 通过；Cone、Cube、Cylinder、Sphere 均返回完整碰撞和 Lightmap 字段 | `artifacts/host-validation/m5/ue-5.8.1-v0.5.0-dev3-report.json` |
+| 只读完整性 | 通过；4 个 Engine BasicShapes 扫描前后 SHA-256 全部一致 | `artifacts/host-validation/m5/ue-5.8.1-v0.5.0-dev3-environment.json` |
+| 当前面板渲染 | 通过；独立 `-RenderOffscreen` Slate 自动化生成 8 张 v0.5 图片 | `artifacts/host-validation/m5/panel-evidence-v0.5.0-dev3.json` |
+
+该轮主机命令行证据明确记录 `claims_visible_editor_review=false`；截图证据明确记录
+`claims_user_interaction=false`。它们分别证明原生采集与生产 Slate 渲染，不冒充人工点击流程。
 
 本结果只覆盖记录的 UE 5.8.1 非生产宿主和 Engine 内容，不等价于 UE 5.4/5.5 兼容证明，也不等价于大规模生产性能证明。
 

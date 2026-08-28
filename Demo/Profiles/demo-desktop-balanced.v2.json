@@ -1,0 +1,16 @@
+{
+  "schema_version": "unreal-static-mesh-profile@2.0.0",
+  "profile_id": "demo-desktop-balanced-v2",
+  "profile_version": "2.0.0",
+  "description": "Recording demo training profile with balanced geometry, collision, and Lightmap readiness values.",
+  "rules": {
+    "triangle_budget": { "enabled": true, "max_lod0": 2000, "severity": "error" },
+    "vertex_budget": { "enabled": true, "max_lod0": 1500, "severity": "error" },
+    "material_slots": { "enabled": true, "max_count": 2, "severity": "warning" },
+    "lod_count": { "enabled": true, "min_count": 1, "severity": "warning" },
+    "nanite": { "enabled": true, "expected": "any", "severity": "warning" },
+    "simple_collision": { "enabled": true, "min_primitive_count": 1, "allow_complex_as_simple": true, "severity": "warning" },
+    "lightmap_uv": { "enabled": true, "required": true, "min_uv_channel_count": 2, "severity": "warning" },
+    "lightmap_resolution": { "enabled": true, "min_resolution": 32, "severity": "info" }
+  }
+}

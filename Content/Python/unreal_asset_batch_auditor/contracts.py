@@ -7,7 +7,9 @@ from pathlib import Path
 from typing import Any, Literal
 
 CONTRACT_VERSION = "unreal-asset-audit@1.0.0"
+CONTRACT_VERSION_V2 = "unreal-asset-audit@2.0.0"
 PROFILE_VERSION = "unreal-static-mesh-profile@1.0.0"
+PROFILE_VERSION_V2 = "unreal-static-mesh-profile@2.0.0"
 Severity = Literal["info", "warning", "error"]
 
 
@@ -64,6 +66,22 @@ class NaniteRule:
 
 
 @dataclass(frozen=True)
+class CollisionRule:
+    enabled: bool
+    min_primitive_count: int
+    allow_complex_as_simple: bool
+    severity: Severity
+
+
+@dataclass(frozen=True)
+class LightmapUvRule:
+    enabled: bool
+    required: bool
+    min_uv_channel_count: int
+    severity: Severity
+
+
+@dataclass(frozen=True)
 class AuditProfile:
     schema_version: str
     profile_id: str
@@ -74,11 +92,15 @@ class AuditProfile:
     material_slots: LimitRule
     lod_count: MinimumRule
     nanite: NaniteRule
+    simple_collision: CollisionRule | None = None
+    lightmap_uv: LightmapUvRule | None = None
+    lightmap_resolution: MinimumRule | None = None
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> AuditProfile:
-        if _required(raw, "schema_version") != PROFILE_VERSION:
-            raise ContractError(f"unsupported profile schema_version: {raw['schema_version']!r}")
+        schema_version = _required(raw, "schema_version")
+        if schema_version not in {PROFILE_VERSION, PROFILE_VERSION_V2}:
+            raise ContractError(f"unsupported profile schema_version: {schema_version!r}")
         rules = _required(raw, "rules")
         if not isinstance(rules, dict):
             raise ContractError("rules must be an object")
@@ -102,8 +124,59 @@ class AuditProfile:
             raise ContractError("profile_id must be a non-empty string")
         if not isinstance(profile_version, str) or not profile_version.strip():
             raise ContractError("profile_version must be a non-empty string")
+        simple_collision = None
+        lightmap_uv = None
+        lightmap_resolution = None
+        if schema_version == PROFILE_VERSION_V2:
+            collision = _required(rules, "simple_collision")
+            lightmap = _required(rules, "lightmap_uv")
+            resolution = _required(rules, "lightmap_resolution")
+            simple_collision = CollisionRule(
+                enabled=_boolean(
+                    _required(collision, "enabled"), "rules.simple_collision.enabled"
+                ),
+                min_primitive_count=_positive_int(
+                    _required(collision, "min_primitive_count"),
+                    "rules.simple_collision.min_primitive_count",
+                    allow_zero=True,
+                ),
+                allow_complex_as_simple=_boolean(
+                    _required(collision, "allow_complex_as_simple"),
+                    "rules.simple_collision.allow_complex_as_simple",
+                ),
+                severity=_severity(
+                    _required(collision, "severity"), "rules.simple_collision.severity"
+                ),
+            )
+            lightmap_uv = LightmapUvRule(
+                enabled=_boolean(_required(lightmap, "enabled"), "rules.lightmap_uv.enabled"),
+                required=_boolean(
+                    _required(lightmap, "required"), "rules.lightmap_uv.required"
+                ),
+                min_uv_channel_count=_positive_int(
+                    _required(lightmap, "min_uv_channel_count"),
+                    "rules.lightmap_uv.min_uv_channel_count",
+                ),
+                severity=_severity(
+                    _required(lightmap, "severity"), "rules.lightmap_uv.severity"
+                ),
+            )
+            lightmap_resolution = MinimumRule(
+                enabled=_boolean(
+                    _required(resolution, "enabled"), "rules.lightmap_resolution.enabled"
+                ),
+                min_value=_positive_int(
+                    _required(resolution, "min_resolution"),
+                    "rules.lightmap_resolution.min_resolution",
+                ),
+                severity=_severity(
+                    _required(resolution, "severity"),
+                    "rules.lightmap_resolution.severity",
+                ),
+            )
+
         return cls(
-            schema_version=PROFILE_VERSION,
+            schema_version=schema_version,
             profile_id=profile_id,
             profile_version=profile_version,
             description=str(raw.get("description", "")),
@@ -120,6 +193,9 @@ class AuditProfile:
                 expected=expected,
                 severity=_severity(_required(nanite, "severity"), "rules.nanite.severity"),
             ),
+            simple_collision=simple_collision,
+            lightmap_uv=lightmap_uv,
+            lightmap_resolution=lightmap_resolution,
         )
 
     @classmethod
@@ -151,6 +227,33 @@ class StaticMeshMetadata:
     lods: tuple[LODMetadata, ...]
     material_slot_count: int
     nanite_enabled: bool
+    simple_collision_primitive_count: int | None = None
+    collision_complexity: str | None = None
+    uv_channel_count: int | None = None
+    lightmap_coordinate_index: int | None = None
+    lightmap_resolution: int | None = None
+
+    @property
+    def has_extended_metadata(self) -> bool:
+        return all(
+            value is not None
+            for value in (
+                self.simple_collision_primitive_count,
+                self.collision_complexity,
+                self.uv_channel_count,
+                self.lightmap_coordinate_index,
+                self.lightmap_resolution,
+            )
+        )
+
+    @property
+    def has_valid_lightmap_uv(self) -> bool:
+        return bool(
+            self.uv_channel_count is not None
+            and self.lightmap_coordinate_index is not None
+            and self.uv_channel_count > 0
+            and 0 <= self.lightmap_coordinate_index < self.uv_channel_count
+        )
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> StaticMeshMetadata:
@@ -159,6 +262,21 @@ class StaticMeshMetadata:
             raise ContractError("lods must contain at least LOD0")
         if [lod.index for lod in lods] != list(range(len(lods))):
             raise ContractError("lod indices must be contiguous and start at zero")
+        def optional_int(
+            name: str, *, allow_zero: bool = True, allow_negative_one: bool = False
+        ) -> int | None:
+            value = raw.get(name)
+            if value is None:
+                return None
+            if allow_negative_one and value == -1:
+                return -1
+            return _positive_int(value, name, allow_zero=allow_zero)
+
+        collision_complexity = raw.get("collision_complexity")
+        if collision_complexity is not None and (
+            not isinstance(collision_complexity, str) or not collision_complexity.strip()
+        ):
+            raise ContractError("collision_complexity must be a non-empty string or null")
         return cls(
             asset_path=str(_required(raw, "asset_path")),
             asset_name=str(_required(raw, "asset_name")),
@@ -169,6 +287,15 @@ class StaticMeshMetadata:
                 allow_zero=True,
             ),
             nanite_enabled=_boolean(_required(raw, "nanite_enabled"), "nanite_enabled"),
+            simple_collision_primitive_count=optional_int(
+                "simple_collision_primitive_count"
+            ),
+            collision_complexity=collision_complexity,
+            uv_channel_count=optional_int("uv_channel_count"),
+            lightmap_coordinate_index=optional_int(
+                "lightmap_coordinate_index", allow_negative_one=True
+            ),
+            lightmap_resolution=optional_int("lightmap_resolution"),
         )
 
 
@@ -272,8 +399,13 @@ class Report:
             isinstance(batch_size, bool) or not isinstance(batch_size, int) or batch_size < 1
         ):
             raise ContractError("batch_size must be null or a positive integer")
+        use_v2 = profile.schema_version == PROFILE_VERSION_V2 or any(
+            asset.has_extended_metadata for asset in assets
+        )
+        if use_v2 and any(not asset.has_extended_metadata for asset in assets):
+            raise ContractError("v2 reports require complete collision and Lightmap metadata")
         return cls(
-            schema_version=CONTRACT_VERSION,
+            schema_version=CONTRACT_VERSION_V2 if use_v2 else CONTRACT_VERSION,
             report_id=report_id,
             created_at=datetime.now(UTC).isoformat(),
             profile_id=profile.profile_id,
@@ -297,7 +429,14 @@ class Report:
         )
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        def drop_none(value: Any) -> Any:
+            if isinstance(value, dict):
+                return {key: drop_none(item) for key, item in value.items() if item is not None}
+            if isinstance(value, list):
+                return [drop_none(item) for item in value]
+            return value
+
+        return drop_none(asdict(self))
 
     def write(self, path: str | Path) -> None:
         destination = Path(path)

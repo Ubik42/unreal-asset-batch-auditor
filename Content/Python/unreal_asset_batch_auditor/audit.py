@@ -156,6 +156,80 @@ def _evaluate_asset(
                 f"profile expects {nanite_rule.expected}."
             ),
         )
+    collision_rule = profile.simple_collision
+    if collision_rule and collision_rule.enabled:
+        primitive_count = asset.simple_collision_primitive_count
+        complexity = asset.collision_complexity or "unknown"
+        complex_as_simple_allowed = (
+            collision_rule.allow_complex_as_simple
+            and complexity == "use_complex_as_simple"
+        )
+        collision_passes = bool(
+            primitive_count is not None
+            and (
+                primitive_count >= collision_rule.min_primitive_count
+                or complex_as_simple_allowed
+            )
+        )
+        expected_collision = f">={collision_rule.min_primitive_count} simple primitives"
+        if collision_rule.allow_complex_as_simple:
+            expected_collision += " or complex-as-simple"
+        check(
+            not collision_passes,
+            rule_id="static_mesh.simple_collision",
+            severity=collision_rule.severity,
+            metric="simple_collision",
+            observed=f"{primitive_count if primitive_count is not None else 'missing'}; {complexity}",
+            expected=expected_collision,
+            pointer="/rules/simple_collision",
+            message=(
+                f"Simple collision primitives are {primitive_count}; collision complexity is "
+                f"{complexity}; profile expects {expected_collision}."
+            ),
+        )
+    lightmap_uv_rule = profile.lightmap_uv
+    if lightmap_uv_rule and lightmap_uv_rule.enabled and lightmap_uv_rule.required:
+        uv_channels = asset.uv_channel_count or 0
+        lightmap_uv_ready = (
+            asset.has_valid_lightmap_uv
+            and uv_channels >= lightmap_uv_rule.min_uv_channel_count
+        )
+        check(
+            not lightmap_uv_ready,
+            rule_id="static_mesh.lightmap_uv",
+            severity=lightmap_uv_rule.severity,
+            metric="lightmap_uv",
+            observed=(
+                f"index={asset.lightmap_coordinate_index}; "
+                f"uv_channels={asset.uv_channel_count}"
+            ),
+            expected=(
+                "valid Lightmap index and "
+                f">={lightmap_uv_rule.min_uv_channel_count} UV channels"
+            ),
+            pointer="/rules/lightmap_uv",
+            message=(
+                f"Lightmap coordinate index is {asset.lightmap_coordinate_index} with "
+                f"{asset.uv_channel_count} UV channels; profile requires a valid index and "
+                f"at least {lightmap_uv_rule.min_uv_channel_count} channels."
+            ),
+        )
+    lightmap_resolution_rule = profile.lightmap_resolution
+    if lightmap_resolution_rule and lightmap_resolution_rule.enabled:
+        resolution = asset.lightmap_resolution
+        check(
+            resolution is None or resolution < lightmap_resolution_rule.min_value,
+            rule_id="static_mesh.lightmap_resolution",
+            severity=lightmap_resolution_rule.severity,
+            metric="lightmap_resolution",
+            observed=resolution if resolution is not None else "missing",
+            expected=lightmap_resolution_rule.min_value,
+            pointer="/rules/lightmap_resolution/min_resolution",
+            message=(
+                f"Lightmap resolution {resolution} is below profile minimum "
+                f"{lightmap_resolution_rule.min_value}."
+            ),
+        )
     return issues, evidence
 
 

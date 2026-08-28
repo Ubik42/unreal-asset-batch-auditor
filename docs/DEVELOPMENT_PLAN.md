@@ -14,7 +14,7 @@ collector protocol
 
 规则和阈值归 Profile；Python 不携带隐藏预算。C++ 只采集事实，不做项目规则决策。这样更换平台、资产类别或项目预算时不需要重新编译插件。
 
-## M1：只读审计 MVP（本轮）
+## M1：只读审计 MVP
 
 - Profile、Issue、Evidence、Report v1 JSON Schema；
 - Static Mesh LOD 顶点/三角形、材质槽、LOD 数和 Nanite 元数据；
@@ -52,3 +52,28 @@ M1 的证据上限是离线 fixture。只有在选定 UE 项目中成功编译�
 - 不在没有基准数据时声称“数千资产不会冻结编辑器”。
 
 唯一下一切片及证据门槛以 `config/goal-state.json` 为准。
+
+## M4：完整资产台账与结果探索
+
+状态：已完成。中文 Slate 面板提供“资产总览 / 问题明细”、共享搜索、通过/需处理/失败状态、
+全部成功资产元数据、直接打开最新报告和报告目录。8 张 v0.4 Slate 自动化图片及哈希保留在
+`artifacts/host-validation/m4/`。
+
+## M5：交付就绪规则
+
+状态：进行中。
+
+### M5-S1：碰撞与 Lightmap（已完成）
+
+- Profile / Report v2，同时保留 v1 解析兼容；
+- C++ 采集简单碰撞体数量、碰撞复杂度、UV 通道、Lightmap Coordinate Index 与分辨率；
+- Python 评估简单碰撞、Lightmap UV 就绪度与最低分辨率，政策全部来自 Profile；
+- 中文资产账本与问题证据支持新字段和筛选；
+- 41+ 离线回归、UE 5.8.1 BuildPlugin、真实 BasicShapes 采集、SHA-256 只读验证和 8 张 v0.5 Slate 截图。
+
+### M5-S2：命名与目录政策（下一切片）
+
+- 定义可组合、可禁用的命名前缀/正则/目录规则；
+- 对象名、package path 与规则命中证据进入 Report；
+- 仅报告，不自动重命名或移动资产；
+- 扩展 Demo 故障素材、中文筛选、真实宿主证据和教程。

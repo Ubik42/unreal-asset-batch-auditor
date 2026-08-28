@@ -40,6 +40,21 @@ struct FStaticMeshAuditMetadata
     bool bNaniteEnabled = false;
 
     UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 SimpleCollisionPrimitiveCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString CollisionComplexity;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 UvChannelCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 LightmapCoordinateIndex = -1;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 LightmapResolution = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
     bool bCollected = false;
 
     UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")

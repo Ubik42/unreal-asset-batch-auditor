@@ -21,7 +21,7 @@ void FUnrealAssetBatchAuditorModule::StartupModule()
         FOnSpawnTab::CreateRaw(this, &FUnrealAssetBatchAuditorModule::SpawnAuditTab))
         .SetDisplayName(NSLOCTEXT("UnrealAssetBatchAuditor", "TabTitle", "资产批量审计"))
         .SetTooltipText(NSLOCTEXT(
-            "UnrealAssetBatchAuditor", "TabTooltip", "检查 Static Mesh 预算、材质槽、LOD 与 Nanite 状态"))
+            "UnrealAssetBatchAuditor", "TabTooltip", "检查 Static Mesh 预算、材质、LOD、Nanite、碰撞与 Lightmap 就绪度"))
         .SetMenuType(ETabSpawnerMenuType::Hidden);
 
     UToolMenus::RegisterStartupCallback(

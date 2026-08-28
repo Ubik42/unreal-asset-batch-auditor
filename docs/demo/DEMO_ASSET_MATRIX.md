@@ -6,6 +6,11 @@
 24 个资产按原始三角形复杂度分成 Light、Medium、Heavy 三组；文件夹名只表示相对复杂度，
 不预先决定审核结论。是否通过完全由本次选择的项目 Profile 决定。
 
+v0.5 还为每个资产记录简单碰撞体数量、碰撞复杂度、UV 通道、Lightmap Coordinate Index 与
+Lightmap 分辨率。当前真实 Demo 分布中，11 个资产没有简单碰撞，8 个资产只有 1 个 UV 通道，
+4 个资产的 Lightmap 分辨率低于 32。第 24 个资产是唯一明确修改过的项目副本：简单碰撞被移除、
+Lightmap 分辨率设为 8；此变体用于稳定复现交付错误，不会改写 `/Engine` 源资产。
+
 | # | 分组 | 演示资产 | 三角形 | 顶点 | 材质槽 | LOD | Nanite |
 | ---: | --- | --- | ---: | ---: | ---: | ---: | --- |
 | 1 | Light | SM_UABA_01_LineSegmentCylinder | 40 | 67 | 1 | 1 | 关闭 |
@@ -40,8 +45,8 @@
 
 | Profile | 通过资产 | 有 Issue 的资产 | Issue | 采集失败 | 适合演示 |
 | --- | ---: | ---: | ---: | ---: | --- |
-| desktop-balanced | 15 | 9 | 21 | 2 | 一批资产中同时出现通过和问题 |
-| mobile-strict | 0 | 24 | 87 | 2 | 五类规则全部触发，展示平台差异 |
-| review-lenient | 18 | 6 | 13 | 2 | 放宽项目策略后问题自然减少 |
+| desktop-balanced v2 | 5 | 19 | 43 | 2 | 同时展示几何、碰撞与 Lightmap 交付问题 |
+| mobile-strict v2 | 0 | 24 | 111 | 2 | 8 类规则形成严格平台门禁 |
+| review-lenient v2 | 15 | 9 | 17 | 2 | 关闭碰撞门禁并放宽 UV 后问题自然减少 |
 
 三次真实 UE 5.8.1 扫描均记录 `unchanged=true`。Profile 数值是教学用模拟数据。

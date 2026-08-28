@@ -111,6 +111,17 @@ class UnrealCppCollector:
                         ],
                         "material_slot_count": int(row.material_slot_count),
                         "nanite_enabled": bool(row.nanite_enabled),
+                        "simple_collision_primitive_count": getattr(
+                            row, "simple_collision_primitive_count", None
+                        ),
+                        "collision_complexity": getattr(
+                            row, "collision_complexity", None
+                        ),
+                        "uv_channel_count": getattr(row, "uv_channel_count", None),
+                        "lightmap_coordinate_index": getattr(
+                            row, "lightmap_coordinate_index", None
+                        ),
+                        "lightmap_resolution": getattr(row, "lightmap_resolution", None),
                     }
                 )
             )

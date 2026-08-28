@@ -90,11 +90,18 @@ def _metadata_dict(item) -> dict:  # type: ignore[no-untyped-def]
         "lod0_vertices": item.lods[0].vertices,
         "material_slot_count": item.material_slot_count,
         "nanite_enabled": item.nanite_enabled,
+        "simple_collision_primitive_count": item.simple_collision_primitive_count,
+        "collision_complexity": item.collision_complexity,
+        "uv_channel_count": item.uv_channel_count,
+        "lightmap_coordinate_index": item.lightmap_coordinate_index,
+        "lightmap_resolution": item.lightmap_resolution,
+        "lightmap_uv_valid": item.has_valid_lightmap_uv,
     }
 
 
 def main() -> None:
     collector = UnrealCppCollector()
+    static_mesh_editor = unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem)
     source_paths = _engine_static_mesh_paths()
     source_batch = collector.collect(source_paths)
     selected = _select_diverse_assets(source_batch.assets)
@@ -111,6 +118,13 @@ def main() -> None:
             duplicated = unreal.EditorAssetLibrary.duplicate_asset(source.asset_path, destination)
             if duplicated is None:
                 raise RuntimeError(f"Could not duplicate {source.asset_path} to {destination}")
+        intentional_variation = index == ASSET_COUNT
+        if intentional_variation:
+            demo_asset = unreal.EditorAssetLibrary.load_asset(destination)
+            if not isinstance(demo_asset, unreal.StaticMesh):
+                raise RuntimeError(f"Could not load synthetic fault mesh: {destination}")
+            static_mesh_editor.remove_collisions(demo_asset)
+            demo_asset.set_editor_property("light_map_resolution", 8)
         if not unreal.EditorAssetLibrary.save_asset(destination, only_if_is_dirty=False):
             raise RuntimeError(f"Could not save demo asset: {destination}")
         object_path = f"{destination}.{asset_name}"
@@ -122,6 +136,12 @@ def main() -> None:
                 "source_asset_path": source.asset_path,
                 "demo_asset_path": object_path,
                 "source_metadata": _metadata_dict(source),
+                "intentional_variation": intentional_variation,
+                "variation_note": (
+                    "Synthetic delivery fault: no simple collision and Lightmap resolution 8."
+                    if intentional_variation
+                    else ""
+                ),
             }
         )
 
@@ -156,6 +176,7 @@ def main() -> None:
             "Demo assets are project-owned duplicates; Engine source assets are never modified.",
             "Folder names describe relative source complexity, not audit pass/fail status.",
             "All demo thresholds are training values and are not studio standards.",
+            "Asset 24 is an explicitly labeled project-owned collision and resolution fault.",
         ],
     }
     manifest_path = _project_root() / "demo-asset-manifest.json"

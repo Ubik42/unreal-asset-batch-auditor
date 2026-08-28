@@ -12,6 +12,7 @@ from unreal_asset_batch_auditor.contracts import (
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE = ROOT / "config" / "Profiles" / "default-static-mesh-profile.v1.json"
+PROFILE_V2 = ROOT / "config" / "Profiles" / "default-static-mesh-profile.v2.json"
 
 
 def test_profile_loads_all_project_owned_thresholds() -> None:
@@ -41,6 +42,26 @@ def test_profile_rejects_string_boolean() -> None:
     raw = json.loads(PROFILE.read_text(encoding="utf-8"))
     raw["rules"]["nanite"]["enabled"] = "false"
     with pytest.raises(ContractError, match="boolean"):
+        AuditProfile.from_dict(raw)
+
+
+def test_v2_profile_loads_collision_and_lightmap_policy() -> None:
+    profile = AuditProfile.load(PROFILE_V2)
+
+    assert profile.schema_version == "unreal-static-mesh-profile@2.0.0"
+    assert profile.simple_collision is not None
+    assert profile.simple_collision.min_primitive_count == 1
+    assert profile.simple_collision.allow_complex_as_simple is True
+    assert profile.lightmap_uv is not None and profile.lightmap_uv.required is True
+    assert profile.lightmap_uv.min_uv_channel_count == 2
+    assert profile.lightmap_resolution is not None
+    assert profile.lightmap_resolution.min_value == 32
+
+
+def test_v2_profile_rejects_missing_collision_policy() -> None:
+    raw = json.loads(PROFILE_V2.read_text(encoding="utf-8"))
+    del raw["rules"]["simple_collision"]
+    with pytest.raises(ContractError, match="simple_collision"):
         AuditProfile.from_dict(raw)
 
 

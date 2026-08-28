@@ -7,6 +7,8 @@ from unreal_asset_batch_auditor import AuditProfile, FixtureCollector, audit_ass
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE = ROOT / "config" / "Profiles" / "default-static-mesh-profile.v1.json"
 FIXTURE = ROOT / "tests" / "fixtures" / "static_meshes.v1.json"
+PROFILE_V2 = ROOT / "config" / "Profiles" / "default-static-mesh-profile.v2.json"
+FIXTURE_V2 = ROOT / "tests" / "fixtures" / "static_meshes.v2.json"
 
 
 def test_problem_asset_emits_all_five_profile_driven_issues() -> None:
@@ -56,3 +58,32 @@ def test_issue_and_evidence_ids_are_reproducible() -> None:
     assert [item.evidence_id for item in first.evidence] == [
         item.evidence_id for item in second.evidence
     ]
+
+
+def test_v2_problem_asset_adds_collision_and_lightmap_issues() -> None:
+    report = audit_assets(
+        profile=AuditProfile.load(PROFILE_V2),
+        collector=FixtureCollector(FIXTURE_V2),
+        asset_paths=["/Game/Props/SM_Problem.SM_Problem"],
+    )
+
+    assert report.schema_version == "unreal-asset-audit@2.0.0"
+    assert report.issue_count == 8
+    assert {
+        "static_mesh.simple_collision",
+        "static_mesh.lightmap_uv",
+        "static_mesh.lightmap_resolution",
+    }.issubset({issue.rule_id for issue in report.issues})
+    assert report.assets[0].simple_collision_primitive_count == 0
+    assert report.assets[0].has_valid_lightmap_uv is False
+
+
+def test_v2_complex_as_simple_can_satisfy_profile_collision_policy() -> None:
+    report = audit_assets(
+        profile=AuditProfile.load(PROFILE_V2),
+        collector=FixtureCollector(FIXTURE_V2),
+        asset_paths=["/Game/Props/SM_ComplexCollision.SM_ComplexCollision"],
+    )
+
+    assert "static_mesh.simple_collision" not in {issue.rule_id for issue in report.issues}
+    assert report.issue_count == 1  # only the three-LOD project policy fails

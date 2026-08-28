@@ -1,9 +1,25 @@
 #include "UnrealAssetBatchAuditorLibrary.h"
 
 #include "Engine/StaticMesh.h"
+#include "PhysicsEngine/BodySetup.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "StaticMeshResources.h"
 #include "UObject/SoftObjectPath.h"
+
+namespace
+{
+FString CollisionTraceFlagToString(const ECollisionTraceFlag Flag)
+{
+    switch (Flag)
+    {
+    case CTF_UseDefault: return TEXT("project_default");
+    case CTF_UseSimpleAndComplex: return TEXT("simple_and_complex");
+    case CTF_UseSimpleAsComplex: return TEXT("use_simple_as_complex");
+    case CTF_UseComplexAsSimple: return TEXT("use_complex_as_simple");
+    default: return TEXT("unknown");
+    }
+}
+}
 
 TArray<FStaticMeshAuditMetadata> UUnrealAssetBatchAuditorLibrary::CollectStaticMeshMetadata(
     const TArray<FString>& AssetPaths)
@@ -34,6 +50,17 @@ TArray<FStaticMeshAuditMetadata> UUnrealAssetBatchAuditorLibrary::CollectStaticM
 #else
         Result.bNaniteEnabled = StaticMesh->NaniteSettings.bEnabled;
 #endif
+        Result.LightmapCoordinateIndex = StaticMesh->GetLightMapCoordinateIndex();
+        Result.LightmapResolution = StaticMesh->GetLightMapResolution();
+        if (const UBodySetup* BodySetup = StaticMesh->GetBodySetup())
+        {
+            Result.SimpleCollisionPrimitiveCount = BodySetup->AggGeom.GetElementCount();
+            Result.CollisionComplexity = CollisionTraceFlagToString(BodySetup->CollisionTraceFlag);
+        }
+        else
+        {
+            Result.CollisionComplexity = TEXT("missing_body_setup");
+        }
 
         const FStaticMeshRenderData* RenderData = StaticMesh->GetRenderData();
         if (RenderData == nullptr)
@@ -45,6 +72,11 @@ TArray<FStaticMeshAuditMetadata> UUnrealAssetBatchAuditorLibrary::CollectStaticM
         }
 
         Result.LodMetadata.Reserve(RenderData->LODResources.Num());
+        if (!RenderData->LODResources.IsEmpty())
+        {
+            Result.UvChannelCount =
+                RenderData->LODResources[0].VertexBuffers.StaticMeshVertexBuffer.GetNumTexCoords();
+        }
         for (int32 LODIndex = 0; LODIndex < RenderData->LODResources.Num(); ++LODIndex)
         {
             const FStaticMeshLODResources& LODResource = RenderData->LODResources[LODIndex];

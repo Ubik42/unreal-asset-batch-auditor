@@ -40,6 +40,9 @@ struct FAuditPanelAsset
     FString MaterialSlotCount;
     FString LodCount;
     FString NaniteState;
+    FString CollisionState;
+    FString LightmapUvState;
+    FString LightmapResolution;
     int32 IssueCount = 0;
 };
 

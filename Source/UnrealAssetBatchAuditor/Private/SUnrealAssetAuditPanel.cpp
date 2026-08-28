@@ -59,6 +59,9 @@ FText RuleLabel(const FString& RuleId)
     if (RuleId.Contains(TEXT("material_slots"))) return FText::FromString(TEXT("材质槽"));
     if (RuleId.Contains(TEXT("lod_count"))) return FText::FromString(TEXT("LOD 数量"));
     if (RuleId.Contains(TEXT("nanite_state"))) return FText::FromString(TEXT("Nanite 状态"));
+    if (RuleId.Contains(TEXT("simple_collision"))) return FText::FromString(TEXT("简单碰撞"));
+    if (RuleId.Contains(TEXT("lightmap_uv"))) return FText::FromString(TEXT("Lightmap UV"));
+    if (RuleId.Contains(TEXT("lightmap_resolution"))) return FText::FromString(TEXT("Lightmap 分辨率"));
     if (RuleId == TEXT("collection.failure")) return FText::FromString(TEXT("采集失败"));
     return FText::FromString(RuleId);
 }
@@ -75,6 +78,12 @@ FString LocalizedIssueMessage(const FString& RuleId, const FString& Observed, co
         return FString::Printf(TEXT("LOD 数量为 %s，低于 Profile 下限 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("nanite_state")))
         return FString::Printf(TEXT("Nanite 状态为 %s，Profile 期望为 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("simple_collision")))
+        return FString::Printf(TEXT("碰撞实测为 %s；Profile 要求 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("lightmap_uv")))
+        return FString::Printf(TEXT("Lightmap UV 实测为 %s；Profile 要求 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("lightmap_resolution")))
+        return FString::Printf(TEXT("Lightmap 分辨率为 %s，低于 Profile 下限 %s。"), *Observed, *Expected);
     return FString();
 }
 
@@ -189,6 +198,9 @@ public:
         if (ColumnName == TEXT("Materials")) return SNew(STextBlock).Text(FText::FromString(Item->MaterialSlotCount));
         if (ColumnName == TEXT("LODs")) return SNew(STextBlock).Text(FText::FromString(Item->LodCount));
         if (ColumnName == TEXT("Nanite")) return SNew(STextBlock).Text(FText::FromString(Item->NaniteState));
+        if (ColumnName == TEXT("Collision")) return SNew(STextBlock).Text(FText::FromString(Item->CollisionState));
+        if (ColumnName == TEXT("LightmapUV")) return SNew(STextBlock).Text(FText::FromString(Item->LightmapUvState));
+        if (ColumnName == TEXT("LightmapResolution")) return SNew(STextBlock).Text(FText::FromString(Item->LightmapResolution));
         return SNew(STextBlock)
             .Text(Item->IssueCount > 0 ? FText::AsNumber(Item->IssueCount) : FText::FromString(TEXT("—")))
             .ColorAndOpacity(Item->IssueCount > 0 ? FSlateColor(AmberAccent) : FSlateColor::UseSubduedForeground());
@@ -207,16 +219,16 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
     ProfileOptions = {
         MakeShared<FAuditProfileOption>(FAuditProfileOption{
             TEXT("桌面平衡（推荐演示）"),
-            TEXT("三角形 ≤ 2,000 · 顶点 ≤ 1,500 · 材质槽 ≤ 2 · LOD ≥ 1 · Nanite 不限"),
-            FPaths::Combine(ProfilesRoot, TEXT("desktop-balanced.v1.json"))}),
+            TEXT("三角形 ≤ 2,000 · 材质槽 ≤ 2 · 简单碰撞 ≥ 1（允许 Complex As Simple）· 有效 Lightmap UV · 分辨率 ≥ 32"),
+            FPaths::Combine(ProfilesRoot, TEXT("desktop-balanced.v2.json"))}),
         MakeShared<FAuditProfileOption>(FAuditProfileOption{
             TEXT("移动端严格"),
-            TEXT("三角形 ≤ 500 · 顶点 ≤ 400 · 材质槽 ≤ 1 · LOD ≥ 2 · 要求启用 Nanite"),
-            FPaths::Combine(ProfilesRoot, TEXT("mobile-strict.v1.json"))}),
+            TEXT("三角形 ≤ 500 · 材质槽 ≤ 1 · LOD ≥ 2 · 简单碰撞 ≥ 1 · 有效 Lightmap UV · 分辨率 ≥ 64"),
+            FPaths::Combine(ProfilesRoot, TEXT("mobile-strict.v2.json"))}),
         MakeShared<FAuditProfileOption>(FAuditProfileOption{
             TEXT("宽松复核"),
-            TEXT("三角形 ≤ 10,000 · 顶点 ≤ 7,000 · 材质槽 ≤ 4 · LOD ≥ 1 · Nanite 不限"),
-            FPaths::Combine(ProfilesRoot, TEXT("review-lenient.v1.json"))})
+            TEXT("三角形 ≤ 10,000 · 材质槽 ≤ 4 · Lightmap 仅信息提示 · 碰撞不限制"),
+            FPaths::Combine(ProfilesRoot, TEXT("review-lenient.v2.json"))})
     };
     SelectedProfile = ProfileOptions[0];
     ReportPath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Reports/latest-report.json"));
@@ -404,6 +416,9 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                                 + SHeaderRow::Column(TEXT("Materials")).DefaultLabel(FText::FromString(TEXT("材质槽"))).FixedWidth(68)
                                 + SHeaderRow::Column(TEXT("LODs")).DefaultLabel(FText::FromString(TEXT("LOD"))).FixedWidth(52)
                                 + SHeaderRow::Column(TEXT("Nanite")).DefaultLabel(FText::FromString(TEXT("Nanite"))).FixedWidth(66)
+                                + SHeaderRow::Column(TEXT("Collision")).DefaultLabel(FText::FromString(TEXT("碰撞"))).FixedWidth(58)
+                                + SHeaderRow::Column(TEXT("LightmapUV")).DefaultLabel(FText::FromString(TEXT("LM UV"))).FixedWidth(62)
+                                + SHeaderRow::Column(TEXT("LightmapResolution")).DefaultLabel(FText::FromString(TEXT("LM 分辨率"))).FixedWidth(76)
                                 + SHeaderRow::Column(TEXT("Issues")).DefaultLabel(FText::FromString(TEXT("问题"))).FixedWidth(58)
                             )
                         ]
@@ -660,6 +675,9 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         FailedAsset->MaterialSlotCount = TEXT("—");
         FailedAsset->LodCount = TEXT("—");
         FailedAsset->NaniteState = TEXT("—");
+        FailedAsset->CollisionState = TEXT("—");
+        FailedAsset->LightmapUvState = TEXT("—");
+        FailedAsset->LightmapResolution = TEXT("—");
         FailedAsset->IssueCount = 1;
         AllAssets.Add(FailedAsset);
     }
@@ -674,6 +692,26 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         Item->Status = Item->IssueCount > 0 ? TEXT("issue") : TEXT("pass");
         Item->MaterialSlotCount = FText::AsNumber(Asset->GetIntegerField(TEXT("material_slot_count"))).ToString();
         Item->NaniteState = Asset->GetBoolField(TEXT("nanite_enabled")) ? TEXT("启用") : TEXT("关闭");
+        double CollisionCount = 0.0;
+        Item->CollisionState = Asset->TryGetNumberField(TEXT("simple_collision_primitive_count"), CollisionCount)
+            ? FText::AsNumber(FMath::RoundToInt(CollisionCount)).ToString()
+            : TEXT("—");
+        double UvChannels = 0.0;
+        double LightmapIndex = 0.0;
+        if (Asset->TryGetNumberField(TEXT("uv_channel_count"), UvChannels)
+            && Asset->TryGetNumberField(TEXT("lightmap_coordinate_index"), LightmapIndex))
+        {
+            Item->LightmapUvState = FString::Printf(
+                TEXT("%d/%d"), FMath::RoundToInt(LightmapIndex), FMath::RoundToInt(UvChannels));
+        }
+        else
+        {
+            Item->LightmapUvState = TEXT("—");
+        }
+        double LightmapResolution = 0.0;
+        Item->LightmapResolution = Asset->TryGetNumberField(TEXT("lightmap_resolution"), LightmapResolution)
+            ? FText::AsNumber(FMath::RoundToInt(LightmapResolution)).ToString()
+            : TEXT("—");
         const TArray<TSharedPtr<FJsonValue>>& Lods = Asset->GetArrayField(TEXT("lods"));
         Item->LodCount = FText::AsNumber(Lods.Num()).ToString();
         Item->TriangleCount = TEXT("—");

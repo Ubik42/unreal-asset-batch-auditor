@@ -1,0 +1,31 @@
+{
+  "schema_version": "unreal-panel-evidence@1.0.0",
+  "created_at": "2026-08-28T03:15:26Z",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "plugin_build": "UE_5.8.1-v0.5.0-dev3",
+  "execution": "independent UnrealEditor-Cmd -RenderOffscreen automation",
+  "automation_test": "UnrealAssetBatchAuditor.PanelEvidence",
+  "automation_result": "Success",
+  "source_report": {
+    "path": "artifacts/demo/demo-desktop-balanced-v2-report.json",
+    "sha256": "3DFE81EBD5905EBFAFFE3211EC15346EE7F8B6ACAC25A4D544B12228FD262668",
+    "asset_count": 24,
+    "issue_count": 43,
+    "collection_failure_count": 2,
+    "real_unreal_validation": true
+  },
+  "screenshots": [
+    { "path": "docs/images/workflow/v0.5/01-empty-state.png", "sha256": "1DEA72CD2B5F6FE0237EDC08D71435CCE73A0A748B79F0A846732C5B38628E81" },
+    { "path": "docs/images/workflow/v0.5/02-asset-overview.png", "sha256": "B855A850ED8FC50CCE6E6DD27508DAACF13EED58474BF2BB8435D27FF70C5711" },
+    { "path": "docs/images/workflow/v0.5/03-passing-assets.png", "sha256": "D9A5B2AE3231DB5346BF24164599AA8214820BC7DDA9CDD66D46E94513A2BE20" },
+    { "path": "docs/images/workflow/v0.5/04-assets-needing-work.png", "sha256": "41402ED0C3D2B849B89A518DB3B91A4E66C85386961597470AF260BCAEB82F4C" },
+    { "path": "docs/images/workflow/v0.5/05-issue-details.png", "sha256": "B95975E5DB17EECFCDBF4ACD7F6D85E4129F2C4ABD52A1CB667A4536582008F6" },
+    { "path": "docs/images/workflow/v0.5/06-collision-evidence.png", "sha256": "850888F2E3C1DE7A53FA3D3D3423CFA57050FF89AE902B5F5285A9590E35B667" },
+    { "path": "docs/images/workflow/v0.5/07-lightmap-uv-evidence.png", "sha256": "4F2832D3C5B47B49F55A9023C9689DFEF77AD5787BDA281EF706236E586949B8" },
+    { "path": "docs/images/workflow/v0.5/08-lightmap-resolution-evidence.png", "sha256": "8AC80BF5BEE4B4D0473A9DBD1D956486CD7176CDD0CC6A63F41A4290E2F31040" }
+  ],
+  "claims_slate_rendering": true,
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false,
+  "limitations": "截图证明当前生产 Slate 控件能够解析真实 Unreal Report 并渲染指定状态；不冒充鼠标点击、停靠或人工可见验收。"
+}

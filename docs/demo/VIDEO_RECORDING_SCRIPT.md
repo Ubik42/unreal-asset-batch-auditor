@@ -9,7 +9,7 @@ Content Browser 上方，让资产选择与审计结果同时入镜。
 
 讲解：
 
-> 美术交付里，三角形、顶点、材质槽、LOD 和 Nanite 是否合规，不能靠统一行业数字，也不能靠人工逐个打开资产。本工具使用项目 Profile 定义标准，C++ 批量采集事实，Python 生成可追溯报告，全程只读。
+> 美术交付里，几何预算、材质、LOD、Nanite、简单碰撞和 Lightmap 是否合规，不能靠统一行业数字，也不能靠人工逐个打开资产。本工具使用项目 Profile 定义标准，C++ 批量采集事实，Python 生成可追溯报告，全程只读。
 
 ## 0:35–1:20 演示素材
 
@@ -20,7 +20,7 @@ Engine 内容二进制。此外还加入一个 Material 和一个不存在路径
 
 ## 1:20–2:00 Profile
 
-画面：打开 `demo-desktop-balanced.v1.json`。
+画面：打开 `demo-desktop-balanced.v2.json`。
 
 指出：
 
@@ -38,7 +38,7 @@ Engine 内容二进制。此外还加入一个 Material 和一个不存在路径
 
 讲解：
 
-> 24 个当前选择按 8 个一批进入 C++。15 个资产通过，9 个需要处理。界面展示的是同一份正式 JSON 报告，不是预置表格。
+> 24 个当前选择按 8 个一批进入 C++。5 个资产通过，19 个需要处理，共 43 条问题。界面展示的是同一份正式 JSON 报告，不是预置表格。
 
 ## 3:00–4:10 报告与证据
 
@@ -48,7 +48,7 @@ Engine 内容二进制。此外还加入一个 Material 和一个不存在路径
 依次展示：
 
 1. `real_unreal_validation=true`；
-2. `assets` 中的真实三角形和顶点；
+2. `assets` 中的真实三角形、顶点、简单碰撞、UV 通道和 Lightmap 元数据；
 3. 一条 Issue；
 4. 对应 Evidence 的 observed、expected、profile_pointer；
 5. 两条 collection failure；
@@ -68,16 +68,16 @@ Engine 内容二进制。此外还加入一个 Material 和一个不存在路径
 
 讲解：
 
-> 同一批资产没有改变，只是项目 Profile 改成了严格移动端训练配置，Issue 从 21 条变成 87 条。这证明规则属于项目政策，而不是被写死在 C++ 里。
+> 同一批资产没有改变，只是项目 Profile 改成了严格移动端训练配置，Issue 从 43 条变成 111 条。这证明规则属于项目政策，而不是被写死在 C++ 里。
 
-再切换“宽松复核”，展示 Issue 降至 13 条。
+再切换“宽松复核”，展示 Issue 降至 17 条，并指出它关闭了简单碰撞门禁、放宽了 UV 通道要求。
 
 ## 5:20–6:20 架构说明
 
 画面可以切到 README 架构说明或一张简单流程图：
 
 ```text
-Project Profile → Python orchestration → C++ batch collector → Evidence / Report
+项目 Profile → Python 规则与分批 → C++ 原生采集 → Evidence / Report → 中文台账
 ```
 
 讲解：
@@ -89,6 +89,7 @@ Project Profile → Python orchestration → C++ batch collector → Evidence / 
 如实说明：
 
 - 已验证 UE 5.8.1；
+- v0.5 的真实主机证据覆盖 4 个 Engine BasicShapes 的碰撞与 Lightmap 元数据，扫描前后哈希不变；
 - Demo 是 24 个项目资产，不代表生产项目规模；
 - 120 个 Engine Static Mesh 的额外热缓存测试为 120/120 成功；
 - 当前面板是同步只读审计；批次进度、取消回调和错误路径注入仍由自动化入口完整验证。

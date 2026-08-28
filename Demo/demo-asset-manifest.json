@@ -1,6 +1,6 @@
 {
   "schema_version": "unreal-asset-auditor-demo-manifest@1.0.0",
-  "created_at": "2026-08-25T23:19:29.329230+00:00",
+  "created_at": "2026-08-28T03:10:59.406726+00:00",
   "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
   "project_kind": "recording_demo_non_production",
   "asset_root": "/Game/UABADemo",
@@ -18,14 +18,28 @@
         "lod0_triangles": 40,
         "lod0_vertices": 67,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 40,
         "lod0_vertices": 67,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -39,14 +53,28 @@
         "lod0_triangles": 48,
         "lod0_vertices": 54,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 48,
         "lod0_vertices": 54,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -60,14 +88,28 @@
         "lod0_triangles": 80,
         "lod0_vertices": 158,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "use_complex_as_simple",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 4,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 80,
         "lod0_vertices": 158,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "use_complex_as_simple",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 4,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -81,14 +123,28 @@
         "lod0_triangles": 120,
         "lod0_vertices": 112,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "use_simple_as_complex",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 120,
         "lod0_vertices": 112,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "use_simple_as_complex",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -102,14 +158,28 @@
         "lod0_triangles": 172,
         "lod0_vertices": 203,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "use_simple_as_complex",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 172,
         "lod0_vertices": 203,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "use_simple_as_complex",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -123,14 +193,28 @@
         "lod0_triangles": 204,
         "lod0_vertices": 138,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 4,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 204,
         "lod0_vertices": 138,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 4,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -144,14 +228,28 @@
         "lod0_triangles": 240,
         "lod0_vertices": 112,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 3,
+        "lightmap_coordinate_index": 2,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 240,
         "lod0_vertices": 112,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 3,
+        "lightmap_coordinate_index": 2,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -165,14 +263,28 @@
         "lod0_triangles": 272,
         "lod0_vertices": 156,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 272,
         "lod0_vertices": 156,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -186,14 +298,28 @@
         "lod0_triangles": 352,
         "lod0_vertices": 354,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "use_simple_as_complex",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 352,
         "lod0_vertices": 354,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "use_simple_as_complex",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -207,14 +333,28 @@
         "lod0_triangles": 512,
         "lod0_vertices": 334,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 32,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 512,
         "lod0_vertices": 334,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 32,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -228,14 +368,28 @@
         "lod0_triangles": 670,
         "lod0_vertices": 376,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 670,
         "lod0_vertices": 376,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -249,14 +403,28 @@
         "lod0_triangles": 952,
         "lod0_vertices": 760,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "use_simple_as_complex",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 952,
         "lod0_vertices": 760,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "use_simple_as_complex",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -270,14 +438,28 @@
         "lod0_triangles": 1068,
         "lod0_vertices": 738,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 1068,
         "lod0_vertices": 738,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -291,14 +473,28 @@
         "lod0_triangles": 1404,
         "lod0_vertices": 816,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 1404,
         "lod0_vertices": 816,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -312,14 +508,28 @@
         "lod0_triangles": 1728,
         "lod0_vertices": 1152,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 1728,
         "lod0_vertices": 1152,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -333,14 +543,28 @@
         "lod0_triangles": 3968,
         "lod0_vertices": 2143,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 4,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 3968,
         "lod0_vertices": 2143,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 1,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 4,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -354,14 +578,28 @@
         "lod0_triangles": 4080,
         "lod0_vertices": 4590,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 4080,
         "lod0_vertices": 4590,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -375,14 +613,28 @@
         "lod0_triangles": 6252,
         "lod0_vertices": 4174,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 6252,
         "lod0_vertices": 4174,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -396,14 +648,28 @@
         "lod0_triangles": 17912,
         "lod0_vertices": 10587,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 17912,
         "lod0_vertices": 10587,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -417,14 +683,28 @@
         "lod0_triangles": 32256,
         "lod0_vertices": 32512,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 32256,
         "lod0_vertices": 32512,
         "material_slot_count": 2,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 0,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -438,14 +718,28 @@
         "lod0_triangles": 37472,
         "lod0_vertices": 21422,
         "material_slot_count": 5,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 37472,
         "lod0_vertices": 21422,
         "material_slot_count": 5,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 64,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -459,14 +753,28 @@
         "lod0_triangles": 58540,
         "lod0_vertices": 32470,
         "material_slot_count": 3,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 3,
+        "lightmap_coordinate_index": 2,
+        "lightmap_resolution": 512,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 58540,
         "lod0_vertices": 32470,
         "material_slot_count": 3,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 3,
+        "lightmap_coordinate_index": 2,
+        "lightmap_resolution": 512,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -480,14 +788,28 @@
         "lod0_triangles": 58540,
         "lod0_vertices": 32470,
         "material_slot_count": 3,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 3,
+        "lightmap_coordinate_index": 2,
+        "lightmap_resolution": 512,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": false,
+      "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 58540,
         "lod0_vertices": 32470,
         "material_slot_count": 3,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 1,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 3,
+        "lightmap_coordinate_index": 2,
+        "lightmap_resolution": 512,
+        "lightmap_uv_valid": true
       },
       "matches_source_metadata": true
     },
@@ -501,16 +823,30 @@
         "lod0_triangles": 63774,
         "lod0_vertices": 41436,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 13,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 1024,
+        "lightmap_uv_valid": true
       },
+      "intentional_variation": true,
+      "variation_note": "Synthetic delivery fault: no simple collision and Lightmap resolution 8.",
       "demo_metadata": {
         "lod_count": 1,
         "lod0_triangles": 63774,
         "lod0_vertices": 41436,
         "material_slot_count": 1,
-        "nanite_enabled": false
+        "nanite_enabled": false,
+        "simple_collision_primitive_count": 0,
+        "collision_complexity": "project_default",
+        "uv_channel_count": 2,
+        "lightmap_coordinate_index": 1,
+        "lightmap_resolution": 8,
+        "lightmap_uv_valid": true
       },
-      "matches_source_metadata": true
+      "matches_source_metadata": false
     }
   ],
   "valid_asset_paths": [
@@ -546,6 +882,7 @@
   "notes": [
     "Demo assets are project-owned duplicates; Engine source assets are never modified.",
     "Folder names describe relative source complexity, not audit pass/fail status.",
-    "All demo thresholds are training values and are not studio standards."
+    "All demo thresholds are training values and are not studio standards.",
+    "Asset 24 is an explicitly labeled project-owned collision and resolution fault."
   ]
 }
