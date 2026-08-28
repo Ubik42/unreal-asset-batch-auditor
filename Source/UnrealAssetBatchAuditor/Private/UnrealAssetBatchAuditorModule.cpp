@@ -14,6 +14,11 @@ namespace
 const FName AuditTabName(TEXT("UnrealAssetBatchAuditor"));
 }
 
+FName FUnrealAssetBatchAuditorModule::GetAuditTabName()
+{
+    return AuditTabName;
+}
+
 void FUnrealAssetBatchAuditorModule::StartupModule()
 {
     FGlobalTabmanager::Get()->RegisterNomadTabSpawner(

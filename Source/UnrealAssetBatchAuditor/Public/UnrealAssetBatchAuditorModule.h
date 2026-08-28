@@ -10,6 +10,7 @@ class FUnrealAssetBatchAuditorModule final : public IModuleInterface
 public:
     virtual void StartupModule() override;
     virtual void ShutdownModule() override;
+    static FName GetAuditTabName();
 
 private:
     void RegisterMenus();

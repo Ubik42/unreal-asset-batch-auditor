@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://art-pipeline.local/contracts/unreal-audit-release.v1.schema.json",
+  "title": "Unreal Asset Batch Auditor 发布清单 v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "plugin_name",
+    "plugin_version",
+    "release_channel",
+    "platform",
+    "tested_engine_version",
+    "binary_engine_compatibility",
+    "source_revision",
+    "install_scope",
+    "payload_file_count",
+    "payload_bytes",
+    "payload_tree_sha256",
+    "payload",
+    "claims"
+  ],
+  "properties": {
+    "schema_version": {"const": "unreal-audit-release@1.0.0"},
+    "plugin_name": {"const": "UnrealAssetBatchAuditor"},
+    "plugin_version": {"type": "string", "minLength": 1},
+    "release_channel": {"enum": ["beta", "stable"]},
+    "platform": {"const": "Win64"},
+    "tested_engine_version": {"type": "string", "minLength": 1},
+    "binary_engine_compatibility": {"type": "string", "minLength": 1},
+    "source_revision": {"type": "string", "minLength": 1},
+    "install_scope": {"const": "project_plugin"},
+    "payload_file_count": {"type": "integer", "minimum": 1},
+    "payload_bytes": {"type": "integer", "minimum": 1},
+    "payload_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "payload": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "bytes", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "marketplace_ready",
+        "cross_version_compatible",
+        "contains_engine_derived_demo_assets"
+      ],
+      "properties": {
+        "marketplace_ready": {"const": false},
+        "cross_version_compatible": {"const": false},
+        "contains_engine_derived_demo_assets": {"const": false}
+      }
+    }
+  }
+}

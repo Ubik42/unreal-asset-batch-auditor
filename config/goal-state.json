@@ -84,6 +84,7 @@
       "artifacts/goal",
       "docs",
       "README.md",
+      "LICENSE",
       "AGENTS.md",
       "UnrealAssetBatchAuditor.uplugin",
       "pyproject.toml"
