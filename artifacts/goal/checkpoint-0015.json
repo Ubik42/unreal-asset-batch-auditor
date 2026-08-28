@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0015",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 15,
+  "completedSlice": "M7-S1",
+  "summary": "The productization goal is complete for v0.8.0 Beta. The repository now delivers a Chinese, Profile-driven, read-only Unreal Editor Static Mesh audit plugin with realistic Demo generation, current visual evidence, deterministic team reports, a recoverable installer, a verified clean release archive, reproducible UE 5.8.1 host evidence, and a public GitHub Release.",
+  "evidence": [
+    "The Chinese README first screen presents the product, verified host, downloadable binary, installation guide, recording script, production screenshot, and engineering depth",
+    "Ten practical Static Mesh policies are driven by versioned Profiles; C++ collects Unreal facts while Python owns evaluation, task orchestration, sessions, comparison, and handoff",
+    "Versioned Profile, Issue, Evidence, Report, task-state, handoff, benchmark, session, comparison, and release contracts preserve provenance and evidence boundaries",
+    "The native Slate panel covers rule selection, complete asset ledger, issue evidence, search, running/cancelling states, regression comparison, JSON access, and team export",
+    "The deterministic Demo generator creates 24 project Static Mesh copies from local Engine content plus explicit naming, directory, collision, and Lightmap faults without redistributing or modifying Engine source assets",
+    "Fifteen current visuals cover rule selection, pass/problem states, collision, Lightmap, naming, directory, regression, running, cancelling, and standalone Chinese handoff output",
+    "63 automated tests and Ruff pass; UE_5.8.1-v0.8.0-release1 BuildPlugin completed UHT, C++ compilation, linking, and Win64 packaging",
+    "The release allowlist contains 32 payload files and excludes Intermediate, PDB, pycache, tests, runtime caches, generated Demo uassets, and development-machine absolute paths",
+    "Two archive writes from identical input produced the same ZIP hash; the final archive SHA-256 is cd700ecc4501420227b6181abf2e6e1b6850d3528a8ca7da446ce2fa8a16c1f1",
+    "A fresh project install and a backed-up upgrade each launched an independent UE 5.8.1 process, opened the production tab entry, ran packaged Python and real C++ collection for Engine Cube, and wrote a real Report",
+    "Recoverable uninstall removed the plugin and project enablement while preserving plugin and uproject backups; both owned Unreal PIDs exited without residual processes",
+    "GitHub Release v0.8.0 is public as a prerelease with ZIP, SHA-256, and manifest assets; GitHub reports the ZIP digest as sha256:cd700ecc4501420227b6181abf2e6e1b6850d3528a8ca7da446ce2fa8a16c1f1"
+  ],
+  "nextSlice": null,
+  "knownLimits": [
+    "Recorded compatibility is Windows 11, Win64, and Unreal Engine 5.8.1 only",
+    "The release is Beta and not a signed Marketplace submission",
+    "One C++ collection batch remains a synchronous boundary; no production-scale no-stall claim is made",
+    "Visible manual clicking, docking, and video capture follow the supplied recording script and are not claimed by hidden automation",
+    "The plugin intentionally performs no asset mutation, automatic repair, AI, or PCG generation"
+  ]
+}

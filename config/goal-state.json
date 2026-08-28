@@ -1,8 +1,8 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 14,
-  "status": "active",
+  "stateRevision": 15,
+  "status": "complete",
   "currentMilestone": "M7",
   "milestones": [
     {
@@ -50,61 +50,12 @@
     {
       "id": "M7",
       "title": "Release packaging, visual evidence, and portfolio-grade delivery",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M6"]
     }
   ],
-  "nextSlice": {
-    "id": "M7-S1",
-    "milestoneId": "M7",
-    "title": "Create a clean-install release package and compatibility evidence",
-    "scope": [
-      "Build a deterministic release archive from a clean staged plugin source tree",
-      "Exclude development caches, tests, host runtime, generated Demo assets, and local absolute paths from the distributable",
-      "Generate a version manifest, file inventory, license notice, and SHA-256 checksums",
-      "Validate fresh project installation, plugin enablement, Editor startup, panel registration, and a minimal real-host audit",
-      "Document install, upgrade, uninstall, supported host evidence, and known compatibility boundaries"
-    ],
-    "nonGoals": [
-      "No Marketplace submission or signing in this slice",
-      "No asset mutation or automatic repair",
-      "No AI or PCG feature expansion",
-      "No compatibility claim beyond hosts actually tested",
-      "No copying generated Engine-derived Demo uasset binaries into the release archive"
-    ],
-    "allowedPaths": [
-      "Source/UnrealAssetBatchAuditor",
-      "Content/Python",
-      "contracts",
-      "Resources/Profiles",
-      "Demo",
-      "tests",
-      "scripts",
-      "config",
-      "artifacts/goal",
-      "docs",
-      "README.md",
-      "LICENSE",
-      "AGENTS.md",
-      "UnrealAssetBatchAuditor.uplugin",
-      "pyproject.toml"
-    ],
-    "validationCommands": [
-      ".\\.venv\\Scripts\\python.exe -m pytest -q",
-      ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
-    ],
-    "evidenceCeiling": "Archive inspection may prove package contents and determinism; only installation into a fresh independent Unreal project followed by Editor startup and a real audit may prove installability. Testing UE 5.8.1 does not prove other engine versions.",
-    "realHostRequired": true,
-    "acceptance": [
-      "Two release builds from the same clean source produce identical inventory and payload hashes",
-      "The distributable contains only runtime-required plugin files plus version, license, and checksum metadata",
-      "UE 5.8 BuildPlugin succeeds from the staged source",
-      "A fresh independent UE 5.8 project loads the packaged plugin, registers the Chinese panel, and completes a minimal real audit",
-      "Install, upgrade, uninstall, supported versions, known limits, and Demo regeneration are documented in Chinese",
-      "README links the verified release artifact and does not overclaim Marketplace readiness or cross-version compatibility"
-    ]
-  },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0014.json",
+  "nextSlice": null,
+  "lastCheckpoint": "artifacts/goal/checkpoint-0015.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -148,6 +99,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "v0.8 exposes a real tick-driven panel task, between-batch cancellation with valid partial reports, deterministic Chinese HTML/CSV handoff, UE 5.8.1 BuildPlugin, complete/cancelled host evidence, and fifteen current visuals."
+    },
+    {
+      "id": "m7-release-and-clean-install",
+      "status": "completed",
+      "blocking": false,
+      "reason": "v0.8.0 ships as a deterministic 32-file Win64 archive with MIT license, checksums, Chinese installer and docs; fresh install and upgrade each passed the production tab, Python orchestration, real C++ Cube audit and Report output in independent UE 5.8.1 processes; GitHub Release assets are uploaded with matching digest."
     }
   ]
 }
