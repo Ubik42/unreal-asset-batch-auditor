@@ -11,6 +11,8 @@
     "nanite": { "enabled": true, "expected": "enabled", "severity": "warning" },
     "simple_collision": { "enabled": true, "min_primitive_count": 1, "allow_complex_as_simple": false, "severity": "error" },
     "lightmap_uv": { "enabled": true, "required": true, "min_uv_channel_count": 2, "severity": "error" },
-    "lightmap_resolution": { "enabled": true, "min_resolution": 64, "severity": "warning" }
+    "lightmap_resolution": { "enabled": true, "min_resolution": 64, "severity": "warning" },
+    "object_name": { "enabled": true, "required_prefixes": ["SM_UABA_"], "pattern": "^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$", "severity": "error" },
+    "package_path": { "enabled": true, "allowed_roots": ["/Game/UABADemo"], "forbidden_segments": ["Developers", "Temp"], "severity": "error" }
   }
 }

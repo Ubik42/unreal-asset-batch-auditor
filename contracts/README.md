@@ -10,6 +10,8 @@ Evidence 是确定性的审计输出；破坏性变更必须新增 schema 文件
   Coordinate Index 与 Lightmap 分辨率；
 - Python 仍能读取 v1 Profile，并为没有扩展元数据的旧调用生成 v1 Report；
 - v2 Report 要求每个成功资产都包含完整的碰撞与 Lightmap 字段，避免出现“半升级”报告；
+- v2 Profile 可选加入 `object_name` 与 `package_path`。前者配置允许前缀和完整正则，后者配置
+  允许根目录与禁用目录段；旧 v2 Profile 缺少这两段时仍按原语义读取；
 - Issue、Evidence 和 collection failure 的字段形状没有改变，因此 v2 Report 继续复用 v1 子合同。
 
 每条 Evidence 都记录观测值、期望值和提供阈值的 Profile JSON Pointer。`assets` 保存全部成功资产的

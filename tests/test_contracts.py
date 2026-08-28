@@ -56,6 +56,10 @@ def test_v2_profile_loads_collision_and_lightmap_policy() -> None:
     assert profile.lightmap_uv.min_uv_channel_count == 2
     assert profile.lightmap_resolution is not None
     assert profile.lightmap_resolution.min_value == 32
+    assert profile.object_name is not None
+    assert profile.object_name.required_prefixes == ("SM_",)
+    assert profile.package_path is not None
+    assert profile.package_path.allowed_roots == ("/Game/Props",)
 
 
 def test_v2_profile_rejects_missing_collision_policy() -> None:
@@ -63,6 +67,22 @@ def test_v2_profile_rejects_missing_collision_policy() -> None:
     del raw["rules"]["simple_collision"]
     with pytest.raises(ContractError, match="simple_collision"):
         AuditProfile.from_dict(raw)
+
+
+def test_v2_profile_rejects_invalid_name_regex() -> None:
+    raw = json.loads(PROFILE_V2.read_text(encoding="utf-8"))
+    raw["rules"]["object_name"]["pattern"] = "[broken"
+    with pytest.raises(ContractError, match="pattern is invalid"):
+        AuditProfile.from_dict(raw)
+
+
+def test_older_v2_profile_without_naming_policy_remains_readable() -> None:
+    raw = json.loads(PROFILE_V2.read_text(encoding="utf-8"))
+    del raw["rules"]["object_name"]
+    del raw["rules"]["package_path"]
+    profile = AuditProfile.from_dict(raw)
+    assert profile.object_name is None
+    assert profile.package_path is None
 
 
 def test_offline_report_cannot_claim_real_unreal_validation() -> None:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -44,6 +45,15 @@ def _boolean(value: Any, path: str) -> bool:
     return value
 
 
+def _string_tuple(value: Any, path: str, *, allow_empty: bool = False) -> tuple[str, ...]:
+    if not isinstance(value, list) or (not value and not allow_empty):
+        qualifier = "an array" if allow_empty else "a non-empty array"
+        raise ContractError(f"{path} must be {qualifier} of non-empty strings")
+    if any(not isinstance(item, str) or not item.strip() for item in value):
+        raise ContractError(f"{path} must contain only non-empty strings")
+    return tuple(value)
+
+
 @dataclass(frozen=True)
 class LimitRule:
     enabled: bool
@@ -82,6 +92,22 @@ class LightmapUvRule:
 
 
 @dataclass(frozen=True)
+class ObjectNameRule:
+    enabled: bool
+    required_prefixes: tuple[str, ...]
+    pattern: str | None
+    severity: Severity
+
+
+@dataclass(frozen=True)
+class PackagePathRule:
+    enabled: bool
+    allowed_roots: tuple[str, ...]
+    forbidden_segments: tuple[str, ...]
+    severity: Severity
+
+
+@dataclass(frozen=True)
 class AuditProfile:
     schema_version: str
     profile_id: str
@@ -95,6 +121,8 @@ class AuditProfile:
     simple_collision: CollisionRule | None = None
     lightmap_uv: LightmapUvRule | None = None
     lightmap_resolution: MinimumRule | None = None
+    object_name: ObjectNameRule | None = None
+    package_path: PackagePathRule | None = None
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> AuditProfile:
@@ -127,6 +155,8 @@ class AuditProfile:
         simple_collision = None
         lightmap_uv = None
         lightmap_resolution = None
+        object_name = None
+        package_path = None
         if schema_version == PROFILE_VERSION_V2:
             collision = _required(rules, "simple_collision")
             lightmap = _required(rules, "lightmap_uv")
@@ -174,6 +204,51 @@ class AuditProfile:
                     "rules.lightmap_resolution.severity",
                 ),
             )
+            name_policy = rules.get("object_name")
+            if name_policy is not None:
+                prefixes = _string_tuple(
+                    _required(name_policy, "required_prefixes"),
+                    "rules.object_name.required_prefixes",
+                )
+                pattern = name_policy.get("pattern")
+                if pattern is not None:
+                    if not isinstance(pattern, str) or not pattern:
+                        raise ContractError("rules.object_name.pattern must be non-empty or null")
+                    try:
+                        re.compile(pattern)
+                    except re.error as exc:
+                        raise ContractError(
+                            f"rules.object_name.pattern is invalid: {exc}"
+                        ) from exc
+                object_name = ObjectNameRule(
+                    enabled=_boolean(
+                        _required(name_policy, "enabled"), "rules.object_name.enabled"
+                    ),
+                    required_prefixes=prefixes,
+                    pattern=pattern,
+                    severity=_severity(
+                        _required(name_policy, "severity"), "rules.object_name.severity"
+                    ),
+                )
+            path_policy = rules.get("package_path")
+            if path_policy is not None:
+                package_path = PackagePathRule(
+                    enabled=_boolean(
+                        _required(path_policy, "enabled"), "rules.package_path.enabled"
+                    ),
+                    allowed_roots=_string_tuple(
+                        _required(path_policy, "allowed_roots"),
+                        "rules.package_path.allowed_roots",
+                    ),
+                    forbidden_segments=_string_tuple(
+                        _required(path_policy, "forbidden_segments"),
+                        "rules.package_path.forbidden_segments",
+                        allow_empty=True,
+                    ),
+                    severity=_severity(
+                        _required(path_policy, "severity"), "rules.package_path.severity"
+                    ),
+                )
 
         return cls(
             schema_version=schema_version,
@@ -196,6 +271,8 @@ class AuditProfile:
             simple_collision=simple_collision,
             lightmap_uv=lightmap_uv,
             lightmap_resolution=lightmap_resolution,
+            object_name=object_name,
+            package_path=package_path,
         )
 
     @classmethod

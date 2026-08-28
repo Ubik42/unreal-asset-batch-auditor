@@ -62,6 +62,8 @@ FText RuleLabel(const FString& RuleId)
     if (RuleId.Contains(TEXT("simple_collision"))) return FText::FromString(TEXT("简单碰撞"));
     if (RuleId.Contains(TEXT("lightmap_uv"))) return FText::FromString(TEXT("Lightmap UV"));
     if (RuleId.Contains(TEXT("lightmap_resolution"))) return FText::FromString(TEXT("Lightmap 分辨率"));
+    if (RuleId.Contains(TEXT("object_name"))) return FText::FromString(TEXT("资产命名"));
+    if (RuleId.Contains(TEXT("package_path"))) return FText::FromString(TEXT("目录规范"));
     if (RuleId == TEXT("collection.failure")) return FText::FromString(TEXT("采集失败"));
     return FText::FromString(RuleId);
 }
@@ -84,6 +86,10 @@ FString LocalizedIssueMessage(const FString& RuleId, const FString& Observed, co
         return FString::Printf(TEXT("Lightmap UV 实测为 %s；Profile 要求 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("lightmap_resolution")))
         return FString::Printf(TEXT("Lightmap 分辨率为 %s，低于 Profile 下限 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("object_name")))
+        return FString::Printf(TEXT("资产名 %s 不符合 Profile 命名规则：%s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("package_path")))
+        return FString::Printf(TEXT("资产目录 %s 不符合 Profile 目录规则：%s。"), *Observed, *Expected);
     return FString();
 }
 
@@ -219,15 +225,15 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
     ProfileOptions = {
         MakeShared<FAuditProfileOption>(FAuditProfileOption{
             TEXT("桌面平衡（推荐演示）"),
-            TEXT("三角形 ≤ 2,000 · 材质槽 ≤ 2 · 简单碰撞 ≥ 1（允许 Complex As Simple）· 有效 Lightmap UV · 分辨率 ≥ 32"),
+            TEXT("三角形 ≤ 2,000 · 材质槽 ≤ 2 · 简单碰撞 ≥ 1 · 有效 Lightmap UV · 分辨率 ≥ 32 · SM_UABA_ 命名 · /Game/UABADemo"),
             FPaths::Combine(ProfilesRoot, TEXT("desktop-balanced.v2.json"))}),
         MakeShared<FAuditProfileOption>(FAuditProfileOption{
             TEXT("移动端严格"),
-            TEXT("三角形 ≤ 500 · 材质槽 ≤ 1 · LOD ≥ 2 · 简单碰撞 ≥ 1 · 有效 Lightmap UV · 分辨率 ≥ 64"),
+            TEXT("三角形 ≤ 500 · 材质槽 ≤ 1 · LOD ≥ 2 · 简单碰撞 ≥ 1 · Lightmap ≥ 64 · 严格命名/目录"),
             FPaths::Combine(ProfilesRoot, TEXT("mobile-strict.v2.json"))}),
         MakeShared<FAuditProfileOption>(FAuditProfileOption{
             TEXT("宽松复核"),
-            TEXT("三角形 ≤ 10,000 · 材质槽 ≤ 4 · Lightmap 仅信息提示 · 碰撞不限制"),
+            TEXT("三角形 ≤ 10,000 · 材质槽 ≤ 4 · Lightmap 仅信息提示 · 碰撞不限制 · SM_ 命名"),
             FPaths::Combine(ProfilesRoot, TEXT("review-lenient.v2.json"))})
     };
     SelectedProfile = ProfileOptions[0];

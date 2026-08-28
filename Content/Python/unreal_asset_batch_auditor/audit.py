@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 from collections.abc import Callable, Sequence
 
 from .batching import BatchProgress, collect_in_batches
@@ -228,6 +229,56 @@ def _evaluate_asset(
             message=(
                 f"Lightmap resolution {resolution} is below profile minimum "
                 f"{lightmap_resolution_rule.min_value}."
+            ),
+        )
+    name_rule = profile.object_name
+    if name_rule and name_rule.enabled:
+        prefix_ok = any(asset.asset_name.startswith(item) for item in name_rule.required_prefixes)
+        pattern_ok = name_rule.pattern is None or re.fullmatch(
+            name_rule.pattern, asset.asset_name
+        ) is not None
+        expected_name = f"prefix in {list(name_rule.required_prefixes)}"
+        if name_rule.pattern:
+            expected_name += f" and full-match /{name_rule.pattern}/"
+        check(
+            not (prefix_ok and pattern_ok),
+            rule_id="static_mesh.object_name",
+            severity=name_rule.severity,
+            metric="asset_name",
+            observed=asset.asset_name,
+            expected=expected_name,
+            pointer="/rules/object_name",
+            message=f"Asset name {asset.asset_name!r} does not satisfy {expected_name}.",
+        )
+    path_rule = profile.package_path
+    if path_rule and path_rule.enabled:
+        package_path = asset.asset_path.split(".", 1)[0]
+        directory = package_path.rsplit("/", 1)[0]
+        root_ok = any(
+            directory == root.rstrip("/") or directory.startswith(root.rstrip("/") + "/")
+            for root in path_rule.allowed_roots
+        )
+        segments = {segment.casefold() for segment in directory.split("/") if segment}
+        forbidden_hits = [
+            segment
+            for segment in path_rule.forbidden_segments
+            if segment.casefold() in segments
+        ]
+        expected_path = (
+            f"root in {list(path_rule.allowed_roots)}; "
+            f"forbidden segments absent {list(path_rule.forbidden_segments)}"
+        )
+        check(
+            not root_ok or bool(forbidden_hits),
+            rule_id="static_mesh.package_path",
+            severity=path_rule.severity,
+            metric="package_directory",
+            observed=directory,
+            expected=expected_path,
+            pointer="/rules/package_path",
+            message=(
+                f"Package directory {directory!r} is outside allowed roots or contains "
+                f"forbidden segments {forbidden_hits}."
             ),
         )
     return issues, evidence

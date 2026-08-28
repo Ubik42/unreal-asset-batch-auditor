@@ -60,6 +60,28 @@
             "min_resolution": { "type": "integer", "minimum": 1 },
             "severity": { "$ref": "profile.v1.schema.json#/$defs/severity" }
           }
+        },
+        "object_name": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "required_prefixes", "pattern", "severity"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "required_prefixes": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+            "pattern": { "type": ["string", "null"], "minLength": 1 },
+            "severity": { "$ref": "profile.v1.schema.json#/$defs/severity" }
+          }
+        },
+        "package_path": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "allowed_roots", "forbidden_segments", "severity"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "allowed_roots": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+            "forbidden_segments": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "severity": { "$ref": "profile.v1.schema.json#/$defs/severity" }
+          }
         }
       }
     }

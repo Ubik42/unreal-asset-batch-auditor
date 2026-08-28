@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from unreal_asset_batch_auditor import AuditProfile, FixtureCollector, audit_assets
@@ -87,3 +88,33 @@ def test_v2_complex_as_simple_can_satisfy_profile_collision_policy() -> None:
 
     assert "static_mesh.simple_collision" not in {issue.rule_id for issue in report.issues}
     assert report.issue_count == 1  # only the three-LOD project policy fails
+
+
+def test_v2_name_and_package_policy_are_profile_driven() -> None:
+    raw = json.loads(PROFILE_V2.read_text(encoding="utf-8"))
+    raw["rules"]["object_name"] = {
+        "enabled": True,
+        "required_prefixes": ["ENV_"],
+        "pattern": r"^ENV_[A-Z0-9_]+$",
+        "severity": "error",
+    }
+    raw["rules"]["package_path"] = {
+        "enabled": True,
+        "allowed_roots": ["/Game/Production/Environment"],
+        "forbidden_segments": ["Developers", "Temp"],
+        "severity": "warning",
+    }
+    report = audit_assets(
+        profile=AuditProfile.from_dict(raw),
+        collector=FixtureCollector(FIXTURE_V2),
+        asset_paths=["/Game/Props/SM_Healthy.SM_Healthy"],
+    )
+
+    policy_issues = {
+        issue.rule_id: issue for issue in report.issues
+        if issue.rule_id in {"static_mesh.object_name", "static_mesh.package_path"}
+    }
+    assert set(policy_issues) == {"static_mesh.object_name", "static_mesh.package_path"}
+    evidence = {item.metric: item for item in report.evidence}
+    assert evidence["asset_name"].observed == "SM_Healthy"
+    assert evidence["package_directory"].observed == "/Game/Props"
