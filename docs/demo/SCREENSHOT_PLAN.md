@@ -1,7 +1,7 @@
 # 当前版本真实截图与验收清单
 
-状态：v0.5 自动化面板证据已完成。图片位于 `docs/images/workflow/v0.5/`，哈希和源报告记录于
-`artifacts/host-validation/m5/panel-evidence-v0.5.0-dev3.json`。
+状态：v0.6 自动化面板证据已完成。图片位于 `docs/images/workflow/v0.6/`，哈希、测试 PID、退出状态和源报告记录于
+`artifacts/host-validation/m5/panel-lifecycle-v0.6.0-dev1.json`。
 
 截图必须来自当前打包版本的真实 Unreal Editor 会话。离线 fixture、UI 草图、旧版截图和合成图不能代替以下证据。
 
@@ -15,12 +15,14 @@
 | 06 | 简单碰撞证据 | 10 条缺少简单碰撞的过滤结果 | 碰撞事实和项目政策可追溯 |
 | 07 | Lightmap UV | 8 条 UV 通道不足的过滤结果 | UV 通道数与索引一起进入证据 |
 | 08 | Lightmap 分辨率 | 4 条低分辨率过滤结果 | 阈值来自 Profile，不写死在采集器 |
+| 09 | 资产命名 | `BAD_UABA_22_EditorShaderBall` 与期望前缀/正则 | 命名政策来自 Profile 且证据可搜索 |
+| 10 | 目录规范 | `Developers` 中的真实项目资产与允许根/禁用段 | 错目录不会被几何检查掩盖 |
 
 ## 截图验收
 
 - 统一使用 16:9 或接近 16:9 的清晰画面，面板文字可读；
 - 不出现个人账号、聊天窗口、密钥、无关工程路径或其他项目内容；
-- 截图文件放入 `docs/images/workflow/v0.5/`，名称使用 `01-` 至 `08-` 的稳定前缀；
+- 截图文件放入 `docs/images/workflow/v0.6/`，名称使用 `01-` 至 `10-` 的稳定前缀；
 - README 只引用已经真实拍摄并核对当前版本的图片；
 - 每次 UI 大改后重新拍摄，不沿用无法证明当前行为的旧图。
 

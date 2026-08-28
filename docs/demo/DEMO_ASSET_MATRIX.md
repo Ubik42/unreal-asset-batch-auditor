@@ -34,8 +34,8 @@ Lightmap 分辨率设为 8；此变体用于稳定复现交付错误，不会改
 | 19 | Heavy | SM_UABA_19_VivePreController_Trimlines | 17912 | 10587 | 1 | 1 | 关闭 |
 | 20 | Heavy | SM_UABA_20_TransformGizmoFreeRotation | 32256 | 32512 | 2 | 1 | 关闭 |
 | 21 | Heavy | SM_UABA_21_SM_ColorCalibrator | 37472 | 21422 | 5 | 1 | 关闭 |
-| 22 | Heavy | SM_UABA_22_EditorShaderBall | 58540 | 32470 | 3 | 1 | 关闭 |
-| 23 | Heavy | SM_UABA_23_SM_MatPreviewMesh_01 | 58540 | 32470 | 3 | 1 | 关闭 |
+| 22 | Heavy | BAD_UABA_22_EditorShaderBall（错误命名） | 58540 | 32470 | 3 | 1 | 关闭 |
+| 23 | Developers | SM_UABA_23_SM_MatPreviewMesh_01（错误目录） | 58540 | 32470 | 3 | 1 | 关闭 |
 | 24 | Heavy | SM_UABA_24_SM_Room_01 | 63774 | 41436 | 1 | 1 | 关闭 |
 
 另有两个故意加入的诊断输入：一个真实 Material（类型不匹配）和一个不存在的 object path。
@@ -45,8 +45,8 @@ Lightmap 分辨率设为 8；此变体用于稳定复现交付错误，不会改
 
 | Profile | 通过资产 | 有 Issue 的资产 | Issue | 采集失败 | 适合演示 |
 | --- | ---: | ---: | ---: | ---: | --- |
-| desktop-balanced v2 | 5 | 19 | 43 | 2 | 同时展示几何、碰撞与 Lightmap 交付问题 |
-| mobile-strict v2 | 0 | 24 | 111 | 2 | 8 类规则形成严格平台门禁 |
-| review-lenient v2 | 15 | 9 | 17 | 2 | 关闭碰撞门禁并放宽 UV 后问题自然减少 |
+| desktop-balanced v2 | 5 | 19 | 45 | 2 | 同时展示几何、碰撞、Lightmap、命名与目录问题 |
+| mobile-strict v2 | 0 | 24 | 113 | 2 | 10 类规则形成严格平台门禁 |
+| review-lenient v2 | 15 | 9 | 19 | 2 | 放宽几何政策后仍保留命名与目录问题 |
 
 三次真实 UE 5.8.1 扫描均记录 `unchanged=true`。Profile 数值是教学用模拟数据。

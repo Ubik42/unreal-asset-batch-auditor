@@ -1,9 +1,9 @@
 {
   "FileVersion": 3,
-  "Version": 5,
-  "VersionName": "0.5.0",
+  "Version": 6,
+  "VersionName": "0.6.0",
   "FriendlyName": "Unreal 资产批量审计",
-  "Description": "Profile 驱动的只读 Static Mesh 审计工作台，覆盖几何预算、碰撞与 Lightmap 就绪度。",
+  "Description": "Profile 驱动的只读 Static Mesh 审计工作台，覆盖几何预算、碰撞、Lightmap、命名与目录规范。",
   "Category": "Editor",
   "CreatedBy": "Ubik42",
   "CanContainContent": true,

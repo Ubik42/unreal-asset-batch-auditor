@@ -1,6 +1,6 @@
 {
   "schema_version": "unreal-asset-auditor-demo-manifest@1.0.0",
-  "created_at": "2026-08-28T03:10:59.406726+00:00",
+  "created_at": "2026-08-28T03:34:10.018766+00:00",
   "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
   "project_kind": "recording_demo_non_production",
   "asset_root": "/Game/UABADemo",
@@ -27,6 +27,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -62,6 +63,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -97,6 +99,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -132,6 +135,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -167,6 +171,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -202,6 +207,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -237,6 +243,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -272,6 +279,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -307,6 +315,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -342,6 +351,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -377,6 +387,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -412,6 +423,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -447,6 +459,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -482,6 +495,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -517,6 +531,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -552,6 +567,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -587,6 +603,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -622,6 +639,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -657,6 +675,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -692,6 +711,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -727,6 +747,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -747,7 +768,7 @@
       "index": 22,
       "group": "03_Heavy",
       "source_asset_path": "/Engine/EditorMeshes/EditorShaderBall.EditorShaderBall",
-      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
+      "demo_asset_path": "/Game/UABADemo/03_Heavy/BAD_UABA_22_EditorShaderBall.BAD_UABA_22_EditorShaderBall",
       "source_metadata": {
         "lod_count": 1,
         "lod0_triangles": 58540,
@@ -762,6 +783,9 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [
+        "invalid_object_name"
+      ],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -780,9 +804,9 @@
     },
     {
       "index": 23,
-      "group": "03_Heavy",
+      "group": "Developers",
       "source_asset_path": "/Engine/EngineMeshes/SM_MatPreviewMesh_01.SM_MatPreviewMesh_01",
-      "demo_asset_path": "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+      "demo_asset_path": "/Game/UABADemo/Developers/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
       "source_metadata": {
         "lod_count": 1,
         "lod0_triangles": 58540,
@@ -797,6 +821,9 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": false,
+      "policy_faults": [
+        "forbidden_package_segment"
+      ],
       "variation_note": "",
       "demo_metadata": {
         "lod_count": 1,
@@ -832,6 +859,7 @@
         "lightmap_uv_valid": true
       },
       "intentional_variation": true,
+      "policy_faults": [],
       "variation_note": "Synthetic delivery fault: no simple collision and Lightmap resolution 8.",
       "demo_metadata": {
         "lod_count": 1,
@@ -871,8 +899,8 @@
     "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
     "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
     "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
-    "/Game/UABADemo/03_Heavy/SM_UABA_22_EditorShaderBall.SM_UABA_22_EditorShaderBall",
-    "/Game/UABADemo/03_Heavy/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
+    "/Game/UABADemo/03_Heavy/BAD_UABA_22_EditorShaderBall.BAD_UABA_22_EditorShaderBall",
+    "/Game/UABADemo/Developers/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01",
     "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01"
   ],
   "diagnostic_paths": [
@@ -883,6 +911,8 @@
     "Demo assets are project-owned duplicates; Engine source assets are never modified.",
     "Folder names describe relative source complexity, not audit pass/fail status.",
     "All demo thresholds are training values and are not studio standards.",
+    "Asset 22 intentionally violates the object-name policy.",
+    "Asset 23 intentionally lives under the forbidden Developers segment.",
     "Asset 24 is an explicitly labeled project-owned collision and resolution fault."
   ]
 }

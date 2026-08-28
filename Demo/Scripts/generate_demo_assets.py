@@ -99,6 +99,20 @@ def _metadata_dict(item) -> dict:  # type: ignore[no-untyped-def]
     }
 
 
+def _demo_location(index: int, source_name: str, default_group: str) -> tuple[str, str, list[str]]:
+    safe_source_name = _safe_name(source_name)
+    group = default_group
+    asset_name = f"SM_UABA_{index:02d}_{safe_source_name}"
+    policy_faults: list[str] = []
+    if index == 22:
+        asset_name = f"BAD_UABA_{index:02d}_{safe_source_name}"
+        policy_faults.append("invalid_object_name")
+    if index == 23:
+        group = "Developers"
+        policy_faults.append("forbidden_package_segment")
+    return group, asset_name, policy_faults
+
+
 def main() -> None:
     collector = UnrealCppCollector()
     static_mesh_editor = unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem)
@@ -111,9 +125,19 @@ def main() -> None:
 
     for index, source in enumerate(selected, start=1):
         group_index = min((index - 1) // group_size, 2)
-        group = ("01_Light", "02_Medium", "03_Heavy")[group_index]
-        asset_name = f"SM_UABA_{index:02d}_{_safe_name(source.asset_name)}"
+        default_group = ("01_Light", "02_Medium", "03_Heavy")[group_index]
+        group, asset_name, policy_faults = _demo_location(
+            index, source.asset_name, default_group
+        )
         destination = f"{DEMO_ROOT}/{group}/{asset_name}"
+        legacy_name = f"SM_UABA_{index:02d}_{_safe_name(source.asset_name)}"
+        legacy_destination = f"{DEMO_ROOT}/{default_group}/{legacy_name}"
+        if (
+            legacy_destination != destination
+            and unreal.EditorAssetLibrary.does_asset_exist(legacy_destination)
+            and not unreal.EditorAssetLibrary.delete_asset(legacy_destination)
+        ):
+            raise RuntimeError(f"Could not remove legacy generated asset: {legacy_destination}")
         if not unreal.EditorAssetLibrary.does_asset_exist(destination):
             duplicated = unreal.EditorAssetLibrary.duplicate_asset(source.asset_path, destination)
             if duplicated is None:
@@ -137,6 +161,7 @@ def main() -> None:
                 "demo_asset_path": object_path,
                 "source_metadata": _metadata_dict(source),
                 "intentional_variation": intentional_variation,
+                "policy_faults": policy_faults,
                 "variation_note": (
                     "Synthetic delivery fault: no simple collision and Lightmap resolution 8."
                     if intentional_variation
@@ -176,6 +201,8 @@ def main() -> None:
             "Demo assets are project-owned duplicates; Engine source assets are never modified.",
             "Folder names describe relative source complexity, not audit pass/fail status.",
             "All demo thresholds are training values and are not studio standards.",
+            "Asset 22 intentionally violates the object-name policy.",
+            "Asset 23 intentionally lives under the forbidden Developers segment.",
             "Asset 24 is an explicitly labeled project-owned collision and resolution fault.",
         ],
     }

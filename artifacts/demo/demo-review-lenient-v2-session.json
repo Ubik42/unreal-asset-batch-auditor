@@ -1,21 +1,23 @@
 {
   "schema_version": "unreal-asset-auditor-demo-session@1.0.0",
-  "created_at": "2026-08-28T03:11:50.318955+00:00",
+  "created_at": "2026-08-28T03:35:03.411291+00:00",
   "profile_id": "demo-review-lenient-v2",
   "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
   "requested_count": 26,
   "asset_count": 24,
-  "issue_count": 17,
+  "issue_count": 19,
   "collection_failure_count": 2,
   "rule_counts": {
     "static_mesh.lightmap_resolution": 4,
     "static_mesh.material_slots": 1,
+    "static_mesh.object_name": 1,
+    "static_mesh.package_path": 1,
     "static_mesh.triangle_budget.lod0": 6,
     "static_mesh.vertex_budget.lod0": 6
   },
   "severity_counts": {
     "error": 12,
-    "info": 4,
+    "info": 6,
     "warning": 1
   },
   "progress_events": [

@@ -1,16 +1,18 @@
 {
   "schema_version": "unreal-asset-auditor-demo-session@1.0.0",
-  "created_at": "2026-08-28T03:11:16.689100+00:00",
+  "created_at": "2026-08-28T03:34:27.652540+00:00",
   "profile_id": "demo-desktop-balanced-v2",
   "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
   "requested_count": 26,
   "asset_count": 24,
-  "issue_count": 43,
+  "issue_count": 45,
   "collection_failure_count": 2,
   "rule_counts": {
     "static_mesh.lightmap_resolution": 4,
     "static_mesh.lightmap_uv": 8,
     "static_mesh.material_slots": 3,
+    "static_mesh.object_name": 1,
+    "static_mesh.package_path": 1,
     "static_mesh.simple_collision": 10,
     "static_mesh.triangle_budget.lod0": 9,
     "static_mesh.vertex_budget.lod0": 9
@@ -18,7 +20,7 @@
   "severity_counts": {
     "error": 18,
     "info": 4,
-    "warning": 21
+    "warning": 23
   },
   "progress_events": [
     {

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0012",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 12,
+  "completedSlice": "M5-S2",
+  "summary": "M5 is complete. Version 0.6 adds optional Profile-driven object-name and package-path policies, realistic generated policy faults, localized panel evidence, reproducible host lifecycle validation, current screenshots, tutorials, and GitHub-ready evidence without adding any asset mutation API.",
+  "evidence": [
+    "Old v2 Profiles without object_name or package_path remain readable",
+    "Profile rules support multiple allowed prefixes, a full-match regular expression, allowed roots, and forbidden directory segments",
+    "The deterministic Demo contains one BAD_UABA name fault, one Developers path fault, and one collision/Lightmap fault across 24 real project-owned Static Mesh duplicates",
+    "Fresh UE 5.8.1 reports produce 45, 113, and 19 issues under the three training Profiles; each contains exactly one naming and one path issue",
+    "UE_5.8.1-v0.6.0-dev1 BuildPlugin succeeded from a clean staged plugin source",
+    "scripts/run_panel_evidence.ps1 starts an independent hidden UnrealEditor-Cmd process, records exact PID and timing, enforces a bounded timeout, and verifies no residual or pre-existing Unreal process impact",
+    "UnrealAssetBatchAuditor.PanelEvidence passed and generated ten current production Slate screenshots",
+    "The lifecycle manifest binds the source Report and all screenshot SHA-256 values and explicitly does not claim user interaction",
+    "Chinese README, setup tutorial, asset matrix, recording script, screenshot plan, contract notes, and host test plan describe the expanded workflow and honest evidence boundary"
+  ],
+  "nextSlice": "M6-S1",
+  "unresolvedRisks": [
+    "Audit history and regression comparison are not yet available in the panel",
+    "Visible mouse-click and docking interaction remains a manual recording step",
+    "Cross-version Unreal compatibility is not claimed",
+    "No asset mutation or automatic repair is authorized"
+  ]
+}

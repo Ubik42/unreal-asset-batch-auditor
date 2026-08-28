@@ -21,6 +21,7 @@ def test_demo_manifest_has_24_real_project_assets_and_two_diagnostics() -> None:
         "01_Light",
         "02_Medium",
         "03_Heavy",
+        "Developers",
     }
     assert all(
         item["matches_source_metadata"] or item["intentional_variation"]
@@ -30,6 +31,12 @@ def test_demo_manifest_has_24_real_project_assets_and_two_diagnostics() -> None:
     assert len(synthetic) == 1
     assert synthetic[0]["demo_metadata"]["simple_collision_primitive_count"] == 0
     assert synthetic[0]["demo_metadata"]["lightmap_resolution"] == 8
+    policy_faults = {
+        fault
+        for item in manifest["assets"]
+        for fault in item.get("policy_faults", [])
+    }
+    assert policy_faults == {"invalid_object_name", "forbidden_package_segment"}
     for object_path in manifest["valid_asset_paths"]:
         package_path = object_path.split(".", 1)[0].removeprefix("/Game/")
         assert (DEMO / "Content" / f"{package_path}.uasset").is_file()
@@ -69,9 +76,9 @@ def test_recorded_demo_sessions_cover_real_mixed_and_strict_scenarios() -> None:
 
 def test_recorded_v2_demo_sessions_cover_collision_and_lightmap_scenarios() -> None:
     expected = {
-        "demo-desktop-balanced-v2": {"issues": 43, "collision": 10, "uv": 8, "resolution": 4},
-        "demo-mobile-strict-v2": {"issues": 111, "collision": 11, "uv": 8, "resolution": 5},
-        "demo-review-lenient-v2": {"issues": 17, "collision": 0, "uv": 0, "resolution": 4},
+        "demo-desktop-balanced-v2": {"issues": 45, "collision": 10, "uv": 8, "resolution": 4},
+        "demo-mobile-strict-v2": {"issues": 113, "collision": 11, "uv": 8, "resolution": 5},
+        "demo-review-lenient-v2": {"issues": 19, "collision": 0, "uv": 0, "resolution": 4},
     }
     for profile_id, counts in expected.items():
         report = json.loads((ARTIFACTS / f"{profile_id}-report.json").read_text(encoding="utf-8"))
@@ -85,6 +92,8 @@ def test_recorded_v2_demo_sessions_cover_collision_and_lightmap_scenarios() -> N
         assert rule_ids.count("static_mesh.simple_collision") == counts["collision"]
         assert rule_ids.count("static_mesh.lightmap_uv") == counts["uv"]
         assert rule_ids.count("static_mesh.lightmap_resolution") == counts["resolution"]
+        assert rule_ids.count("static_mesh.object_name") == 1
+        assert rule_ids.count("static_mesh.package_path") == 1
         assert session["integrity"]["unchanged"] is True
 
 
@@ -110,8 +119,8 @@ def test_current_panel_evidence_contains_eight_real_slate_pngs() -> None:
         assert len(payload) > 50_000
 
 
-def test_v05_panel_evidence_covers_collision_and_lightmap() -> None:
-    image_root = ROOT / "docs" / "images" / "workflow" / "v0.5"
+def test_v06_panel_evidence_covers_collision_lightmap_and_project_policy() -> None:
+    image_root = ROOT / "docs" / "images" / "workflow" / "v0.6"
     expected = [
         "01-empty-state.png",
         "02-asset-overview.png",
@@ -121,6 +130,8 @@ def test_v05_panel_evidence_covers_collision_and_lightmap() -> None:
         "06-collision-evidence.png",
         "07-lightmap-uv-evidence.png",
         "08-lightmap-resolution-evidence.png",
+        "09-object-name-evidence.png",
+        "10-package-path-evidence.png",
     ]
 
     assert [path.name for path in sorted(image_root.glob("*.png"))] == expected
@@ -137,10 +148,12 @@ def test_v05_panel_evidence_covers_collision_and_lightmap() -> None:
             / "artifacts"
             / "host-validation"
             / "m5"
-            / "panel-evidence-v0.5.0-dev3.json"
+            / "panel-lifecycle-v0.6.0-dev1.json"
         ).read_text(encoding="utf-8")
     )
-    assert manifest["automation_result"] == "Success"
-    assert manifest["claims_slate_rendering"] is True
+    assert manifest["automation_passed"] is True
+    assert manifest["process_exited"] is True
+    assert manifest["existing_processes_survived"] is True
+    assert len(manifest["report_sha256"]) == 64
     assert manifest["claims_user_interaction"] is False
-    assert len(manifest["screenshots"]) == 8
+    assert len(manifest["screenshots"]) == 10

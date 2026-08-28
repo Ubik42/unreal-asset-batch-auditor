@@ -1,12 +1,13 @@
 # 工作流截图说明
 
-## v0.5 当前版本
+## v0.6 当前版本
 
-`v0.5/` 中的 8 张图由 UE 5.8.1 独立 `-RenderOffscreen` 宿主直接调用当前生产 Slate 控件生成，
+`v0.6/` 中的 10 张图由 UE 5.8.1 独立 `-RenderOffscreen` 宿主直接调用当前生产 Slate 控件生成，
 覆盖空状态、完整资产账本、通过/待处理筛选、问题明细、简单碰撞、Lightmap UV 与 Lightmap
-分辨率。源数据是 24 个真实 Demo `.uasset` 生成的 v2 Report；图片与源报告 SHA-256 位于：
+分辨率、资产命名与目录规范。源数据是 24 个真实 Demo `.uasset` 生成的 v2 Report；图片 SHA-256、
+测试 PID、耗时、退出状态与进程隔离结论位于：
 
-`artifacts/host-validation/m5/panel-evidence-v0.5.0-dev3.json`
+`artifacts/host-validation/m5/panel-lifecycle-v0.6.0-dev1.json`
 
 该证据证明真实 Slate 渲染和 Report 解析，不声明鼠标点击、窗口停靠或人工可见验收。
 

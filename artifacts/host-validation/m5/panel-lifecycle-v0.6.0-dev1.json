@@ -1,0 +1,82 @@
+{
+  "schema_version": "unreal-panel-lifecycle@1.0.0",
+  "created_at": "2026-08-28T03:46:55.0726851+00:00",
+  "engine": "UE 5.8.1",
+  "plugin_build": "UE_5.8.1-v0.6.0-dev1",
+  "execution": "independent hidden UnrealEditor-Cmd -RenderOffscreen",
+  "test_pid": 43928,
+  "created_unreal_pids": [
+    43928
+  ],
+  "existing_unreal_pids_before": [],
+  "existing_unreal_pids_after": [],
+  "existing_processes_survived": true,
+  "started_at": "2026-08-28T03:46:26.4275681+00:00",
+  "finished_at": "2026-08-28T03:46:55.0726851+00:00",
+  "duration_seconds": 28.645,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "automation_test": "UnrealAssetBatchAuditor.PanelEvidence",
+  "automation_passed": true,
+  "report_path": "artifacts/demo/demo-desktop-balanced-v2-report.json",
+  "report_sha256": "AF49A1C6429D4C6A40470385063DC94612C1CEAF04D1035C443E753AB73FD1F9",
+  "log_path": "artifacts/host-runtime/panel-20260827-214626/Saved/Logs/UnrealAssetBatchAuditorHost.log",
+  "committed_log_excerpt": "artifacts/host-validation/m5/panel-lifecycle-v0.6.0-dev1-log.txt",
+  "committed_log_excerpt_sha256": "DE58DAE9C516CCB6EC5ED8E644277B937A6BB8B761B2F36B6868412243C08CE6",
+  "screenshot_count": 10,
+  "screenshots": [
+    {
+      "path": "docs/images/workflow/v0.6/01-empty-state.png",
+      "bytes": 87167,
+      "sha256": "D4081244B35220415CA49CDC0718313637C554EC3160B95026C495B65236ACD4"
+    },
+    {
+      "path": "docs/images/workflow/v0.6/02-asset-overview.png",
+      "bytes": 168477,
+      "sha256": "C3562613E673844A6FDB204A20DE3E5276D41FE1E1AF44A8F1B7C9FB28A0C8CB"
+    },
+    {
+      "path": "docs/images/workflow/v0.6/03-passing-assets.png",
+      "bytes": 105166,
+      "sha256": "F5E82FBEEC31E5C949EADC6E877B8948E70F77689F9B756417B3AC58231A4202"
+    },
+    {
+      "path": "docs/images/workflow/v0.6/04-assets-needing-work.png",
+      "bytes": 172840,
+      "sha256": "DCCC850465DD87DED63E013F3A1DCF146A2739F177A6184B6249C08424A9D048"
+    },
+    {
+      "path": "docs/images/workflow/v0.6/05-issue-details.png",
+      "bytes": 196288,
+      "sha256": "B733C6BAD2B082DAE5FF04C0EB2CC3A6C78ACC33606A301A28FD9064640774DC"
+    },
+    {
+      "path": "docs/images/workflow/v0.6/06-collision-evidence.png",
+      "bytes": 147228,
+      "sha256": "6496DC236C8BA1AF9542B233A77BD39C42968A0D952F31F04978D4854C7BB8E8"
+    },
+    {
+      "path": "docs/images/workflow/v0.6/07-lightmap-uv-evidence.png",
+      "bytes": 126623,
+      "sha256": "CB4F0A825AF8DE91DE95C925A33F1B5C65084191EB0E18D482EB9B39ECAF110A"
+    },
+    {
+      "path": "docs/images/workflow/v0.6/08-lightmap-resolution-evidence.png",
+      "bytes": 106743,
+      "sha256": "03A783AD7B0C3A1BE96CCA168B125C3DE7AEDCD43DD439980C64C18AF201E8DF"
+    },
+    {
+      "path": "docs/images/workflow/v0.6/09-object-name-evidence.png",
+      "bytes": 88289,
+      "sha256": "691CD08467C46B21AAF4A478C958D2429735E6854844E2B1FEF5A7C168BA0EDE"
+    },
+    {
+      "path": "docs/images/workflow/v0.6/10-package-path-evidence.png",
+      "bytes": 89795,
+      "sha256": "6CF022FC76B7482E84DBD1BE6B13ACCEA11E03F56923D106A6EFD35258ED4435"
+    }
+  ],
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false
+}

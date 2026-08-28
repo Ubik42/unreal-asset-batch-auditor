@@ -114,6 +114,10 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         Capture(TEXT("07-lightmap-uv-evidence.png"));
         Panel->SetEvidenceView(false, TEXT("Lightmap 分辨率"));
         Capture(TEXT("08-lightmap-resolution-evidence.png"));
+        Panel->SetEvidenceView(false, TEXT("资产命名"));
+        Capture(TEXT("09-object-name-evidence.png"));
+        Panel->SetEvidenceView(false, TEXT("目录规范"));
+        Capture(TEXT("10-package-path-evidence.png"));
     }
     else
     {

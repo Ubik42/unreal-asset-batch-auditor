@@ -74,6 +74,18 @@
 该轮主机命令行证据明确记录 `claims_visible_editor_review=false`；截图证据明确记录
 `claims_user_interaction=false`。它们分别证明原生采集与生产 Slate 渲染，不冒充人工点击流程。
 
+## 2026-08-27 v0.6 命名与目录政策回归
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| v0.6.0 BuildPlugin | 通过；干净暂存目录仅复制发布所需源码与资源，UE 5.8.1 Win64 编译成功 | `artifacts/host-build/UE_5.8.1-v0.6.0-dev1`（本机忽略目录） |
+| 真实政策故障 | 通过；真实项目 `.uasset` 分别触发 1 条资产命名和 1 条目录规范问题 | `artifacts/demo/demo-desktop-balanced-v2-report.json` |
+| 三套 Profile | 通过；24 个资产分别产生 45 / 113 / 19 条 Issue，均有 2 条独立采集失败 | `artifacts/demo/*-v2-report.json` |
+| 面板生命周期 | 通过；结构化证据记录本轮 PID、启动/退出耗时、无超时、自动化 Success，退出后无残留 Unreal PID | `artifacts/host-validation/m5/panel-lifecycle-v0.6.0-dev1.json` |
+| 视觉证据 | 通过；10 张生产 Slate PNG 覆盖空态、账本、碰撞、Lightmap、命名和目录 | `docs/images/workflow/v0.6/` |
+
+生命周期证据仍不声明人工点击、停靠或前台可见验收；这些交互由录屏者按教程完成。
+
 本结果只覆盖记录的 UE 5.8.1 非生产宿主和 Engine 内容，不等价于 UE 5.4/5.5 兼容证明，也不等价于大规模生产性能证明。
 
 哈希证据使用仓库内只读脚本：

@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 11,
+  "stateRevision": 12,
   "status": "active",
-  "currentMilestone": "M5",
+  "currentMilestone": "M6",
   "milestones": [
     {
       "id": "M0",
@@ -38,13 +38,13 @@
     {
       "id": "M5",
       "title": "Collision, Lightmap UV, naming, and project-structure policies",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M4"]
     },
     {
       "id": "M6",
       "title": "Large-batch interaction, saved sessions, and team handoff",
-      "status": "pending",
+      "status": "in_progress",
       "dependsOn": ["M5"]
     },
     {
@@ -55,20 +55,20 @@
     }
   ],
   "nextSlice": {
-    "id": "M5-S2",
-    "milestoneId": "M5",
-    "title": "Add Profile-driven naming and project-structure policies",
+    "id": "M6-S1",
+    "milestoneId": "M6",
+    "title": "Add saved audit sessions and regression comparison",
     "scope": [
-      "Extend Profile and Report contracts with optional naming and package-path policies",
-      "Collect object name and package path as read-only facts without loading unrelated project assets",
-      "Evaluate configurable prefix, regular-expression, allowed-root, and forbidden-segment rules in Python",
-      "Expose localized naming and directory evidence in the native Chinese panel",
-      "Extend fixtures, Demo profiles, tests, real-host evidence, documentation, and screenshots"
+      "Define a versioned project-local session index without adding a database or cloud dependency",
+      "Preserve immutable historical reports and expose recent sessions in the native Chinese panel",
+      "Compare current and baseline sessions by stable asset path and rule id",
+      "Classify new, persistent, resolved, and collection-failure changes with traceable evidence",
+      "Extend fixtures, tests, Demo flows, host lifecycle evidence, documentation, and screenshots"
     ],
     "nonGoals": [
+      "No cloud service, external database, user account, or telemetry upload",
       "No asset mutation or automatic repair",
-      "No asset rename, move, redirector creation, or package save",
-      "No project-wide crawl; only explicitly selected object paths are evaluated",
+      "No automatic CI gate or team notification in this slice",
       "No compatibility claim beyond hosts actually tested"
     ],
     "allowedPaths": [
@@ -90,19 +90,19 @@
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ],
-    "evidenceCeiling": "Fixtures may prove naming and path rule determinism; BuildPlugin may prove compilation; only fresh Unreal host object paths and Slate evidence may prove Editor integration.",
+    "evidenceCeiling": "Fixtures may prove comparison determinism; BuildPlugin may prove compilation; only fresh Unreal host sessions and Slate evidence may prove saved-history integration.",
     "realHostRequired": true,
     "acceptance": [
-      "Existing v1 and v2 Profiles and reports remain readable",
-      "Naming and directory policy is optional, versioned, and fully Profile-driven",
-      "Only explicitly selected Unreal object paths are evaluated",
-      "Naming and path issue evidence remains searchable and localized in the panel",
+      "Existing reports remain readable and are never overwritten when saved as history",
+      "The session index tolerates missing or invalid historical files with localized diagnostics",
+      "Comparison results deterministically classify new, persistent, resolved, and failed items",
+      "Recent sessions and comparison state are usable from the native Chinese panel",
       "UE 5.8 BuildPlugin succeeds",
-      "A fresh independent Unreal host session validates object-path facts and the panel without touching existing user sessions",
-      "README, Demo tutorial, and screenshots show the naming and directory workflow"
+      "A fresh independent Unreal host lifecycle validates history and comparison without touching existing user sessions",
+      "README, Demo tutorial, and screenshots show the session comparison workflow"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0011.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0012.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -128,6 +128,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "Eight v0.5 production Slate screenshots cover the expanded ledger plus collision and Lightmap evidence; hashes are recorded in the M5 manifest."
+    },
+    {
+      "id": "m5s2-policy-host-and-visual",
+      "status": "completed",
+      "blocking": false,
+      "reason": "v0.6 added real project-owned naming and directory faults, three fresh UE reports, a clean UE 5.8.1 BuildPlugin, ten production Slate screenshots, and a structured isolated PID lifecycle record."
     }
   ]
 }
