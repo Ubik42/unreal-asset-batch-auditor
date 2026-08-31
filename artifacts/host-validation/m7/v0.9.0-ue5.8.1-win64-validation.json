@@ -1,0 +1,86 @@
+{
+  "schema_version": "unreal-audit-release-validation@1.0.0",
+  "created_at": "2026-08-31T02:00:49.9196036+00:00",
+  "release_label": "v0.9.0-ue5.8.1-win64",
+  "plugin_version": "0.9.0",
+  "tested_engine_version": "5.8.1",
+  "platform": "Win64",
+  "archive_path": "dist/release/UnrealAssetBatchAuditor-0.9.0-UE5.8-Win64.zip",
+  "archive_bytes": 535115,
+  "archive_sha256": "1D555A6A525A0C22436E8B3CFF6F0A1F70D7ACD0B6F7447E9E3CB9ACC7865BCC",
+  "payload_tree_sha256": "97ca17a4ad8ae758b4e353720f26abcf48b88736e06cd24d58574ec7cf78cd36",
+  "payload_file_count": 55,
+  "source_revision": "73ff1e8",
+  "fresh_project_created": true,
+  "install": {
+    "independent_copy": true,
+    "project_descriptor_enabled": true,
+    "plugin_is_reparse_point": false,
+    "smoke": {
+      "phase": "install",
+      "pid": 26816,
+      "started_at": "2026-08-31T01:59:26.6344551+00:00",
+      "finished_at": "2026-08-31T01:59:55.5147681+00:00",
+      "duration_seconds": 28.88,
+      "timed_out": false,
+      "exit_code": 0,
+      "automation_test": "UnrealAssetBatchAuditor.ReleaseInstallSmoke",
+      "automation_passed": true,
+      "log_path": "artifacts/host-runtime/release-20260830-195926/FreshProject/Saved/Logs/UABAReleaseValidation.log",
+      "log_excerpt_path": "artifacts/host-validation/m7/v0.9.0-ue5.8.1-win64-install-log.txt",
+      "log_excerpt_sha256": "9579CEF5937CDA9485D8F3110DDDA4A61AD1D5701B6C92EBD453D3ACA55C6B61"
+    }
+  },
+  "upgrade": {
+    "backup_created": true,
+    "smoke": {
+      "phase": "upgrade",
+      "pid": 45880,
+      "started_at": "2026-08-31T02:00:20.7826804+00:00",
+      "finished_at": "2026-08-31T02:00:49.3489711+00:00",
+      "duration_seconds": 28.566,
+      "timed_out": false,
+      "exit_code": 0,
+      "automation_test": "UnrealAssetBatchAuditor.ReleaseInstallSmoke",
+      "automation_passed": true,
+      "log_path": "artifacts/host-runtime/release-20260830-195926/FreshProject/Saved/Logs/UABAReleaseValidation.log",
+      "log_excerpt_path": "artifacts/host-validation/m7/v0.9.0-ue5.8.1-win64-upgrade-log.txt",
+      "log_excerpt_sha256": "4B9FCE463AB41880F303CA9D8AF4B00D72E565303A2F0824AB3FAACEF61B7B04"
+    }
+  },
+  "unattended": {
+    "wrapper_exit_code": 0,
+    "status": "passed",
+    "asset_count": 6,
+    "issue_count": 12,
+    "collection_failure_count": 0,
+    "stdout": "UABA passed: 项目预设范围通过审计；资产 6，问题 12，采集失败 0；摘要 D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\host-runtime\\release-20260830-195926\\FreshProject\\Saved\\UnrealAssetBatchAuditor\\CI\\latest-run-summary.json",
+    "duration_seconds": 25.061,
+    "summary_path": "artifacts/host-validation/m7/v0.9.0-ue5.8.1-win64-unattended-summary.json",
+    "summary_sha256": "EFEBC12FD4DB54773799C998E54D7D697093B14AA95B831DC34A774224116503",
+    "report_path": "artifacts/host-validation/m7/v0.9.0-ue5.8.1-win64-unattended-report.json",
+    "report_sha256": "9070262CA15BB0BC2DD25290E795FCB3917718586820A8D52A1494172653257D"
+  },
+  "uninstall": {
+    "plugin_directory_removed": true,
+    "recoverable_backup_created": true,
+    "project_descriptor_entry_removed": true
+  },
+  "report_path": "artifacts/host-validation/m7/v0.9.0-ue5.8.1-win64-report.json",
+  "report_sha256": "6C9123A1DAD4273ADAC67A99AFA63496DDEED8A35D926F551781568C4BDFFC57",
+  "existing_unreal_pids_before": [],
+  "created_unreal_pids": [
+    26816,
+    45880
+  ],
+  "existing_unreal_pids_after": [
+    8744
+  ],
+  "existing_processes_survived": true,
+  "residual_created_processes": [],
+  "residual_owned_processes": [],
+  "preexisting_processes_managed_by_test": false,
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false,
+  "claims_cross_version_compatibility": false
+}

@@ -166,3 +166,16 @@ Cook 依赖、运行时 residency、Shader 编译成本、GPU 性能或跨版本
 | 进程隔离 | 通过；独立隐藏宿主结束后无本轮临时目录对应的 UE 残留进程，既有与并发 UE 不受管理 | `artifacts/host-validation/m10/unattended-host-UE_5.8.1-v0.9.0-dev3.json` |
 
 本验证没有连接外部 CI；只证明该命令可以被 CI 调用并提供稳定机器语义。
+
+## 2026-08-30 v0.9.0 正式发布验证
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| 确定性发布 | 通过；55 个白名单文件，同输入双次 ZIP SHA-256 一致 | `artifacts/host-validation/m7/v0.9.0-ue5.8.1-win64-validation.json` |
+| 全新安装 | 通过；独立复制插件并更新 `.uproject`，不是 Junction | 同上 |
+| 面板与真实采集 | 通过；生产 Tab 打开，C++ 真实采集 Cube 并生成 v3 Report | 同上与 `v0.9.0-ue5.8.1-win64-report.json` |
+| 随包无人值守 | 通过；显式 BasicShapes 范围审计 6 个资产、0 采集失败、退出码 0 | 同上与 `v0.9.0-ue5.8.1-win64-unattended-summary.json` |
+| 升级与卸载 | 通过；升级后二次真实烟雾成功，卸载保留可恢复插件和 descriptor 备份 | 同上 |
+| 进程隔离 | 通过；本轮全新项目无残留 UE，既有与并发 UE 不受管理 | 同上 |
+
+发布 ZIP SHA-256：`1D555A6A525A0C22436E8B3CFF6F0A1F70D7ACD0B6F7447E9E3CB9ACC7865BCC`。

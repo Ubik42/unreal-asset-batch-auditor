@@ -1,0 +1,9 @@
+LogCsvProfiler: Display: Metadata set : engineversion="5.8.1-56057345+++UE5+Release-5.8"
+LogCsvProfiler: Display: Metadata set : commandline="" D:\3D\_tools\unreal-asset-batch-auditor\artifacts\host-runtime\release-20260830-195926\FreshProject\UABAReleaseValidation.uproject -ExecCmds="Automation RunTests UnrealAssetBatchAuditor.ReleaseInstallSmoke" -TestExit="Automation Test Queue Empty" -unattended -nop4 -nosplash -RenderOffscreen""
+LogInit: Command Line: -ExecCmds="Automation RunTests UnrealAssetBatchAuditor.ReleaseInstallSmoke" -TestExit="Automation Test Queue Empty" -unattended -nop4 -nosplash -RenderOffscreen
+[2026.08.31-02.00.49:077][208]LogAutomationCommandLine: Display: Found 1 automation tests based on 'UnrealAssetBatchAuditor.ReleaseInstallSmoke'
+[2026.08.31-02.00.49:081][208]LogAutomationController: Display: Test Started. Name={ReleaseInstallSmoke} Path={UnrealAssetBatchAuditor.ReleaseInstallSmoke}
+[2026.08.31-02.00.49:173][210]LogAutomationController: Display: Test Completed. Result={Success} Name={ReleaseInstallSmoke} Path={UnrealAssetBatchAuditor.ReleaseInstallSmoke}
+[2026.08.31-02.00.49:174][211]LogAutomationCommandLine: Display: ...Automation Test Queue Empty 1 tests performed.
+[2026.08.31-02.00.49:174][211]LogExit: Display: **** TestExit: Automation Test Queue Empty ****
+[2026.08.31-02.00.49:174][211]LogCore: Engine exit requested (reason: Win RequestExit)

@@ -1,0 +1,14 @@
+{
+  "schema_version": "unreal-asset-audit-run@1.0.0",
+  "created_at": "2026-08-31T02:00:17.117674+00:00",
+  "preset_id": "engine-basic-shapes-ci-v1",
+  "status": "passed",
+  "exit_code": 0,
+  "message": "项目预设范围通过审计",
+  "report_path": "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\host-runtime\\release-20260830-195926\\FreshProject\\Saved\\UnrealAssetBatchAuditor\\CI\\latest-report.json",
+  "requested_asset_count": 6,
+  "asset_count": 6,
+  "issue_count": 12,
+  "blocking_issue_count": 0,
+  "collection_failure_count": 0
+}

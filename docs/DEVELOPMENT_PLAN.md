@@ -158,8 +158,20 @@ Demo 资产、三套 UE Report、UE 5.8.1 `UE_5.8.1-v0.6.0-dev1` BuildPlugin、�
 0 个采集失败并以包装退出码 0 完成；Report、摘要、日志和哈希位于 `artifacts/host-validation/m10/`。
 不声明已接入外部 CI、跨版本兼容或生产规模性能。
 
+## M11：v0.9 作品级发布（已完成）
+
+- 55 个白名单 payload 包含运行时 C++/Python、v3 Profile、项目预设、Schema、安装器和中文说明；
+- 固定 ZIP 时间戳，相同输入连续两次生成相同哈希；
+- 全新临时项目完成独立安装、中文生产 Tab、真实 Cube 采集、随包无人值守、升级与可恢复卸载；
+- 发布证据记录源修订、逐文件 SHA-256、payload tree、进程归属和声明边界。
+
+完成证据：`UE_5.8.1-v0.9.0-release1` BuildPlugin；ZIP SHA-256
+`1D555A6A525A0C22436E8B3CFF6F0A1F70D7ACD0B6F7447E9E3CB9ACC7865BCC`；完整验证位于
+`artifacts/host-validation/m7/v0.9.0-ue5.8.1-win64-validation.json`。只覆盖 Windows 11、Win64、
+UE 5.8.1，不声明 Marketplace 或跨版本兼容。
+
 ## 后续候选路线
 
 | 里程碑 | 方向 | 边界 |
 | --- | --- | --- |
-| M11 | v0.9 安装包与作品级交付 | 到发布阶段才跑完整安装/升级矩阵 |
+| M12 | 资产定位与复核效率 | 只读定位、打开资产和复制证据，不引入自动修改 |

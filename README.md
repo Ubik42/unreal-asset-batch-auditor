@@ -2,9 +2,8 @@
 
 面向 Unreal 项目 Static Mesh 的只读交付验收台。项目 Profile 定义预算和预期，Editor-only C++ 模块批量采集元数据，Python 负责规则编排与 JSON 报告。扫描接口不保存资产、不重建网格，也不修改 Nanite。
 
-> **当前源码：v0.9.0 发布候选** · 正在执行 UE 5.8.1 正式安装包验证<br>
-> **公开可安装版本：v0.8.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
-> [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.8.0) ·
+> **当前源码 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.9.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
 ![资产交付验收台：材质与纹理依赖台账](docs/images/workflow/v0.9-material/02-asset-overview.png)
@@ -200,8 +199,8 @@ Demo Profile 是为了形成清晰对比而模拟的项目数据，不代表行�
 
 ### 推荐：直接使用发布包
 
-从 [GitHub Releases](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.8.0)
-下载 `UnrealAssetBatchAuditor-0.8.0-UE5.8-Win64.zip`，解压后执行：
+从 [GitHub Releases](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.9.0)
+下载 `UnrealAssetBatchAuditor-0.9.0-UE5.8-Win64.zip`，解压后执行：
 
 ```powershell
 .\install-plugin.ps1 -Action Install -ProjectPath "<项目目录或 .uproject 路径>"
@@ -249,7 +248,8 @@ report = run(
 - v0.9-dev2 已通过 68 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主真实采集 5 个 Engine Static Mesh 的有效材质路径、纹理依赖数和最大纹理边长；
 - 材质证据宿主以明确标注的模拟 Profile 产生 9 条纹理风险，14 张原生 Slate 图与生命周期记录位于 `docs/images/workflow/v0.9-material/` 和 `artifacts/host-validation/m9/`；这不代表运行时 GPU 成本、完整 Cook 依赖或人工点击测试；
 - v0.9-dev3 增加项目预设与稳定退出码；独立 UE 5.8.1 命令行宿主按显式 `/Engine/BasicShapes` 范围审计 6 个资产，生成 12 条非阻断告警、0 个采集失败并以退出码 0 结束；
-- 下一阶段只做 v0.9 作品级发布收口，不加入泛 AI 对话或 PCG；
+- v0.9.0 发布包包含 55 个白名单文件；相同输入双次 ZIP 完全一致；全新安装、真实 Cube 采集、随包无人值守、升级和可恢复卸载均通过。ZIP SHA-256：`1D555A6A525A0C22436E8B3CFF6F0A1F70D7ACD0B6F7447E9E3CB9ACC7865BCC`；
+- 后续开发回到资产定位与复核效率，不加入泛 AI 对话或 PCG；
 - 不声明 Marketplace 就绪、其他 UE 版本兼容或生产规模绝对无卡顿。
 
 ## 许可证与演示素材
