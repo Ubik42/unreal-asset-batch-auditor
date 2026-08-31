@@ -61,6 +61,20 @@
           "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
         }
       }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledger_schema_version", "ledger_file", "ledger_sha256", "reviewed_count", "orphan_count", "fix_required_count", "approved_exception_count"],
+      "properties": {
+        "ledger_schema_version": {"const": "unreal-audit-review-ledger@1.0.0"},
+        "ledger_file": {"type": "string", "minLength": 1},
+        "ledger_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "reviewed_count": {"type": "integer", "minimum": 0},
+        "orphan_count": {"type": "integer", "minimum": 0},
+        "fix_required_count": {"type": "integer", "minimum": 0},
+        "approved_exception_count": {"type": "integer", "minimum": 0}
+      }
     }
   }
 }

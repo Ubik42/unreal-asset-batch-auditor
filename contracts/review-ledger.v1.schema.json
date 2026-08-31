@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://art-pipeline.local/contracts/unreal-audit-review-ledger.v1.schema.json",
+  "title": "Unreal 资产审计审阅台账 v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "report_id", "report_sha256", "records"],
+  "properties": {
+    "schema_version": {"const": "unreal-audit-review-ledger@1.0.0"},
+    "report_id": {"type": "string", "minLength": 1},
+    "report_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["issue_id", "evidence_id", "asset_path", "rule_id", "decision", "owner", "note", "updated_at"],
+        "properties": {
+          "issue_id": {"type": "string", "minLength": 1},
+          "evidence_id": {"type": "string", "minLength": 1},
+          "asset_path": {"type": "string", "minLength": 1},
+          "rule_id": {"type": "string", "minLength": 1},
+          "decision": {"enum": ["fix_required", "approved_exception"]},
+          "owner": {"type": "string", "maxLength": 80},
+          "note": {"type": "string", "maxLength": 500},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      }
+    }
+  }
+}

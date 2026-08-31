@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .review_ledger import load_review_snapshot
+
 HANDOFF_VERSION = "unreal-audit-handoff@1.0.0"
 
 
@@ -131,7 +133,17 @@ def _localized_issue(rule_id: str, observed: str, expected: str) -> str:
     return "规则检查未通过；请结合实测值、期望值和 Profile 指针复核。"
 
 
-def _rows(report: dict[str, Any]) -> list[dict[str, str]]:
+def _review_label(decision: str) -> str:
+    return {
+        "fix_required": "需修复",
+        "approved_exception": "批准例外",
+    }.get(decision, "未复核")
+
+
+def _rows(
+    report: dict[str, Any], reviews: dict[tuple[str, str], dict[str, str]] | None = None
+) -> list[dict[str, str]]:
+    reviews = reviews or {}
     evidence_by_id = {
         str(item.get("evidence_id", "")): item for item in report.get("evidence", [])
     }
@@ -142,6 +154,9 @@ def _rows(report: dict[str, Any]) -> list[dict[str, str]]:
         severity = str(issue.get("severity", ""))
         observed = _display(evidence.get("observed"))
         expected = _display(evidence.get("expected"))
+        review = reviews.get(
+            (str(issue.get("issue_id", "")), str(issue.get("evidence_id", ""))), {}
+        )
         rows.append(
             {
                 "类型": "规则问题",
@@ -157,6 +172,9 @@ def _rows(report: dict[str, Any]) -> list[dict[str, str]]:
                 "说明": _localized_issue(rule_id, observed, expected),
                 "原始说明": str(issue.get("message", "")),
                 "证据 ID": str(issue.get("evidence_id", "")),
+                "审阅决定": _review_label(str(review.get("decision", ""))),
+                "负责人": str(review.get("owner", "")),
+                "审阅备注": str(review.get("note", "")),
             }
         )
     for failure in report.get("collection_failures", []):
@@ -178,6 +196,9 @@ def _rows(report: dict[str, Any]) -> list[dict[str, str]]:
                 ),
                 "原始说明": str(failure.get("message", "")),
                 "证据 ID": "—",
+                "审阅决定": "不可审阅",
+                "负责人": "",
+                "审阅备注": "采集失败没有 Issue / Evidence 绑定",
             }
         )
     return rows
@@ -198,6 +219,9 @@ def _csv_bytes(rows: list[dict[str, str]]) -> bytes:
         "说明",
         "原始说明",
         "证据 ID",
+        "审阅决定",
+        "负责人",
+        "审阅备注",
     ]
     stream = io.StringIO(newline="")
     writer = csv.DictWriter(stream, fieldnames=columns, lineterminator="\r\n")
@@ -217,10 +241,16 @@ def _html_text(report: dict[str, Any], rows: list[dict[str, str]]) -> str:
         f"<td>{html.escape(row['检查项'])}</td>"
         f"<td>{html.escape(row['实测'])}</td>"
         f"<td>{html.escape(row['期望'])}</td>"
+        f"<td><strong>{html.escape(row['审阅决定'])}</strong><br><span class='sub'>{html.escape(row['负责人'])}</span><br><span class='sub'>{html.escape(row['审阅备注'])}</span></td>"
         f"<td>{html.escape(row['说明'])}</td>"
         "</tr>"
         for row in rows
-    ) or "<tr><td colspan='6' class='empty'>没有规则问题或采集失败</td></tr>"
+    ) or "<tr><td colspan='7' class='empty'>没有规则问题或采集失败</td></tr>"
+    review_counts = {
+        "未复核": sum(row["审阅决定"] == "未复核" for row in rows),
+        "需修复": sum(row["审阅决定"] == "需修复" for row in rows),
+        "批准例外": sum(row["审阅决定"] == "批准例外" for row in rows),
+    }
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -256,8 +286,9 @@ tr:hover td{{background:#101a20}} .level{{font-weight:700}} .level.error{{color:
 <div class="metric">取消未处理<strong>{report['cancelled_asset_count']}</strong></div>
 </section>
 <div class="note"><strong>{html.escape(validation_label)}</strong><br>{html.escape(validation_note)}<br>宿主版本：{html.escape(str(host))}</div>
+<div class="note"><strong>人工审阅</strong><br>未复核 {review_counts['未复核']} · 需修复 {review_counts['需修复']} · 批准例外 {review_counts['批准例外']}。审阅决定来自独立台账，不改变规则事实。</div>
 <h2>问题与失败明细</h2>
-<div class="table-wrap"><table><thead><tr><th>级别</th><th>资产</th><th>检查项</th><th>实测</th><th>期望</th><th>证据说明</th></tr></thead><tbody>{row_html}</tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>级别</th><th>资产</th><th>检查项</th><th>实测</th><th>期望</th><th>审阅决定</th><th>证据说明</th></tr></thead><tbody>{row_html}</tbody></table></div>
 <footer>此文件由 Unreal Asset Batch Auditor 从版本化 JSON Report 确定性生成。CSV 文件保留 Profile 指针和证据 ID，便于制作人、TA 与美术负责人筛选交接。</footer>
 </main></body></html>
 """
@@ -267,7 +298,11 @@ def _sha256(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def export_handoff(report_path: str | Path, output_root: str | Path) -> HandoffResult:
+def export_handoff(
+    report_path: str | Path,
+    output_root: str | Path,
+    review_ledger_root: str | Path | None = None,
+) -> HandoffResult:
     """Create a standalone Chinese HTML/CSV package from an existing report."""
 
     report = _load_report(report_path)
@@ -276,7 +311,17 @@ def export_handoff(report_path: str | Path, output_root: str | Path) -> HandoffR
     )[:96]
     root = Path(output_root) / safe_report_id
     root.mkdir(parents=True, exist_ok=True)
-    rows = _rows(report)
+    review_snapshot = (
+        load_review_snapshot(report_path, review_ledger_root, isolate_corrupt=False)
+        if review_ledger_root is not None
+        else None
+    )
+    reviews = (
+        {(item["issue_id"], item["evidence_id"]): item for item in review_snapshot.records}
+        if review_snapshot
+        else {}
+    )
+    rows = _rows(report, reviews)
     html_payload = _html_text(report, rows).encode("utf-8")
     csv_payload = _csv_bytes(rows)
     html_path = root / "审计交接报告.html"
@@ -309,6 +354,25 @@ def export_handoff(report_path: str | Path, output_root: str | Path) -> HandoffR
             {"path": csv_path.name, "sha256": _sha256(csv_payload)},
         ],
     }
+    if review_snapshot is not None:
+        manifest["review"] = {
+            "ledger_schema_version": "unreal-audit-review-ledger@1.0.0",
+            "ledger_file": review_snapshot.ledger_path.name,
+            "ledger_sha256": (
+                _sha256(review_snapshot.ledger_path.read_bytes())
+                if review_snapshot.ledger_path.exists()
+                else None
+            ),
+            "reviewed_count": len(review_snapshot.records),
+            "orphan_count": len(review_snapshot.orphan_records),
+            "fix_required_count": sum(
+                item["decision"] == "fix_required" for item in review_snapshot.records
+            ),
+            "approved_exception_count": sum(
+                item["decision"] == "approved_exception"
+                for item in review_snapshot.records
+            ),
+        }
     manifest_path.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

@@ -1,0 +1,39 @@
+{
+  "schema_version": "unreal-audit-handoff@1.0.0",
+  "report_id": "report-cb972b528ed0c25a",
+  "report_created_at": "2026-08-31T01:49:25.809062+00:00",
+  "profile_id": "demo-desktop-balanced-v3",
+  "profile_version": "3.0.0",
+  "collection_mode": "unreal_editor",
+  "real_unreal_validation": true,
+  "host_engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "validation_label": "真实 Unreal 宿主采集",
+  "validation_boundary": "资产事实由报告记录的 Unreal Editor 宿主采集；导出过程只读取报告，不重新扫描或修改资产。",
+  "summary": {
+    "requested_asset_count": 6,
+    "processed_asset_count": 6,
+    "cancelled_asset_count": 0,
+    "asset_count": 6,
+    "issue_count": 12,
+    "collection_failure_count": 0
+  },
+  "files": [
+    {
+      "path": "审计交接报告.html",
+      "sha256": "147e96a6cf21ebe064ef563afbf523b5f4fc8ec8089a801d87de299cb65cd1e4"
+    },
+    {
+      "path": "审计问题明细.csv",
+      "sha256": "69959b6697c1ecba9524ea7549608a0cfe861ef714b1835758b10cdee2e922e2"
+    }
+  ],
+  "review": {
+    "ledger_schema_version": "unreal-audit-review-ledger@1.0.0",
+    "ledger_file": "report-cb972b528ed0c25a.review.v1.json",
+    "ledger_sha256": "002cc7472acc6f6d2aaa3e3f474ed1f2fbdba7dfc8ce7ab07aacd56edb2dd183",
+    "reviewed_count": 2,
+    "orphan_count": 0,
+    "fix_required_count": 1,
+    "approved_exception_count": 1
+  }
+}

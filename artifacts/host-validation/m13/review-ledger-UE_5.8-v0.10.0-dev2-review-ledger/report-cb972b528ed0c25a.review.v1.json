@@ -1,0 +1,27 @@
+{
+  "records": [
+    {
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "decision": "approved_exception",
+      "evidence_id": "ev-191177966074e5e0",
+      "issue_id": "issue-c95ed4f9bdf36f0d",
+      "note": "引擎内置演示资产，仅用于审计工具录屏",
+      "owner": "主美",
+      "rule_id": "static_mesh.object_name",
+      "updated_at": "2026-08-31T02:56:10.454319Z"
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "decision": "fix_required",
+      "evidence_id": "ev-8a3cedfc0759b5a7",
+      "issue_id": "issue-e09a323f99ba78b8",
+      "note": "移动到项目允许目录并按 SM_ 前缀重命名后复检",
+      "owner": "环境组 / 小林",
+      "rule_id": "static_mesh.object_name",
+      "updated_at": "2026-08-31T02:56:10.450815Z"
+    }
+  ],
+  "report_id": "report-cb972b528ed0c25a",
+  "report_sha256": "e2717dbd9f12eaafd26621c7390d6ed570be5f3c303124ce95cb09227a43d8e5",
+  "schema_version": "unreal-audit-review-ledger@1.0.0"
+}

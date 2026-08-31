@@ -182,8 +182,20 @@ UE 5.8.1，不声明 Marketplace 或跨版本兼容。
 `/Engine/BasicShapes` 报告问题定位到 Content Browser，并生成 15 张当前 Slate 截图。完整记录见
 `artifacts/goal/checkpoint-0021.json`；不把自动化同步选择宣称成可见人工点击测试。
 
+## M13：审阅决策与责任交接（已完成）
+
+- Review Ledger v1 以 Report SHA-256、Issue ID 和 Evidence ID 绑定人工决定；
+- 缺少记录表示未复核，可记录需修复、批准例外、负责人和备注；
+- 台账采用临时文件加原子替换，损坏 JSON 隔离，同名报告内容变化时旧记录作为孤儿保留；
+- Slate 审阅刻度、筛选、行内状态和编辑区区分规则严重度与人工决定；
+- HTML、CSV 与交接清单带出审阅状态和台账 SHA-256，不泄露本机绝对路径。
+
+完成证据：79 项 Python 测试与 Ruff；UE 5.8 `UE_5.8-v0.10.0-dev2` BuildPlugin；独立隐藏宿主
+写入并重新加载两条真实 BasicShapes 审阅决定，确认源 Report 不变；15 张当前 Slate 图和带审阅字段的
+团队交接包位于 `artifacts/host-validation/m13/`。本轮不包含多人并发、账号权限或外部工单。
+
 ## 后续候选路线
 
 | 里程碑 | 方向 | 边界 |
 | --- | --- | --- |
-| M12 | 资产定位与复核效率 | 只读定位、打开资产和复制证据，不引入自动修改 |
+| M14 | 交付批次热区与资产组概览 | 按真实目录/资产组聚合风险并下钻，不推断 GPU 性能 |

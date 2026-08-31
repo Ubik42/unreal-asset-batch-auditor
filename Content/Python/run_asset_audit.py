@@ -12,6 +12,8 @@ from unreal_asset_batch_auditor import (
     audit_assets,
     compare_reports,
     export_handoff,
+    update_review,
+    write_review_view,
 )
 
 
@@ -76,12 +78,44 @@ def export_handoff_from_request_file(request_path: str) -> dict:
     """Export a standalone Chinese team package without rescanning Unreal assets."""
 
     request = json.loads(Path(request_path).read_text(encoding="utf-8"))
-    result = export_handoff(
-        str(request["report_path"]), str(request["output_root"])
-    )
+    args = [str(request["report_path"]), str(request["output_root"])]
+    if request.get("review_ledger_root"):
+        args.append(str(request["review_ledger_root"]))
+    result = export_handoff(*args)
     return {
         "root": str(result.root),
         "html_path": str(result.html_path),
         "csv_path": str(result.csv_path),
         "manifest_path": str(result.manifest_path),
     }
+
+
+def refresh_review_view_from_request_file(request_path: str) -> dict:
+    """Reconcile review metadata with the exact current Report and write a panel view."""
+
+    request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+    return write_review_view(
+        str(request["report_path"]),
+        str(request["review_ledger_root"]),
+        str(request["review_view_path"]),
+    )
+
+
+def update_review_from_request_file(request_path: str) -> dict:
+    """Persist one explicit human review decision and refresh the panel view."""
+
+    request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+    update_review(
+        str(request["report_path"]),
+        str(request["review_ledger_root"]),
+        issue_id=str(request["issue_id"]),
+        evidence_id=str(request["evidence_id"]),
+        decision=str(request["decision"]),
+        owner=str(request.get("owner", "")),
+        note=str(request.get("note", "")),
+    )
+    return write_review_view(
+        str(request["report_path"]),
+        str(request["review_ledger_root"]),
+        str(request["review_view_path"]),
+    )

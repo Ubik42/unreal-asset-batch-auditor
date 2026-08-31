@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
-  "Version": 12,
-  "VersionName": "0.10.0-dev1",
+  "Version": 13,
+  "VersionName": "0.10.0-dev2",
   "FriendlyName": "Unreal 资产批量审计",
   "Description": "Profile 驱动的只读 Static Mesh 交付验收台，覆盖批次范围、材质纹理依赖、风险谱、回归交接与无人值守门禁。",
   "Category": "Editor",

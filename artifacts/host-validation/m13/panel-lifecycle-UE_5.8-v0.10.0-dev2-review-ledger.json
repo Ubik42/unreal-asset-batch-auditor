@@ -1,0 +1,125 @@
+{
+  "schema_version": "unreal-panel-lifecycle@1.0.0",
+  "created_at": "2026-08-31T02:56:11.1432113+00:00",
+  "engine": "UE 5.8.1",
+  "plugin_build": "UE_5.8-v0.10.0-dev2",
+  "execution": "independent hidden UnrealEditor-Cmd -RenderOffscreen",
+  "test_pid": 21676,
+  "created_unreal_pids": [
+    21676
+  ],
+  "concurrent_unreal_pids_observed": [],
+  "existing_unreal_pids_before": [],
+  "existing_unreal_pids_after": [],
+  "existing_processes_survived": true,
+  "missing_preexisting_pids": [],
+  "preexisting_processes_managed_by_test": false,
+  "started_at": "2026-08-31T02:55:43.2903214+00:00",
+  "finished_at": "2026-08-31T02:56:11.1432113+00:00",
+  "duration_seconds": 27.853,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "owned_pid_visible_at_snapshot": true,
+  "automation_tests": "UnrealAssetBatchAuditor.PanelEvidence",
+  "automation_passed": true,
+  "panel_evidence_passed": true,
+  "panel_task_lifecycle_passed": true,
+  "report_path": "artifacts/host-validation/m10/unattended-report.json",
+  "report_sha256": "E2717DBD9F12EAAFD26621C7390D6ED570BE5F3C303124CE95CB09227A43D8E5",
+  "comparison_path": "artifacts/demo/session-history/latest-comparison.v1.json",
+  "comparison_sha256": "4C8B5029591D6E47A7983D9398B2823B44E00835ED5DBF2D543BA32DBBE4514F",
+  "log_path": "artifacts/host-runtime/panel-20260830-205543/Saved/Logs/UnrealAssetBatchAuditorHost.log",
+  "committed_log_excerpt": "artifacts/host-validation/m13/panel-lifecycle-UE_5.8-v0.10.0-dev2-review-ledger-log.txt",
+  "committed_log_excerpt_sha256": "4959159E51B50901E8C465A9761B3730061A86B5B0CF5488A36628500A4F9AAE",
+  "screenshot_count": 15,
+  "screenshots": [
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/01-empty-state.png",
+      "bytes": 122850,
+      "sha256": "F82322BE164301C33CAAAE63AB1D5B609F942CE7E0D67BCCE9300CC2382FD977"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/02-asset-overview.png",
+      "bytes": 145408,
+      "sha256": "701886E5611FB1FB7E674A98F5837AF9FB048B437D7FA1AD52A5F02849CB61EF"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/03-passing-assets.png",
+      "bytes": 121598,
+      "sha256": "FBD2201C3677D6E7EF80631EA86F6DBA0E69084D197C60E6707801DE536BF458"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/04-assets-needing-work.png",
+      "bytes": 142982,
+      "sha256": "4A0D259858D9386AFE50D2F75B3F2FF8EA08464E4BB68580A54A3EBD3F47B44E"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/05-issue-details.png",
+      "bytes": 202835,
+      "sha256": "2714C5AB15419B58C43059726B6AF810D162ADD41D5451DD6035A13BD09EFD1D"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/06-collision-evidence.png",
+      "bytes": 135909,
+      "sha256": "CE3CAF08791DF24C9957ED2671B74181048EB7ED6D0703C54B49B1AFD2E340D4"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/07-lightmap-uv-evidence.png",
+      "bytes": 135641,
+      "sha256": "FCB8EEAB20211BE3248732697DFB7DD6A6EB1A7F97A51C29FB56C9222BF13E5D"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/08-lightmap-resolution-evidence.png",
+      "bytes": 136345,
+      "sha256": "20B33FD8C4403F170D7DF78145086A80DBF141D0AB7711516847FE8E899392A3"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/09-object-name-evidence.png",
+      "bytes": 169251,
+      "sha256": "9D1A7EFFDED5CC9C78AE832185DBA136B0C4E0DCF7588E404B21BAD1E6D91E95"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/10-package-path-evidence.png",
+      "bytes": 173205,
+      "sha256": "23C9AE3779D77AF2F7AAE4C288A8CE970C2D9C94C1994D1F6268F427C2D953DB"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/11-regression-overview.png",
+      "bytes": 217517,
+      "sha256": "2A872FBDF6F08FBF48ED16852EFC4FAEF2356BC540074BD1E235202351A1D4FB"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/12-resolved-changes.png",
+      "bytes": 181809,
+      "sha256": "A32D6D80688B7EAE07C8C55AA13CBC2934BDB59B3B278BB997E09F62F8F7B050"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/13-review-ledger.png",
+      "bytes": 202499,
+      "sha256": "7F019FB72CA5CB64D66FA4D6199DB87C7DCE9639D2E5725194E8F34C8DF3C52F"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/14-running-batch-task.png",
+      "bytes": 145921,
+      "sha256": "D67B403DEF1FE8DEE71AD8587825F1431165EC176A456368705B46E556FFD364"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review-ledger/15-cancelling-task.png",
+      "bytes": 145970,
+      "sha256": "CDF6776799E1124C53B48E4242B33E892D7F1F6BF8A9824954BBDE465D7AE4C6"
+    }
+  ],
+  "task_artifact_count": 0,
+  "task_artifacts": null,
+  "review_artifact_count": 1,
+  "review_artifacts": [
+    {
+      "path": "artifacts/host-validation/m13/review-ledger-UE_5.8-v0.10.0-dev2-review-ledger/report-cb972b528ed0c25a.review.v1.json",
+      "bytes": 1018,
+      "sha256": "002CC7472ACC6F6D2AAA3E3F474ED1F2FBDBA7DFC8CE7AB07AACD56EDB2DD183"
+    }
+  ],
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false
+}

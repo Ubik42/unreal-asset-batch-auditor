@@ -2,13 +2,13 @@
 
 面向 Unreal 项目 Static Mesh 的只读交付验收台。项目 Profile 定义预算和预期，Editor-only C++ 模块批量采集元数据，Python 负责规则编排与 JSON 报告。扫描接口不保存资产、不重建网格，也不修改 Nanite。
 
-> **当前源码：v0.10.0-dev1 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> **当前源码：v0.10.0-dev2 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.9.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
-![资产交付验收台：材质与纹理依赖台账](docs/images/workflow/v0.9-material/02-asset-overview.png)
+![资产交付验收台：机器审计事实与人工交付决定](docs/images/workflow/v0.10-review-ledger/13-review-ledger.png)
 
-<p align="center"><sub>真实 UE 5.8.1 原生 Slate：左侧校准规则和交付批次，顶部风险谱按真实 Report 汇总问题，主表保留完整资产证据。</sub></p>
+<p align="center"><sub>真实 UE 5.8.1 原生 Slate：规则事实保留在不可变 Report，制作决定、负责人和备注进入独立 Review Ledger。</sub></p>
 
 ## 这个项目体现什么
 
@@ -19,7 +19,7 @@
 - **面板与门禁同源**：项目预设把 Profile、显式目录和阻断等级固化为可评审 JSON；人工验收和命令行门禁消费同一规则源；
 - **可安装而非只在开发机运行**：发布 ZIP 经过确定性打包、全新项目安装、升级、卸载和两轮独立 UE 宿主验证。
 
-## 三步完成资产审计
+## 五步完成资产审计与交接
 
 ### 1. 选择项目检查规则
 
@@ -51,7 +51,15 @@ Content Browser 选择，`打开复核` 只打开 Static Mesh Editor；问题行
 
 ![问题行定位、打开与复制证据](docs/images/workflow/v0.10-review/13-review-actions.png)
 
-以上 v0.9-dev2 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件，数据来自真实
+### 5. 记录人工决定并交给团队
+
+规则结果不会自动代表制作决定。审阅刻度把问题分为“未复核 / 需修复 / 批准例外”，并可记录负责人和
+简短依据。决定写入按 `report_id + issue_id + evidence_id` 绑定的独立 Review Ledger；原始 Report
+保持字节不变。切换或改写同名报告时，无法精确匹配的旧记录会作为孤儿保留，不会套到新问题。
+
+![独立审阅台账：需修复、批准例外与负责人](docs/images/workflow/v0.10-review-ledger/13-review-ledger.png)
+
+以上 v0.10.0-dev2 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件，数据来自真实
 Engine Static Mesh；不是网页复刻或设计稿。完整演示流程另使用 24 个本机生成的项目 Demo `.uasset`。生命周期记录保存测试 PID、
 耗时、退出状态、截图、报告与交接包哈希。自动化证明面板渲染、任务状态、批次间取消和报告解析，
 不冒充鼠标点击人工测试。演示 Profile 使用模拟项目阈值，不代表行业统一标准。
@@ -135,12 +143,14 @@ CSV 和带 SHA-256 的交接清单；制片、主美或外包同事无需安装 
 - “资产总览”展示每个已采集资产的通过/需处理/失败状态、几何预算、材质/纹理依赖、LOD、Nanite、碰撞、Lightmap UV、Lightmap 分辨率和问题数，不再隐藏通过资产；
 - “问题明细”保留严重度、规则、实测值、Profile 阈值与本地化证据说明，并可直接打开最新 JSON 或报告目录；
 - 资产行和问题行可只读定位到 Content Browser、打开 Static Mesh Editor；规则问题可复制带 Evidence ID 的确定性复核摘要；
+- 独立 Review Ledger 支持未复核、需修复、批准例外、负责人和备注；台账原子写入，损坏文件隔离，未知旧记录不套用；
 - 面板运行会在项目 `Saved/UnrealAssetBatchAuditor/Sessions` 中保存不可变历史报告和版本化轻量索引，不再只留下会被覆盖的 `latest-report.json`；
 - 中文面板可选择同 Profile 历史会话作为回归基线，查看新增、持续、已解决和采集失败变化；比较结果使用版本化 JSON，可供后续 CI 或团队看板消费；
 - 调用方可设置正整数批次大小；进度事件覆盖请求、处理、成功、失败和取消数量；
 - 取消仅在 C++ 批次之间生效，已完成批次的资产与失败证据会保留在 Report；
 - 原生面板使用版本化任务状态驱动 pending/running/cancelling/completed/cancelled/failed，并在 Editor Tick 之间推进批次；
 - 从正式 Report 确定性生成中文单文件 HTML、UTF-8 BOM CSV 和 SHA-256 交接清单，不重新扫描资产；
+- 团队交接 HTML、CSV 与清单可带出人工审阅决定、负责人、备注及台账 SHA-256，同时保留规则严重度；
 - Python fixture collector 与 Unreal C++ collector 使用同一编排边界；
 - 离线错误资产集、回归测试和显式 `real_unreal_validation=false` 报告。
 - 版本化项目预设与 `UnrealEditor-Cmd` 无人值守入口，输出正式 Report、轻量运行摘要和稳定退出码。

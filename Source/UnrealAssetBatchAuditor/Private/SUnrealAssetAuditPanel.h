@@ -4,6 +4,7 @@
 #include "Widgets/SCompoundWidget.h"
 
 class ITableRow;
+class FJsonObject;
 struct FAssetData;
 class SEditableTextBox;
 class SSearchBox;
@@ -21,6 +22,10 @@ struct FAuditPanelIssue
     FString Observed;
     FString Expected;
     FString EvidenceId;
+    FString IssueId;
+    FString ReviewDecision = TEXT("unreviewed");
+    FString ReviewOwner;
+    FString ReviewNote;
 };
 
 struct FAuditProfileOption
@@ -99,6 +104,9 @@ public:
     bool SelectFirstResolvableIssueForEvidence();
     FString GetSelectedEvidenceSummaryForEvidence() const;
     bool LocateSelectedAssetForEvidence(FString& OutError);
+    bool SetSelectedReviewForEvidence(
+        const FString& Decision, const FString& Owner, const FString& Note, FString& OutError);
+    int32 GetEvidenceReviewedCount() const;
 #endif
 
 private:
@@ -138,10 +146,17 @@ private:
     FReply LocateReviewAsset();
     FReply OpenReviewAsset();
     FReply CopyReviewEvidence();
+    FReply SaveReviewDecision();
+    FReply SetDraftReviewDecision(FString Decision);
+    FReply SetReviewFilter(FString Decision);
     TSharedRef<SWidget> BuildSummaryCell(const FText& Label, TAttribute<FText> Value, const FLinearColor& Accent) const;
     TSharedRef<SWidget> BuildRiskCell(const FText& Label, const FString& Category, const FLinearColor& Accent);
     FReply ToggleRiskCategory(FString Category);
     void RebuildSelectionFromInternalFolders(const TArray<FString>& InternalFolders, TSet<FString>& InOutAssetPaths);
+    bool RefreshReviewData(FString& OutError);
+    bool LoadReviewView(FString& OutError);
+    bool RunReviewBridge(
+        const FString& FunctionName, const TSharedRef<FJsonObject>& Request, FString& OutError);
 
     FText GetSelectionText() const;
     FText GetStatusText() const;
@@ -155,6 +170,9 @@ private:
     FText GetResultViewHint() const;
     FText GetReviewContextText() const;
     FText GetReviewActionTooltip() const;
+    FText GetReviewProgressText() const;
+    FText GetReviewFilterLabel(FString Decision) const;
+    FText GetReviewOrphanText() const;
     FText GetSelectedSessionLabel() const;
     FText GetComparisonBaselineText() const;
     FText GetNewIssueCountText() const;
@@ -175,6 +193,7 @@ private:
     bool CanLocateReviewAsset() const;
     bool CanOpenReviewAsset() const;
     bool CanCopyReviewEvidence() const;
+    bool CanSaveReviewDecision() const;
     bool TryResolveReviewAsset(FAssetData& OutAssetData, FString& OutError) const;
     FString GetReviewAssetPath() const;
     FString BuildReviewEvidenceSummary() const;
@@ -199,22 +218,30 @@ private:
     FSessionPtr SelectedSession;
     TSharedPtr<SComboBox<FSessionPtr>> SessionComboBox;
     TSharedPtr<SSearchBox> SearchInput;
+    TSharedPtr<SEditableTextBox> ReviewOwnerInput;
+    TSharedPtr<SEditableTextBox> ReviewNoteInput;
     FString ReportPath;
     FString SessionRoot;
     FString ComparisonPath;
     FString TaskStatePath;
     FString CancelRequestPath;
     FString HandoffRoot;
+    FString ReviewLedgerRoot;
+    FString ReviewViewPath;
+    FString ReviewRequestPath;
     FString LastHandoffPath;
     FString ActiveTaskId;
     FString TaskState = TEXT("idle");
     FString CurrentProfileId;
+    FString CurrentReportId;
     FString CurrentProfileVersion;
     FString CurrentReportCreatedAt;
     FString ComparisonBaselineLabel;
     FString StatusMessage;
     FString SearchText;
     FString ActiveRiskCategory;
+    FString ActiveReviewFilter;
+    FString DraftReviewDecision = TEXT("unreviewed");
     int32 DiscoveredFolderAssetCount = 0;
     int32 BatchSize = 64;
     int32 AssetCount = 0;
@@ -225,6 +252,7 @@ private:
     int32 PersistentIssueCount = 0;
     int32 ResolvedIssueCount = 0;
     int32 FailureChangeCount = 0;
+    int32 ReviewOrphanCount = 0;
     int32 TaskRequestedCount = 0;
     int32 TaskProcessedCount = 0;
     int32 TaskCompletedBatchCount = 0;

@@ -60,6 +60,12 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         AddError(TEXT("UABA_PANEL_EVIDENCE_OUTPUT is empty"));
         return false;
     }
+    FString OriginalReportText;
+    if (!FFileHelper::LoadFileToString(OriginalReportText, *ReportPath))
+    {
+        AddError(TEXT("Could not snapshot source Report before panel evidence"));
+        return false;
+    }
 
     TSharedPtr<SUnrealAssetAuditPanel> Panel;
     const TSharedRef<SWindow> Window = SNew(SWindow)
@@ -199,6 +205,34 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
     }
 
     Panel->SetEvidenceView(false, TEXT(""));
+    if (EvidenceMode == TEXT("review"))
+    {
+        FString ReviewError;
+        TestTrue(
+            TEXT("A real report issue can receive a fix-required review sidecar"),
+            Panel->SelectIssueForEvidence(
+                TEXT("/Engine/BasicShapes/Cone.Cone"), TEXT("static_mesh.object_name"))
+                && Panel->SetSelectedReviewForEvidence(
+                    TEXT("fix_required"), TEXT("环境组 / 小林"),
+                    TEXT("移动到项目允许目录并按 SM_ 前缀重命名后复检"), ReviewError));
+        if (!ReviewError.IsEmpty()) AddError(ReviewError);
+        TestTrue(
+            TEXT("A second issue can record an approved exception"),
+            Panel->SelectIssueForEvidence(
+                TEXT("/Engine/BasicShapes/Cube.Cube"), TEXT("static_mesh.object_name"))
+                && Panel->SetSelectedReviewForEvidence(
+                    TEXT("approved_exception"), TEXT("主美"),
+                    TEXT("引擎内置演示资产，仅用于审计工具录屏"), ReviewError));
+        if (!ReviewError.IsEmpty()) AddError(ReviewError);
+        TestEqual(TEXT("Review decisions persist and remap to exact issues"),
+            Panel->GetEvidenceReviewedCount(), 2);
+        FString ReportAfterReview;
+        TestTrue(TEXT("Review sidecar leaves the source Report byte content unchanged"),
+            FFileHelper::LoadFileToString(ReportAfterReview, *ReportPath)
+                && ReportAfterReview == OriginalReportText);
+        Panel->SelectIssueForEvidence(
+            TEXT("/Engine/BasicShapes/Cone.Cone"), TEXT("static_mesh.object_name"));
+    }
     if (Panel->SelectFirstResolvableIssueForEvidence())
     {
         const FString Summary = Panel->GetSelectedEvidenceSummaryForEvidence();
@@ -207,7 +241,9 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         TestTrue(TEXT("Selected report issue locates a real Static Mesh in Content Browser"),
             Panel->LocateSelectedAssetForEvidence(LocateError));
         if (!LocateError.IsEmpty()) AddError(LocateError);
-        Capture(TEXT("13-review-actions.png"));
+        Capture(EvidenceMode == TEXT("review")
+            ? TEXT("13-review-ledger.png")
+            : TEXT("13-review-actions.png"));
     }
     else
     {

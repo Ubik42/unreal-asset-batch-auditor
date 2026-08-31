@@ -178,6 +178,20 @@ FLinearColor ComparisonChangeColor(const FString& ChangeType)
     return GreenAccent;
 }
 
+FText ReviewDecisionLabel(const FString& Decision)
+{
+    if (Decision == TEXT("fix_required")) return FText::FromString(TEXT("需修复"));
+    if (Decision == TEXT("approved_exception")) return FText::FromString(TEXT("批准例外"));
+    return FText::FromString(TEXT("未复核"));
+}
+
+FLinearColor ReviewDecisionColor(const FString& Decision)
+{
+    if (Decision == TEXT("fix_required")) return RedAccent;
+    if (Decision == TEXT("approved_exception")) return GreenAccent;
+    return GraphiteAccent;
+}
+
 FString LocalizedComparisonMessage(const FString& ChangeType)
 {
     if (ChangeType == TEXT("new"))
@@ -234,6 +248,17 @@ public:
         if (ColumnName == TEXT("Expected"))
         {
             return SNew(STextBlock).Text(FText::FromString(Item->Expected));
+        }
+        if (ColumnName == TEXT("Review"))
+        {
+            return SNew(STextBlock)
+                .Text(ReviewDecisionLabel(Item->ReviewDecision))
+                .ColorAndOpacity(ReviewDecisionColor(Item->ReviewDecision))
+                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+                .ToolTipText(FText::FromString(
+                    Item->ReviewOwner.IsEmpty()
+                        ? Item->ReviewNote
+                        : FString::Printf(TEXT("负责人：%s\n%s"), *Item->ReviewOwner, *Item->ReviewNote)));
         }
         return SNew(STextBlock).Text(FText::FromString(Item->Message)).ToolTipText(FText::FromString(Item->Message));
     }
@@ -375,6 +400,9 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
     TaskStatePath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Tasks/current-task-state.json"));
     CancelRequestPath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Tasks/cancel-request.json"));
     HandoffRoot = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Handoffs"));
+    ReviewLedgerRoot = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Reviews"));
+    ReviewViewPath = FPaths::Combine(ReviewLedgerRoot, TEXT("current-review-view.v1.json"));
+    ReviewRequestPath = FPaths::Combine(ReviewLedgerRoot, TEXT("review-request.v1.json"));
     StatusMessage = TEXT("选择 Static Mesh，然后开始只读审计");
 
     ChildSlot
@@ -640,8 +668,57 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                     ]
                     + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
                     [
+                        SNew(SBorder)
+                        .Visibility(this, &SUnrealAssetAuditPanel::GetIssueViewVisibility)
+                        .BorderImage(FAppStyle::GetBrush(TEXT("Brushes.Header")))
+                        .BorderBackgroundColor(FLinearColor(0.075f, 0.065f, 0.035f, 1.0f))
+                        .Padding(FMargin(10, 6))
+                        [
+                            SNew(SHorizontalBox)
+                            + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0, 0, 12, 0)
+                            [
+                                SNew(STextBlock)
+                                .Text(this, &SUnrealAssetAuditPanel::GetReviewProgressText)
+                                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+                                .ColorAndOpacity(AmberAccent)
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth()
+                            [
+                                SNew(SButton)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                                .Text_Lambda([this] { return GetReviewFilterLabel(TEXT("unreviewed")); })
+                                .ForegroundColor_Lambda([this] { return ActiveReviewFilter == TEXT("unreviewed") ? FSlateColor(CyanAccent) : FSlateColor::UseForeground(); })
+                                .OnClicked_Lambda([this] { return SetReviewFilter(TEXT("unreviewed")); })
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                                .Text_Lambda([this] { return GetReviewFilterLabel(TEXT("fix_required")); })
+                                .ForegroundColor_Lambda([this] { return ActiveReviewFilter == TEXT("fix_required") ? FSlateColor(RedAccent) : FSlateColor::UseForeground(); })
+                                .OnClicked_Lambda([this] { return SetReviewFilter(TEXT("fix_required")); })
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                                .Text_Lambda([this] { return GetReviewFilterLabel(TEXT("approved_exception")); })
+                                .ForegroundColor_Lambda([this] { return ActiveReviewFilter == TEXT("approved_exception") ? FSlateColor(GreenAccent) : FSlateColor::UseForeground(); })
+                                .OnClicked_Lambda([this] { return SetReviewFilter(TEXT("approved_exception")); })
+                            ]
+                            + SHorizontalBox::Slot().FillWidth(1)
+                            + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
+                            [
+                                SNew(STextBlock)
+                                .Text(this, &SUnrealAssetAuditPanel::GetReviewOrphanText)
+                                .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                            ]
+                        ]
+                    ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
+                    [
                         SAssignNew(SearchInput, SSearchBox)
-                        .HintText(FText::FromString(TEXT("搜索资产、状态、规则或证据说明")))
+                        .HintText(FText::FromString(TEXT("搜索资产、规则、证据说明、负责人或审阅备注")))
                         .OnTextChanged(this, &SUnrealAssetAuditPanel::HandleSearchChanged)
                     ]
                     + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
@@ -684,6 +761,65 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                                 .ToolTipText(FText::FromString(TEXT("复制资产、规则、实测、阈值与 Evidence ID")))
                                 .IsEnabled(this, &SUnrealAssetAuditPanel::CanCopyReviewEvidence)
                                 .OnClicked(this, &SUnrealAssetAuditPanel::CopyReviewEvidence)
+                            ]
+                        ]
+                    ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
+                    [
+                        SNew(SBorder)
+                        .Visibility(this, &SUnrealAssetAuditPanel::GetIssueViewVisibility)
+                        .BorderImage(FAppStyle::GetBrush(TEXT("Brushes.Header")))
+                        .BorderBackgroundColor(FLinearColor(0.055f, 0.06f, 0.045f, 1.0f))
+                        .Padding(FMargin(10, 6))
+                        [
+                            SNew(SHorizontalBox)
+                            + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0, 0, 8, 0)
+                            [SNew(STextBlock).Text(FText::FromString(TEXT("人工决定"))).Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))]
+                            + SHorizontalBox::Slot().AutoWidth()
+                            [
+                                SNew(SButton)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                                .Text(FText::FromString(TEXT("未复核")))
+                                .ForegroundColor_Lambda([this] { return DraftReviewDecision == TEXT("unreviewed") ? FSlateColor(CyanAccent) : FSlateColor::UseForeground(); })
+                                .IsEnabled_Lambda([this] { return SelectedReviewIssue.IsValid() && !SelectedReviewIssue->IssueId.IsEmpty(); })
+                                .OnClicked_Lambda([this] { return SetDraftReviewDecision(TEXT("unreviewed")); })
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(4, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                                .Text(FText::FromString(TEXT("需修复")))
+                                .ForegroundColor_Lambda([this] { return DraftReviewDecision == TEXT("fix_required") ? FSlateColor(RedAccent) : FSlateColor::UseForeground(); })
+                                .IsEnabled_Lambda([this] { return SelectedReviewIssue.IsValid() && !SelectedReviewIssue->IssueId.IsEmpty(); })
+                                .OnClicked_Lambda([this] { return SetDraftReviewDecision(TEXT("fix_required")); })
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(4, 0, 8, 0)
+                            [
+                                SNew(SButton)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                                .Text(FText::FromString(TEXT("批准例外")))
+                                .ForegroundColor_Lambda([this] { return DraftReviewDecision == TEXT("approved_exception") ? FSlateColor(GreenAccent) : FSlateColor::UseForeground(); })
+                                .IsEnabled_Lambda([this] { return SelectedReviewIssue.IsValid() && !SelectedReviewIssue->IssueId.IsEmpty(); })
+                                .OnClicked_Lambda([this] { return SetDraftReviewDecision(TEXT("approved_exception")); })
+                            ]
+                            + SHorizontalBox::Slot().FillWidth(0.22f).Padding(0, 0, 6, 0)
+                            [
+                                SAssignNew(ReviewOwnerInput, SEditableTextBox)
+                                .HintText(FText::FromString(TEXT("负责人（选填）")))
+                                .IsEnabled(this, &SUnrealAssetAuditPanel::CanSaveReviewDecision)
+                            ]
+                            + SHorizontalBox::Slot().FillWidth(0.48f).Padding(0, 0, 6, 0)
+                            [
+                                SAssignNew(ReviewNoteInput, SEditableTextBox)
+                                .HintText(FText::FromString(TEXT("备注：修复要求或例外依据")))
+                                .IsEnabled(this, &SUnrealAssetAuditPanel::CanSaveReviewDecision)
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth()
+                            [
+                                SNew(SButton)
+                                .Text(FText::FromString(TEXT("记录决定")))
+                                .IsEnabled(this, &SUnrealAssetAuditPanel::CanSaveReviewDecision)
+                                .OnClicked(this, &SUnrealAssetAuditPanel::SaveReviewDecision)
                             ]
                         ]
                     ]
@@ -733,7 +869,8 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                                 + SHeaderRow::Column(TEXT("Rule")).DefaultLabel(FText::FromString(TEXT("检查项"))).FillWidth(0.16f)
                                 + SHeaderRow::Column(TEXT("Observed")).DefaultLabel(FText::FromString(TEXT("实测"))).FixedWidth(82)
                                 + SHeaderRow::Column(TEXT("Expected")).DefaultLabel(FText::FromString(TEXT("阈值"))).FixedWidth(82)
-                                + SHeaderRow::Column(TEXT("Message")).DefaultLabel(FText::FromString(TEXT("证据说明"))).FillWidth(0.34f)
+                                + SHeaderRow::Column(TEXT("Review")).DefaultLabel(FText::FromString(TEXT("审阅"))).FixedWidth(86)
+                                + SHeaderRow::Column(TEXT("Message")).DefaultLabel(FText::FromString(TEXT("证据说明"))).FillWidth(0.30f)
                             )
                         ]
                         + SOverlay::Slot()
@@ -1195,6 +1332,7 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
     FailureCount = Root->GetIntegerField(TEXT("collection_failure_count"));
     ResultViewMode = 0;
     CurrentProfileId = Root->GetStringField(TEXT("profile_id"));
+    CurrentReportId = Root->GetStringField(TEXT("report_id"));
     CurrentProfileVersion = Root->GetStringField(TEXT("profile_version"));
     CurrentReportCreatedAt = Root->GetStringField(TEXT("created_at"));
     AllIssues.Reset();
@@ -1218,6 +1356,7 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         Item->Severity = Issue->GetStringField(TEXT("severity"));
         Item->AssetPath = Issue->GetStringField(TEXT("asset_path"));
         Item->RuleId = Issue->GetStringField(TEXT("rule_id"));
+        Item->IssueId = Issue->GetStringField(TEXT("issue_id"));
         Item->EvidenceId = Issue->GetStringField(TEXT("evidence_id"));
         const FString RawMessage = Issue->GetStringField(TEXT("message"));
         AssetsWithIssues.Add(Item->AssetPath);
@@ -1340,9 +1479,116 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
     }
     AllAssets.Sort([](const FAssetPtr& Left, const FAssetPtr& Right) { return Left->AssetPath < Right->AssetPath; });
     PassingAssetCount = FMath::Max(0, AssetCount - AssetsWithIssues.Num());
+    FString ReviewError;
+    const bool bReviewReady = RefreshReviewData(ReviewError);
     RebuildFilteredIssues();
     RebuildFilteredAssets();
-    StatusMessage = FString::Printf(TEXT("已载入报告 · %d 个资产 · %d 个问题"), AssetCount, IssueCount);
+    StatusMessage = bReviewReady
+        ? FString::Printf(TEXT("已载入报告 · %d 个资产 · %d 个问题 · 审阅台账已就绪"), AssetCount, IssueCount)
+        : FString::Printf(TEXT("已载入报告；审阅台账暂不可用：%s"), *ReviewError);
+    return true;
+}
+
+bool SUnrealAssetAuditPanel::RunReviewBridge(
+    const FString& FunctionName, const TSharedRef<FJsonObject>& Request, FString& OutError)
+{
+    IFileManager::Get().MakeDirectory(*ReviewLedgerRoot, true);
+    FString Json;
+    const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Json);
+    FJsonSerializer::Serialize(Request, Writer);
+    if (!FFileHelper::SaveStringToFile(
+        Json, *ReviewRequestPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
+    {
+        OutError = TEXT("无法写入审阅请求；原始 Report 未改变");
+        return false;
+    }
+    IPythonScriptPlugin* Python = IPythonScriptPlugin::Get();
+    if (!Python || (!Python->IsPythonInitialized() && !Python->ForceEnablePythonAtRuntime()))
+    {
+        OutError = TEXT("Python Script Plugin 未就绪");
+        return false;
+    }
+    FString PythonPath = ReviewRequestPath.Replace(TEXT("\\"), TEXT("/"));
+    PythonPath.ReplaceInline(TEXT("'"), TEXT("\\'"));
+    const FString Command = FString::Printf(
+        TEXT("import run_asset_audit; run_asset_audit.%s(r'%s')"), *FunctionName, *PythonPath);
+    if (!Python->ExecPythonCommand(*Command))
+    {
+        OutError = TEXT("审阅台账操作失败；原始 Report 和资产均未改变");
+        return false;
+    }
+    OutError.Reset();
+    return true;
+}
+
+bool SUnrealAssetAuditPanel::RefreshReviewData(FString& OutError)
+{
+    if (CurrentReportId.IsEmpty() || !FPaths::FileExists(ReportPath))
+    {
+        OutError = TEXT("当前没有可关联的 Report");
+        return false;
+    }
+    TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
+    Request->SetStringField(TEXT("report_path"), ReportPath);
+    Request->SetStringField(TEXT("review_ledger_root"), ReviewLedgerRoot);
+    Request->SetStringField(TEXT("review_view_path"), ReviewViewPath);
+    if (!RunReviewBridge(TEXT("refresh_review_view_from_request_file"), Request, OutError))
+    {
+        return false;
+    }
+    return LoadReviewView(OutError);
+}
+
+bool SUnrealAssetAuditPanel::LoadReviewView(FString& OutError)
+{
+    FString Json;
+    if (!FFileHelper::LoadFileToString(Json, *ReviewViewPath))
+    {
+        OutError = TEXT("找不到审阅视图");
+        return false;
+    }
+    TSharedPtr<FJsonObject> Root;
+    const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
+    if (!FJsonSerializer::Deserialize(Reader, Root) || !Root.IsValid()
+        || Root->GetStringField(TEXT("schema_version")) != TEXT("unreal-audit-review-view@1.0.0")
+        || Root->GetStringField(TEXT("report_id")) != CurrentReportId)
+    {
+        OutError = TEXT("审阅视图版本或 Report 身份不匹配");
+        return false;
+    }
+    for (const FIssuePtr& Item : AllIssues)
+    {
+        Item->ReviewDecision = TEXT("unreviewed");
+        Item->ReviewOwner.Reset();
+        Item->ReviewNote.Reset();
+    }
+    TMap<FString, FIssuePtr> IssuesByKey;
+    for (const FIssuePtr& Item : AllIssues)
+    {
+        IssuesByKey.Add(Item->IssueId + TEXT("|") + Item->EvidenceId, Item);
+    }
+    for (const TSharedPtr<FJsonValue>& Value : Root->GetArrayField(TEXT("records")))
+    {
+        const TSharedPtr<FJsonObject> Record = Value->AsObject();
+        if (!Record.IsValid()) continue;
+        const FString Key = Record->GetStringField(TEXT("issue_id"))
+            + TEXT("|") + Record->GetStringField(TEXT("evidence_id"));
+        if (FIssuePtr* Item = IssuesByKey.Find(Key))
+        {
+            (*Item)->ReviewDecision = Record->GetStringField(TEXT("decision"));
+            (*Item)->ReviewOwner = Record->GetStringField(TEXT("owner"));
+            (*Item)->ReviewNote = Record->GetStringField(TEXT("note"));
+        }
+    }
+    ReviewOrphanCount = Root->GetIntegerField(TEXT("orphan_count"));
+    if (SelectedReviewIssue.IsValid())
+    {
+        DraftReviewDecision = SelectedReviewIssue->ReviewDecision;
+        if (ReviewOwnerInput.IsValid()) ReviewOwnerInput->SetText(FText::FromString(SelectedReviewIssue->ReviewOwner));
+        if (ReviewNoteInput.IsValid()) ReviewNoteInput->SetText(FText::FromString(SelectedReviewIssue->ReviewNote));
+    }
+    RebuildFilteredIssues();
+    OutError.Reset();
     return true;
 }
 
@@ -1567,6 +1813,38 @@ bool SUnrealAssetAuditPanel::LocateSelectedAssetForEvidence(FString& OutError)
     return true;
 }
 
+bool SUnrealAssetAuditPanel::SetSelectedReviewForEvidence(
+    const FString& Decision, const FString& Owner, const FString& Note, FString& OutError)
+{
+    if (!SelectedReviewIssue.IsValid() || SelectedReviewIssue->IssueId.IsEmpty())
+    {
+        OutError = TEXT("没有可审阅的选中 Issue");
+        return false;
+    }
+    DraftReviewDecision = Decision;
+    TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
+    Request->SetStringField(TEXT("report_path"), ReportPath);
+    Request->SetStringField(TEXT("review_ledger_root"), ReviewLedgerRoot);
+    Request->SetStringField(TEXT("review_view_path"), ReviewViewPath);
+    Request->SetStringField(TEXT("issue_id"), SelectedReviewIssue->IssueId);
+    Request->SetStringField(TEXT("evidence_id"), SelectedReviewIssue->EvidenceId);
+    Request->SetStringField(TEXT("decision"), Decision);
+    Request->SetStringField(TEXT("owner"), Owner);
+    Request->SetStringField(TEXT("note"), Note);
+    return RunReviewBridge(TEXT("update_review_from_request_file"), Request, OutError)
+        && LoadReviewView(OutError);
+}
+
+int32 SUnrealAssetAuditPanel::GetEvidenceReviewedCount() const
+{
+    int32 Count = 0;
+    for (const FIssuePtr& Item : AllIssues)
+    {
+        if (!Item->IssueId.IsEmpty() && Item->ReviewDecision != TEXT("unreviewed")) ++Count;
+    }
+    return Count;
+}
+
 
 void SUnrealAssetAuditPanel::SetComparisonEvidenceView(const FString& FilterText)
 {
@@ -1632,13 +1910,20 @@ void SUnrealAssetAuditPanel::RebuildFilteredIssues()
     {
         const FString LocalRule = RuleLabel(Item->RuleId).ToString();
         const FString LocalSeverity = SeverityLabel(Item->Severity).ToString();
+        const FString LocalReview = ReviewDecisionLabel(Item->ReviewDecision).ToString();
         const bool bMatchesSearch = SearchText.IsEmpty()
             || Item->AssetPath.Contains(SearchText, ESearchCase::IgnoreCase)
             || Item->RuleId.Contains(SearchText, ESearchCase::IgnoreCase)
             || LocalRule.Contains(SearchText, ESearchCase::IgnoreCase)
             || LocalSeverity.Contains(SearchText, ESearchCase::IgnoreCase)
+            || LocalReview.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->ReviewOwner.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->ReviewNote.Contains(SearchText, ESearchCase::IgnoreCase)
             || Item->Message.Contains(SearchText, ESearchCase::IgnoreCase);
-        if (bMatchesSearch && RuleBelongsToRiskCategory(Item->RuleId, ActiveRiskCategory))
+        const bool bMatchesReview = ActiveReviewFilter.IsEmpty()
+            || (!Item->IssueId.IsEmpty() && Item->ReviewDecision == ActiveReviewFilter);
+        if (bMatchesSearch && bMatchesReview
+            && RuleBelongsToRiskCategory(Item->RuleId, ActiveRiskCategory))
         {
             FilteredIssues.Add(Item);
         }
@@ -1705,6 +1990,9 @@ void SUnrealAssetAuditPanel::HandleIssueSelectionChanged(FIssuePtr Item, ESelect
 {
     SelectedReviewIssue = Item;
     if (!Item.IsValid()) return;
+    DraftReviewDecision = Item->ReviewDecision;
+    if (ReviewOwnerInput.IsValid()) ReviewOwnerInput->SetText(FText::FromString(Item->ReviewOwner));
+    if (ReviewNoteInput.IsValid()) ReviewNoteInput->SetText(FText::FromString(Item->ReviewNote));
     SelectedReviewAsset.Reset();
     if (AssetList.IsValid()) AssetList->ClearSelection();
 }
@@ -1714,6 +2002,9 @@ void SUnrealAssetAuditPanel::HandleAssetSelectionChanged(FAssetPtr Item, ESelect
     SelectedReviewAsset = Item;
     if (!Item.IsValid()) return;
     SelectedReviewIssue.Reset();
+    DraftReviewDecision = TEXT("unreviewed");
+    if (ReviewOwnerInput.IsValid()) ReviewOwnerInput->SetText(FText::GetEmpty());
+    if (ReviewNoteInput.IsValid()) ReviewNoteInput->SetText(FText::GetEmpty());
     if (IssueList.IsValid()) IssueList->ClearSelection();
 }
 
@@ -1881,6 +2172,61 @@ FReply SUnrealAssetAuditPanel::CopyReviewEvidence()
     return FReply::Handled();
 }
 
+FReply SUnrealAssetAuditPanel::SetDraftReviewDecision(FString Decision)
+{
+    DraftReviewDecision = MoveTemp(Decision);
+    if (DraftReviewDecision == TEXT("unreviewed"))
+    {
+        if (ReviewOwnerInput.IsValid()) ReviewOwnerInput->SetText(FText::GetEmpty());
+        if (ReviewNoteInput.IsValid()) ReviewNoteInput->SetText(FText::GetEmpty());
+    }
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::SetReviewFilter(FString Decision)
+{
+    ActiveReviewFilter = ActiveReviewFilter == Decision ? FString() : MoveTemp(Decision);
+    RebuildFilteredIssues();
+    return FReply::Handled();
+}
+
+bool SUnrealAssetAuditPanel::CanSaveReviewDecision() const
+{
+    return SelectedReviewIssue.IsValid()
+        && !SelectedReviewIssue->IssueId.IsEmpty()
+        && !SelectedReviewIssue->EvidenceId.IsEmpty()
+        && (DraftReviewDecision == TEXT("unreviewed")
+            || DraftReviewDecision == TEXT("fix_required")
+            || DraftReviewDecision == TEXT("approved_exception"));
+}
+
+FReply SUnrealAssetAuditPanel::SaveReviewDecision()
+{
+    if (!CanSaveReviewDecision()) return FReply::Handled();
+    TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
+    Request->SetStringField(TEXT("report_path"), ReportPath);
+    Request->SetStringField(TEXT("review_ledger_root"), ReviewLedgerRoot);
+    Request->SetStringField(TEXT("review_view_path"), ReviewViewPath);
+    Request->SetStringField(TEXT("issue_id"), SelectedReviewIssue->IssueId);
+    Request->SetStringField(TEXT("evidence_id"), SelectedReviewIssue->EvidenceId);
+    Request->SetStringField(TEXT("decision"), DraftReviewDecision);
+    Request->SetStringField(
+        TEXT("owner"), ReviewOwnerInput.IsValid() ? ReviewOwnerInput->GetText().ToString() : FString());
+    Request->SetStringField(
+        TEXT("note"), ReviewNoteInput.IsValid() ? ReviewNoteInput->GetText().ToString() : FString());
+    FString Error;
+    if (!RunReviewBridge(TEXT("update_review_from_request_file"), Request, Error)
+        || !LoadReviewView(Error))
+    {
+        StatusMessage = Error;
+        return FReply::Handled();
+    }
+    StatusMessage = FString::Printf(
+        TEXT("已记录人工决定：%s · 规则事实和原始 Report 未改变"),
+        *ReviewDecisionLabel(DraftReviewDecision).ToString());
+    return FReply::Handled();
+}
+
 FReply SUnrealAssetAuditPanel::ShowAssetOverview()
 {
     ResultViewMode = 0;
@@ -1923,6 +2269,7 @@ FReply SUnrealAssetAuditPanel::ExportHandoff()
     TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
     Request->SetStringField(TEXT("report_path"), ReportPath);
     Request->SetStringField(TEXT("output_root"), HandoffRoot);
+    Request->SetStringField(TEXT("review_ledger_root"), ReviewLedgerRoot);
     FString Json;
     const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Json);
     FJsonSerializer::Serialize(Request, Writer);
@@ -2169,6 +2516,37 @@ FText SUnrealAssetAuditPanel::GetResultViewHint() const
         return FText::Format(FText::FromString(TEXT("显示 {0} 条可追溯问题")), FilteredIssues.Num());
     }
     return FText::Format(FText::FromString(TEXT("显示 {0} 条质量变化")), FilteredComparisons.Num());
+}
+
+FText SUnrealAssetAuditPanel::GetReviewProgressText() const
+{
+    int32 Reviewable = 0;
+    int32 Reviewed = 0;
+    for (const FIssuePtr& Item : AllIssues)
+    {
+        if (Item->IssueId.IsEmpty()) continue;
+        ++Reviewable;
+        if (Item->ReviewDecision != TEXT("unreviewed")) ++Reviewed;
+    }
+    return FText::Format(
+        FText::FromString(TEXT("审阅刻度 {0}/{1}")), Reviewed, Reviewable);
+}
+
+FText SUnrealAssetAuditPanel::GetReviewFilterLabel(FString Decision) const
+{
+    int32 Count = 0;
+    for (const FIssuePtr& Item : AllIssues)
+    {
+        if (!Item->IssueId.IsEmpty() && Item->ReviewDecision == Decision) ++Count;
+    }
+    return FText::Format(FText::FromString(TEXT("{0} {1}")), ReviewDecisionLabel(Decision), Count);
+}
+
+FText SUnrealAssetAuditPanel::GetReviewOrphanText() const
+{
+    return ReviewOrphanCount > 0
+        ? FText::Format(FText::FromString(TEXT("孤儿记录 {0} · 未套用")), ReviewOrphanCount)
+        : FText::FromString(TEXT("台账独立于 Report"));
 }
 
 EVisibility SUnrealAssetAuditPanel::GetAssetViewVisibility() const

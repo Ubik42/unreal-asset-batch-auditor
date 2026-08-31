@@ -193,3 +193,19 @@ Cook 依赖、运行时 residency、Shader 编译成本、GPU 性能或跨版本
 自动化只证明真实对象解析、Content Browser 同步和 Slate 状态，不冒充可见鼠标点击。打开 Static Mesh
 Editor 的入口已完成 UE 编译；当前宿主门禁不声明人工可见打开验证、资产修改或跨版本兼容。进程记录中
 `preexisting_processes_managed_by_test=false`；但既有 PID 未在结束快照中出现，所以也不声明该会话由测试保活。
+
+## 2026-08-30 v0.10-dev2 审阅决策台账
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| Python 合同与边界 | 通过；79 项测试、Ruff 和全部 JSON 可解析 | 本仓测试输出；Review Ledger 定向覆盖 5 项 |
+| BuildPlugin | 通过；UE 5.8 Win64 完成 UHT、C++ 编译、链接与打包 | 本机忽略目录 `artifacts/host-build/UE_5.8-v0.10.0-dev2` |
+| 独立宿主持久化 | 通过；真实 BasicShapes Report 写入 1 条需修复、1 条批准例外，重新加载后精确映射 | `artifacts/host-validation/m13/panel-lifecycle-UE_5.8-v0.10.0-dev2-review-ledger.json` |
+| Report 不变 | 通过；宿主测试在台账操作前后比较源 Report 文本完全一致 | 同上自动化日志 |
+| 台账产物 | 通过；宿主生成的 v1 sidecar 与 SHA-256 已保存 | `artifacts/host-validation/m13/review-ledger-UE_5.8-v0.10.0-dev2-review-ledger/` |
+| 团队交接 | 通过；HTML、CSV 与清单包含审阅决定、负责人、备注和台账哈希 | `artifacts/host-validation/m13/review-handoff/` |
+| 原生 Slate | 通过；15 张当前截图，审阅刻度显示 2/12 | `docs/images/workflow/v0.10-review-ledger/13-review-ledger.png` |
+| 进程隔离 | 通过；脚本只管理自己启动的精确测试 PID，该进程正常退出，测试前后没有用户 UE 进程 | 宿主 JSON 记录 |
+
+本轮证明本地单用户 sidecar、精确 Issue/Evidence 映射和离线团队交接；不声明多人并发、账号权限、
+外部工单同步或资产修复。自动化截图与 Content Browser 同步不冒充人工可见鼠标操作。

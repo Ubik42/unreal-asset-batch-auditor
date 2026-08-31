@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0022",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 22,
+  "completedSlice": "M13-S1",
+  "summary": "v0.10.0-dev2 增加独立人工审阅闭环：规则事实保留在不可变 Report，需修复、批准例外、负责人和备注进入精确绑定的 Review Ledger，并随团队交接包导出。",
+  "evidence": [
+    "Review Ledger v1 以 Report SHA-256、Issue ID 和 Evidence ID 绑定记录，缺少记录表示未复核",
+    "台账采用临时文件加原子替换；损坏 JSON 隔离，同名但内容变化的 Report 不复用旧决定",
+    "Slate 审阅刻度显示未复核、需修复和批准例外数量，支持筛选、负责人、备注与行内状态",
+    "团队 HTML、CSV 和交接清单包含审阅状态、负责人、备注、台账文件名与 SHA-256，不泄露绝对路径",
+    "79 项 Python 测试与 Ruff 通过，全部 contracts JSON 可解析",
+    "UE 5.8 Win64 BuildPlugin UE_5.8-v0.10.0-dev2 成功",
+    "独立隐藏宿主对真实 BasicShapes Report 写入两条决定、重新加载精确映射，并确认源 Report 文本不变",
+    "精确测试 PID 正常退出且未管理其他 UE 会话，进程归属记录在宿主 JSON，15 张 Slate 截图已保存",
+    "结构化证据、台账和带审阅字段的交接包位于 artifacts/host-validation/m13"
+  ],
+  "nextSlice": "M14-S1",
+  "knownLimits": [
+    "只验证 Windows 11、Win64 与 UE 5.8",
+    "当前为本地单用户台账，不含多人并发、账号权限或外部工单同步",
+    "批准例外是人工记录，不改变 Profile、规则严重度或后续 Report",
+    "所有功能保持只读，不修改、保存、重命名或移动资产"
+  ]
+}

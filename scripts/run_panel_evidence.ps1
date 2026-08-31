@@ -69,31 +69,23 @@ $arguments = @(
 )
 $startedAt = [DateTimeOffset]::UtcNow
 $process = Start-Process -FilePath $editorCmd -ArgumentList $arguments -PassThru -WindowStyle Hidden
-$ownedPids = [Collections.Generic.HashSet[int]]::new()
-[void]$ownedPids.Add($process.Id)
+$concurrentPids = [Collections.Generic.HashSet[int]]::new()
 $deadline = [DateTimeOffset]::UtcNow.AddSeconds($TimeoutSeconds)
 while (-not $process.HasExited -and [DateTimeOffset]::UtcNow -lt $deadline) {
     foreach ($id in @(Get-Process UnrealEditor, UnrealEditor-Cmd -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)) {
-        if ($id -notin $existing) { [void]$ownedPids.Add($id) }
+        if ($id -ne $process.Id -and $id -notin $existing) { [void]$concurrentPids.Add($id) }
     }
     Start-Sleep -Milliseconds 250
 }
 $timedOut = -not $process.HasExited
 if ($timedOut) {
-    foreach ($id in $ownedPids) {
-        Stop-Process -Id $id -Force -ErrorAction SilentlyContinue
-    }
+    Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
 } else {
-    $cleanupDeadline = [DateTimeOffset]::UtcNow.AddSeconds(10)
-    do {
-        $newUnreal = @(
-            Get-Process UnrealEditor, UnrealEditor-Cmd -ErrorAction SilentlyContinue |
-                Where-Object { $_.Id -notin $existing } |
-                Select-Object -ExpandProperty Id
-        )
-        foreach ($id in $newUnreal) { [void]$ownedPids.Add($id) }
-        if ($newUnreal.Count -gt 0) { Start-Sleep -Milliseconds 250 }
-    } while ($newUnreal.Count -gt 0 -and [DateTimeOffset]::UtcNow -lt $cleanupDeadline)
+    $ownedExitDeadline = [DateTimeOffset]::UtcNow.AddSeconds(10)
+    while ((Get-Process -Id $process.Id -ErrorAction SilentlyContinue) -and
+        [DateTimeOffset]::UtcNow -lt $ownedExitDeadline) {
+        Start-Sleep -Milliseconds 100
+    }
 }
 $finishedAt = [DateTimeOffset]::UtcNow
 $logPath = Join-Path $runtime "Saved\Logs\UnrealAssetBatchAuditorHost.log"
@@ -135,7 +127,36 @@ $taskArtifacts = if ($PanelOnly) { @() } else { @(Get-ChildItem -LiteralPath $ta
         sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
     }
 }) }
-$after = @(Get-Process UnrealEditor, UnrealEditor-Cmd -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+$reviewSource = Join-Path $runtime "Saved\UnrealAssetBatchAuditor\Reviews"
+$reviewEvidenceRoot = Join-Path $repoRoot "artifacts\host-validation\$EvidenceMilestone\review-ledger-$evidenceLabel"
+$resolvedReviewEvidenceRoot = [IO.Path]::GetFullPath($reviewEvidenceRoot)
+if (-not $resolvedReviewEvidenceRoot.StartsWith([IO.Path]::GetFullPath($repoRoot), [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Review evidence target escaped repository: $resolvedReviewEvidenceRoot"
+}
+$reviewSourceFiles = if (Test-Path -LiteralPath $reviewSource) {
+    @(Get-ChildItem -LiteralPath $reviewSource -Filter '*.review.v1.json' -File)
+} else { @() }
+if ($reviewSourceFiles.Count -gt 0) {
+    if (Test-Path -LiteralPath $reviewEvidenceRoot) {
+        Remove-Item -LiteralPath $reviewEvidenceRoot -Recurse -Force
+    }
+    New-Item -ItemType Directory -Path $reviewEvidenceRoot -Force | Out-Null
+    foreach ($sourceFile in $reviewSourceFiles) {
+        Copy-Item -LiteralPath $sourceFile.FullName -Destination (Join-Path $reviewEvidenceRoot $sourceFile.Name)
+    }
+}
+[array]$reviewArtifacts = if (Test-Path -LiteralPath $reviewEvidenceRoot) {
+    @(Get-ChildItem -LiteralPath $reviewEvidenceRoot -File | Sort-Object Name | ForEach-Object {
+        [ordered]@{
+            path = [IO.Path]::GetRelativePath($repoRoot, $_.FullName).Replace('\', '/')
+            bytes = $_.Length
+            sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+        }
+    })
+} else { @() }
+$afterObserved = @(Get-Process UnrealEditor, UnrealEditor-Cmd -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+$ownedPidVisibleAtSnapshot = $process.Id -in $afterObserved
+$after = @($afterObserved | Where-Object { $_ -ne $process.Id })
 $existingSurvived = @($existing | Where-Object { $_ -notin $after }).Count -eq 0
 $missingPreexisting = @($existing | Where-Object { $_ -notin $after })
 $screenshots = @(Get-ChildItem -LiteralPath $OutputDirectory -Filter '*.png' | Sort-Object Name | ForEach-Object {
@@ -152,7 +173,8 @@ $result = [ordered]@{
     plugin_build = $BuildLabel
     execution = "independent hidden UnrealEditor-Cmd -RenderOffscreen"
     test_pid = $process.Id
-    created_unreal_pids = @($ownedPids | Sort-Object)
+    created_unreal_pids = @($process.Id)
+    concurrent_unreal_pids_observed = @($concurrentPids | Sort-Object)
     existing_unreal_pids_before = $existing
     existing_unreal_pids_after = $after
     existing_processes_survived = $existingSurvived
@@ -164,6 +186,7 @@ $result = [ordered]@{
     timed_out = $timedOut
     exit_code = $process.ExitCode
     process_exited = $process.HasExited
+    owned_pid_visible_at_snapshot = $ownedPidVisibleAtSnapshot
     automation_tests = if ($PanelOnly) { @("UnrealAssetBatchAuditor.PanelEvidence") } else { @(
         "UnrealAssetBatchAuditor.PanelEvidence", "UnrealAssetBatchAuditor.PanelTaskLifecycle") }
     automation_passed = $automationPassed
@@ -180,6 +203,8 @@ $result = [ordered]@{
     screenshots = $screenshots
     task_artifact_count = $taskArtifacts.Count
     task_artifacts = $taskArtifacts
+    review_artifact_count = $reviewArtifacts.Count
+    review_artifacts = $reviewArtifacts
     claims_user_interaction = $false
     claims_visible_editor_review = $false
 }

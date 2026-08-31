@@ -39,6 +39,10 @@ failed 状态、对象/批次计数和最终产物路径。状态文件采用原
 `unreal-audit-handoff@1.0.0` 是 HTML/CSV 交接目录的清单，固定记录源 Report、Profile、宿主、验证边界、
 统计摘要和文件 SHA-256。导出器只消费已有 Report，不重新采集或修改资产。
 
+`unreal-audit-review-ledger@1.0.0` 是人工审阅 sidecar，以 Report SHA-256、Issue ID 和 Evidence ID
+绑定“需修复 / 批准例外”、负责人和备注。缺少记录表示未复核。它不改写 Report；同名报告内容变化时
+旧决定进入孤儿记录，损坏 JSON 会被重命名隔离。
+
 ## 项目预设与无人值守摘要
 
 `unreal-asset-audit-preset@1.0.0` 把 Profile、显式 asset/folder 范围、批大小、阻断严重度和输出位置绑定为

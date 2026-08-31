@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 import pytest
-from unreal_asset_batch_auditor import HandoffError, export_handoff
+from unreal_asset_batch_auditor import HandoffError, export_handoff, update_review
 
 
 def _report(*, real: bool, cancelled: int = 0) -> dict:
@@ -115,6 +115,37 @@ def test_handoff_is_byte_deterministic_and_labels_fixture_boundary(tmp_path: Pat
     assert "离线 Fixture 验证" in page
     assert "不能作为 Unreal 编译、加载或真实资产验证证据" in page
     assert "已取消，保留部分结果" in page
+
+
+def test_handoff_includes_review_decisions_without_changing_report(tmp_path: Path) -> None:
+    report_path = tmp_path / "report.json"
+    report_path.write_text(json.dumps(_report(real=True), ensure_ascii=False), encoding="utf-8")
+    before = report_path.read_bytes()
+    reviews = tmp_path / "Reviews"
+    update_review(
+        report_path,
+        reviews,
+        issue_id="issue-1",
+        evidence_id="ev-1",
+        decision="fix_required",
+        owner="场景组 / 阿岚",
+        note="减少材质槽后重新提交",
+    )
+
+    result = export_handoff(report_path, tmp_path / "exports", reviews)
+    rows = list(
+        csv.DictReader(io.StringIO(result.csv_path.read_bytes().decode("utf-8-sig")))
+    )
+    assert rows[0]["审阅决定"] == "需修复"
+    assert rows[0]["负责人"] == "场景组 / 阿岚"
+    assert rows[0]["审阅备注"] == "减少材质槽后重新提交"
+    assert "人工审阅" in result.html_path.read_text(encoding="utf-8")
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["review"]["reviewed_count"] == 1
+    assert manifest["review"]["fix_required_count"] == 1
+    assert manifest["review"]["ledger_file"] == "report-handoff.review.v1.json"
+    assert len(manifest["review"]["ledger_sha256"]) == 64
+    assert report_path.read_bytes() == before
 
 
 def test_handoff_rejects_incomplete_report(tmp_path: Path) -> None:
