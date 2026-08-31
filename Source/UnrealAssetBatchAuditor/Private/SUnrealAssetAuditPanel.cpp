@@ -57,8 +57,17 @@ bool IsMaterialAssetClass(const FTopLevelAssetPath& ClassPath)
         || ClassPath == UMaterialInstanceConstant::StaticClass()->GetClassPathName();
 }
 
+FString DeliveryPackageAssetType(const FTopLevelAssetPath& ClassPath)
+{
+    if (ClassPath == UStaticMesh::StaticClass()->GetClassPathName()) return TEXT("static_mesh");
+    if (ClassPath == UTexture2D::StaticClass()->GetClassPathName()) return TEXT("texture2d");
+    if (IsMaterialAssetClass(ClassPath)) return TEXT("material_interface");
+    return FString();
+}
+
 FString CurrentTrackTechnicalLabel(const FString& AssetType)
 {
+    if (AssetType == TEXT("delivery_package")) return TEXT("模型 / 纹理 / 材质交付包");
     if (AssetType == TEXT("texture2d")) return TEXT("Texture2D");
     if (AssetType == TEXT("material_interface")) return TEXT("Material Interface");
     return TEXT("Static Mesh");
@@ -66,6 +75,7 @@ FString CurrentTrackTechnicalLabel(const FString& AssetType)
 
 FString CurrentTrackChineseLabel(const FString& AssetType)
 {
+    if (AssetType == TEXT("delivery_package")) return TEXT("交付包");
     if (AssetType == TEXT("texture2d")) return TEXT("纹理");
     if (AssetType == TEXT("material_interface")) return TEXT("材质");
     return TEXT("模型");
@@ -599,7 +609,10 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
             TEXT("texture2d"), TEXT("纹理交付轨道"), TEXT("Texture2D · 尺寸、Mip、分组、压缩、色彩空间与流送")}),
         MakeShared<FAuditAssetTypeOption>(FAuditAssetTypeOption{
             TEXT("material_interface"), TEXT("材质血缘轨道"),
-            TEXT("Material / Instance · 渲染状态、父级链与纹理负载")})
+            TEXT("Material / Instance · 渲染状态、父级链与纹理负载")}),
+        MakeShared<FAuditAssetTypeOption>(FAuditAssetTypeOption{
+            TEXT("delivery_package"), TEXT("交付包总检"),
+            TEXT("一次范围校准 · 模型 / 纹理 / 材质三条验收泳道")})
     };
     SelectedAssetType = AssetTypeOptions[0];
     ProjectProfileRoot = FPaths::Combine(FPaths::ProjectConfigDir(), TEXT("AssetAudit/Profiles"));
@@ -617,11 +630,22 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
         FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Views/current-delivery-groups.v1.json"));
     DeliveryGroupRequestPath = FPaths::Combine(
         FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Views/delivery-groups-request.v1.json"));
+    PackageSummaryPath = FPaths::Combine(
+        FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Packages/latest-package-summary.json"));
+    PackageReportsRoot = FPaths::Combine(
+        FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Packages/LaneReports"));
+    PackageTaskRoot = FPaths::Combine(
+        FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Packages/Tasks"));
     ProfileCloneRequestPath = FPaths::Combine(
         FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Profiles/clone-request.v1.json"));
     ProfileCloneResultPath = FPaths::Combine(
         FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Profiles/clone-result.v1.json"));
     StatusMessage = TEXT("选择交付轨道，再读取对应资产或文件夹");
+    PackageLanes = {
+        FAuditPackageLane{TEXT("static_mesh"), TEXT("模型泳道"), TEXT("Static Mesh")},
+        FAuditPackageLane{TEXT("texture2d"), TEXT("纹理泳道"), TEXT("Texture2D")},
+        FAuditPackageLane{TEXT("material_interface"), TEXT("材质泳道"), TEXT("Material / Instance")}
+    };
 
     ChildSlot
     [
@@ -729,6 +753,7 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                             [
                                 SNew(SButton)
                                 .Text(FText::FromString(TEXT("复制为项目标准")))
+                                .IsEnabled_Lambda([this] { return CurrentAssetType != TEXT("delivery_package"); })
                                 .ToolTipText(FText::FromString(TEXT("内置模板保持只读；副本保存在工程 Config/AssetAudit/Profiles")))
                                 .OnClicked(this, &SUnrealAssetAuditPanel::CloneSelectedProfile)
                             ]
@@ -880,6 +905,10 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                     + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
                     [
                         SNew(SBorder)
+                        .Visibility_Lambda([this]
+                        {
+                            return ResultViewMode == 4 ? EVisibility::Collapsed : EVisibility::Visible;
+                        })
                         .BorderImage(FAppStyle::GetBrush(TEXT("Brushes.Header")))
                         .BorderBackgroundColor(FLinearColor(0.065f, 0.075f, 0.078f, 1.0f))
                         .Padding(FMargin(10, 7))
@@ -907,6 +936,10 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                     + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
                     [
                         SNew(SHorizontalBox)
+                        .Visibility_Lambda([this]
+                        {
+                            return ResultViewMode == 4 ? EVisibility::Collapsed : EVisibility::Visible;
+                        })
                         + SHorizontalBox::Slot().AutoWidth()
                         [
                             SNew(SButton)
@@ -1154,6 +1187,56 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         SNew(SOverlay)
                         + SOverlay::Slot()
                         [
+                            SNew(SVerticalBox)
+                            .Visibility(this, &SUnrealAssetAuditPanel::GetPackageViewVisibility)
+                            + SVerticalBox::Slot().AutoHeight().Padding(2, 2, 2, 10)
+                            [
+                                SNew(SHorizontalBox)
+                                + SHorizontalBox::Slot().FillWidth(1)
+                                [
+                                    SNew(SVerticalBox)
+                                    + SVerticalBox::Slot().AutoHeight()
+                                    [
+                                        SNew(STextBlock)
+                                        .Text(FText::FromString(TEXT("三轨验收泳道")))
+                                        .Font(FAppStyle::GetFontStyle(TEXT("HeadingMedium")))
+                                        .ColorAndOpacity(CyanAccent)
+                                    ]
+                                    + SVerticalBox::Slot().AutoHeight().Padding(0, 3, 0, 0)
+                                    [
+                                        SNew(STextBlock)
+                                        .Text(FText::FromString(TEXT("一次圈定交付范围；模型、纹理、材质分别按项目标准留证。")))
+                                        .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                                    ]
+                                ]
+                                + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
+                                [
+                                    SNew(STextBlock)
+                                    .Text_Lambda([this]
+                                    {
+                                        return FText::Format(
+                                            FText::FromString(TEXT("阻断问题 {0}  ·  未纳入 {1}")),
+                                            PackageBlockingIssueCount,
+                                            PackageIgnoredItems.Num());
+                                    })
+                                    .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+                                    .ColorAndOpacity_Lambda([this]
+                                    {
+                                        return PackageBlockingIssueCount > 0
+                                            ? FSlateColor(RedAccent) : FSlateColor(GreenAccent);
+                                    })
+                                ]
+                            ]
+                            + SVerticalBox::Slot().FillHeight(1)
+                            [
+                                SNew(SHorizontalBox)
+                                + SHorizontalBox::Slot().FillWidth(1)[BuildPackageLaneCard(0)]
+                                + SHorizontalBox::Slot().FillWidth(1).Padding(8, 0)[BuildPackageLaneCard(1)]
+                                + SHorizontalBox::Slot().FillWidth(1)[BuildPackageLaneCard(2)]
+                            ]
+                        ]
+                        + SOverlay::Slot()
+                        [
                             SAssignNew(DeliveryGroupList, SListView<FDeliveryGroupPtr>)
                             .Visibility(this, &SUnrealAssetAuditPanel::GetDeliveryGroupViewVisibility)
                             .ListItemsSource(&FilteredDeliveryGroups)
@@ -1341,16 +1424,28 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                             + SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)
                             [
                                 SNew(STextBlock)
-                                .Text_Lambda([this] { return FText::FromString(ReportPath); })
+                                .Text_Lambda([this]
+                                {
+                                    return FText::FromString(CurrentAssetType == TEXT("delivery_package")
+                                        ? PackageSummaryPath : ReportPath);
+                                })
                                 .Font(FAppStyle::GetFontStyle(TEXT("SmallFont")))
                                 .ColorAndOpacity(FSlateColor::UseSubduedForeground())
-                                .ToolTipText_Lambda([this] { return FText::FromString(ReportPath); })
+                                .ToolTipText_Lambda([this]
+                                {
+                                    return FText::FromString(CurrentAssetType == TEXT("delivery_package")
+                                        ? PackageSummaryPath : ReportPath);
+                                })
                             ]
                             + SHorizontalBox::Slot().AutoWidth().Padding(8, 0, 0, 0)
                             [
                                 SNew(SButton)
                                 .Text(FText::FromString(TEXT("打开最新报告")))
-                                .IsEnabled_Lambda([this] { return FPaths::FileExists(ReportPath); })
+                                .IsEnabled_Lambda([this]
+                                {
+                                    return FPaths::FileExists(CurrentAssetType == TEXT("delivery_package")
+                                        ? PackageSummaryPath : ReportPath);
+                                })
                                 .OnClicked(this, &SUnrealAssetAuditPanel::OpenReportFile)
                             ]
                             + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
@@ -1383,7 +1478,15 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
     ];
 
     RefreshSelection();
-    if (FPaths::FileExists(ReportPath))
+    if (CurrentAssetType == TEXT("delivery_package") && FPaths::FileExists(PackageSummaryPath))
+    {
+        FString LoadError;
+        if (!LoadDeliveryPackageSummary(PackageSummaryPath, LoadError))
+        {
+            StatusMessage = FString::Printf(TEXT("三轨结果已写入，但总检摘要读取失败：%s"), *LoadError);
+        }
+    }
+    else if (FPaths::FileExists(ReportPath))
     {
         FString LoadError;
         LoadReport(ReportPath, LoadError);
@@ -1439,6 +1542,119 @@ TSharedRef<SWidget> SUnrealAssetAuditPanel::BuildRiskCell(
         ];
 }
 
+TSharedRef<SWidget> SUnrealAssetAuditPanel::BuildPackageLaneCard(int32 LaneIndex)
+{
+    const FLinearColor LaneAccent = LaneIndex == 0 ? CyanAccent : (LaneIndex == 1 ? GreenAccent : AmberAccent);
+    const auto LaneStatusText = [this, LaneIndex]()
+    {
+        if (!PackageLanes.IsValidIndex(LaneIndex)) return FText::FromString(TEXT("未开始"));
+        const FAuditPackageLane& Lane = PackageLanes[LaneIndex];
+        if (Lane.State == TEXT("failed")) return FText::FromString(TEXT("采集失败"));
+        if (Lane.State == TEXT("cancelled")) return FText::FromString(TEXT("已取消"));
+        if (Lane.State == TEXT("skipped")) return FText::FromString(TEXT("未纳入"));
+        if (Lane.BlockingIssueCount > 0) return FText::FromString(TEXT("阻断"));
+        if (Lane.IssueAssetCount > 0) return FText::FromString(TEXT("待复核"));
+        return FText::FromString(TEXT("通过"));
+    };
+
+    return SNew(SBorder)
+        .BorderImage(FAppStyle::GetBrush(TEXT("Brushes.Header")))
+        .BorderBackgroundColor(FLinearColor(LaneAccent.R * 0.08f, LaneAccent.G * 0.08f, LaneAccent.B * 0.08f, 1.0f))
+        .Padding(FMargin(14, 13))
+        [
+            SNew(SVerticalBox)
+            + SVerticalBox::Slot().AutoHeight()
+            [
+                SNew(SHorizontalBox)
+                + SHorizontalBox::Slot().FillWidth(1)
+                [
+                    SNew(SVerticalBox)
+                    + SVerticalBox::Slot().AutoHeight()
+                    [
+                        SNew(STextBlock)
+                        .Text_Lambda([this, LaneIndex]
+                        {
+                            return FText::FromString(PackageLanes.IsValidIndex(LaneIndex)
+                                ? PackageLanes[LaneIndex].Label : TEXT("验收轨道"));
+                        })
+                        .Font(FAppStyle::GetFontStyle(TEXT("HeadingSmall")))
+                        .ColorAndOpacity(LaneAccent)
+                    ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(0, 2, 0, 0)
+                    [
+                        SNew(STextBlock)
+                        .Text_Lambda([this, LaneIndex]
+                        {
+                            return FText::FromString(PackageLanes.IsValidIndex(LaneIndex)
+                                ? PackageLanes[LaneIndex].TechnicalLabel : FString());
+                        })
+                        .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                    ]
+                ]
+                + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Top)
+                [
+                    SNew(STextBlock)
+                    .Text_Lambda(LaneStatusText)
+                    .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+                    .ColorAndOpacity_Lambda([this, LaneIndex, LaneAccent]
+                    {
+                        if (!PackageLanes.IsValidIndex(LaneIndex)) return FSlateColor::UseSubduedForeground();
+                        const FAuditPackageLane& Lane = PackageLanes[LaneIndex];
+                        return Lane.State == TEXT("failed") || Lane.BlockingIssueCount > 0
+                            ? FSlateColor(RedAccent) : FSlateColor(LaneAccent);
+                    })
+                ]
+            ]
+            + SVerticalBox::Slot().AutoHeight().Padding(0, 16, 0, 0)
+            [
+                SNew(STextBlock)
+                .Text_Lambda([this, LaneIndex]
+                {
+                    if (!PackageLanes.IsValidIndex(LaneIndex)) return FText::GetEmpty();
+                    const FAuditPackageLane& Lane = PackageLanes[LaneIndex];
+                    return FText::Format(
+                        FText::FromString(TEXT("覆盖 {0}/{1}  ·  通过 {2}  ·  需处理 {3}")),
+                        Lane.ProcessedCount, Lane.RequestedCount,
+                        Lane.PassedAssetCount, Lane.IssueAssetCount);
+                })
+                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+            ]
+            + SVerticalBox::Slot().AutoHeight().Padding(0, 7, 0, 0)
+            [
+                SNew(STextBlock)
+                .Text_Lambda([this, LaneIndex]
+                {
+                    if (!PackageLanes.IsValidIndex(LaneIndex)) return FText::GetEmpty();
+                    const FAuditPackageLane& Lane = PackageLanes[LaneIndex];
+                    const FString Hotspot = Lane.HotspotPath.IsEmpty() ? TEXT("暂无风险热区")
+                        : FString::Printf(TEXT("热区 %s · %d 项"), *Lane.HotspotPath, Lane.HotspotIssueCount);
+                    return FText::FromString(FString::Printf(
+                        TEXT("问题 %d  ·  阻断 %d  ·  采集异常 %d\n%s"),
+                        Lane.IssueCount, Lane.BlockingIssueCount, Lane.CollectionFailureCount, *Hotspot));
+                })
+                .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                .AutoWrapText(true)
+            ]
+            + SVerticalBox::Slot().FillHeight(1)
+            + SVerticalBox::Slot().AutoHeight().Padding(0, 14, 0, 0)
+            [
+                SNew(SButton)
+                .Text_Lambda([this, LaneIndex]
+                {
+                    const FString Label = PackageLanes.IsValidIndex(LaneIndex)
+                        ? PackageLanes[LaneIndex].Label : TEXT("轨道");
+                    return FText::FromString(FString::Printf(TEXT("进入%s台账"), *Label));
+                })
+                .IsEnabled_Lambda([this, LaneIndex]
+                {
+                    return PackageLanes.IsValidIndex(LaneIndex)
+                        && FPaths::FileExists(PackageLanes[LaneIndex].ReportPath);
+                })
+                .OnClicked_Lambda([this, LaneIndex] { return OpenPackageLane(LaneIndex); })
+            ]
+        ];
+}
+
 FReply SUnrealAssetAuditPanel::ToggleRiskCategory(FString Category)
 {
     ActiveRiskCategory = ActiveRiskCategory == Category ? FString() : MoveTemp(Category);
@@ -1460,14 +1676,30 @@ void SUnrealAssetAuditPanel::RebuildSelectionFromInternalFolders(
         AssetRegistryModule.Get().GetAssetsByPath(FName(*InternalFolder), FolderAssets, true, true);
         for (const FAssetData& Asset : FolderAssets)
         {
-            const bool bMatchesTrack = CurrentAssetType == TEXT("texture2d")
+            const FString PackageType = DeliveryPackageAssetType(Asset.AssetClassPath);
+            const bool bMatchesTrack = CurrentAssetType == TEXT("delivery_package")
+                ? !PackageType.IsEmpty()
+                : (CurrentAssetType == TEXT("texture2d")
                 ? Asset.AssetClassPath == UTexture2D::StaticClass()->GetClassPathName()
                 : (CurrentAssetType == TEXT("material_interface")
                     ? IsMaterialAssetClass(Asset.AssetClassPath)
-                    : Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName());
+                    : Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName()));
             if (bMatchesTrack)
             {
-                FolderAssetPaths.Add(Asset.GetSoftObjectPath().ToString());
+                const FString ObjectPath = Asset.GetSoftObjectPath().ToString();
+                FolderAssetPaths.Add(ObjectPath);
+                if (CurrentAssetType == TEXT("delivery_package"))
+                {
+                    if (PackageType == TEXT("static_mesh")) PackageStaticMeshPaths.AddUnique(ObjectPath);
+                    else if (PackageType == TEXT("texture2d")) PackageTexturePaths.AddUnique(ObjectPath);
+                    else if (PackageType == TEXT("material_interface")) PackageMaterialPaths.AddUnique(ObjectPath);
+                }
+            }
+            else if (CurrentAssetType == TEXT("delivery_package"))
+            {
+                ++IgnoredSelectionCount;
+                PackageIgnoredItems.AddUnique(FString::Printf(
+                    TEXT("%s|%s"), *Asset.GetSoftObjectPath().ToString(), *Asset.AssetClassPath.ToString()));
             }
         }
     }
@@ -1480,6 +1712,10 @@ FReply SUnrealAssetAuditPanel::RefreshSelection()
 {
     SelectedAssetPaths.Reset();
     SelectedFolderPaths.Reset();
+    PackageStaticMeshPaths.Reset();
+    PackageTexturePaths.Reset();
+    PackageMaterialPaths.Reset();
+    PackageIgnoredItems.Reset();
     DiscoveredFolderAssetCount = 0;
     IgnoredSelectionCount = 0;
     FContentBrowserModule& ContentBrowser = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
@@ -1488,18 +1724,33 @@ FReply SUnrealAssetAuditPanel::RefreshSelection()
     TSet<FString> UniqueAssetPaths;
     for (const FAssetData& Asset : SelectedAssets)
     {
-        const bool bMatchesTrack = CurrentAssetType == TEXT("texture2d")
+        const FString PackageType = DeliveryPackageAssetType(Asset.AssetClassPath);
+        const bool bMatchesTrack = CurrentAssetType == TEXT("delivery_package")
+            ? !PackageType.IsEmpty()
+            : (CurrentAssetType == TEXT("texture2d")
             ? Asset.AssetClassPath == UTexture2D::StaticClass()->GetClassPathName()
             : (CurrentAssetType == TEXT("material_interface")
                 ? IsMaterialAssetClass(Asset.AssetClassPath)
-                : Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName());
+                : Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName()));
         if (bMatchesTrack)
         {
-            UniqueAssetPaths.Add(Asset.GetSoftObjectPath().ToString());
+            const FString ObjectPath = Asset.GetSoftObjectPath().ToString();
+            UniqueAssetPaths.Add(ObjectPath);
+            if (CurrentAssetType == TEXT("delivery_package"))
+            {
+                if (PackageType == TEXT("static_mesh")) PackageStaticMeshPaths.AddUnique(ObjectPath);
+                else if (PackageType == TEXT("texture2d")) PackageTexturePaths.AddUnique(ObjectPath);
+                else if (PackageType == TEXT("material_interface")) PackageMaterialPaths.AddUnique(ObjectPath);
+            }
         }
         else
         {
             ++IgnoredSelectionCount;
+            if (CurrentAssetType == TEXT("delivery_package"))
+            {
+                PackageIgnoredItems.AddUnique(FString::Printf(
+                    TEXT("%s|%s"), *Asset.GetSoftObjectPath().ToString(), *Asset.AssetClassPath.ToString()));
+            }
         }
     }
 
@@ -1521,12 +1772,21 @@ FReply SUnrealAssetAuditPanel::RefreshSelection()
     SelectedAssetPaths = UniqueAssetPaths.Array();
     SelectedAssetPaths.Sort();
     SelectedFolderPaths.Sort();
+    PackageStaticMeshPaths.Sort();
+    PackageTexturePaths.Sort();
+    PackageMaterialPaths.Sort();
+    PackageIgnoredItems.Sort();
     const FString TrackLabel = CurrentTrackTechnicalLabel(CurrentAssetType);
     StatusMessage = SelectedAssetPaths.IsEmpty()
         ? FString::Printf(TEXT("当前选择没有 %s；未扩大到其他资产类型"), *TrackLabel)
-        : FString::Printf(
+        : (CurrentAssetType == TEXT("delivery_package")
+            ? FString::Printf(
+                TEXT("交付包范围已就绪 · 模型 %d · 纹理 %d · 材质 %d · 忽略 %d"),
+                PackageStaticMeshPaths.Num(), PackageTexturePaths.Num(), PackageMaterialPaths.Num(),
+                IgnoredSelectionCount)
+            : FString::Printf(
             TEXT("%s 交付批次已就绪 · %d 个对象 · 忽略 %d 个其他类型"),
-            *TrackLabel, SelectedAssetPaths.Num(), IgnoredSelectionCount);
+            *TrackLabel, SelectedAssetPaths.Num(), IgnoredSelectionCount));
     return FReply::Handled();
 }
 
@@ -1661,21 +1921,59 @@ FReply SUnrealAssetAuditPanel::RunAudit()
     IFileManager::Get().Delete(*CancelRequestPath, false, true, true);
 
     TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
-    Request->SetStringField(TEXT("asset_type"), CurrentAssetType);
-    Request->SetStringField(TEXT("profile_path"), ProfilePath);
-    Request->SetStringField(TEXT("output_path"), ReportPath);
     Request->SetStringField(TEXT("session_root"), SessionRoot);
     Request->SetStringField(TEXT("handoff_root"), HandoffRoot);
     Request->SetStringField(TEXT("state_path"), TaskStatePath);
     Request->SetStringField(TEXT("cancel_path"), CancelRequestPath);
     Request->SetStringField(TEXT("task_id"), ActiveTaskId);
     Request->SetNumberField(TEXT("batch_size"), BatchSize);
-    TArray<TSharedPtr<FJsonValue>> Paths;
-    for (const FString& Path : SelectedAssetPaths)
+    if (CurrentAssetType == TEXT("delivery_package"))
     {
-        Paths.Add(MakeShared<FJsonValueString>(Path));
+        Request->SetStringField(TEXT("recipe_path"), ProfilePath);
+        Request->SetStringField(TEXT("output_path"), PackageSummaryPath);
+        Request->SetStringField(
+            TEXT("reports_root"), FPaths::Combine(PackageReportsRoot, ActiveTaskId));
+        Request->SetStringField(
+            TEXT("task_root"), FPaths::Combine(PackageTaskRoot, ActiveTaskId));
+        TSharedRef<FJsonObject> Lanes = MakeShared<FJsonObject>();
+        const auto AddLane = [&Lanes](const FString& Name, const TArray<FString>& Values)
+        {
+            TArray<TSharedPtr<FJsonValue>> JsonValues;
+            for (const FString& Value : Values) JsonValues.Add(MakeShared<FJsonValueString>(Value));
+            Lanes->SetArrayField(Name, JsonValues);
+        };
+        AddLane(TEXT("static_mesh"), PackageStaticMeshPaths);
+        AddLane(TEXT("texture2d"), PackageTexturePaths);
+        AddLane(TEXT("material_interface"), PackageMaterialPaths);
+        Request->SetObjectField(TEXT("lanes"), Lanes);
+        TArray<TSharedPtr<FJsonValue>> Ignored;
+        for (const FString& Encoded : PackageIgnoredItems)
+        {
+            FString AssetPath;
+            FString AssetClass;
+            if (!Encoded.Split(TEXT("|"), &AssetPath, &AssetClass)) continue;
+            TSharedRef<FJsonObject> Item = MakeShared<FJsonObject>();
+            Item->SetStringField(TEXT("asset_path"), AssetPath);
+            Item->SetStringField(TEXT("asset_class"), AssetClass);
+            Item->SetStringField(
+                TEXT("reason"), TEXT("当前总检只接收 Static Mesh、Texture2D 与 Material Interface"));
+            Ignored.Add(MakeShared<FJsonValueObject>(Item));
+        }
+        Request->SetArrayField(TEXT("ignored_assets"), Ignored);
+        IFileManager::Get().Delete(*PackageSummaryPath, false, true, true);
     }
-    Request->SetArrayField(TEXT("asset_paths"), Paths);
+    else
+    {
+        Request->SetStringField(TEXT("asset_type"), CurrentAssetType);
+        Request->SetStringField(TEXT("profile_path"), ProfilePath);
+        Request->SetStringField(TEXT("output_path"), ReportPath);
+        TArray<TSharedPtr<FJsonValue>> Paths;
+        for (const FString& Path : SelectedAssetPaths)
+        {
+            Paths.Add(MakeShared<FJsonValueString>(Path));
+        }
+        Request->SetArrayField(TEXT("asset_paths"), Paths);
+    }
 
     const FString RequestPath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/panel-request.json"));
     FString RequestJson;
@@ -1699,9 +1997,11 @@ FReply SUnrealAssetAuditPanel::RunAudit()
 
     FString PythonPath = RequestPath.Replace(TEXT("\\"), TEXT("/"));
     PythonPath.ReplaceInline(TEXT("'"), TEXT("\\'"));
+    const FString StartFunction = CurrentAssetType == TEXT("delivery_package")
+        ? TEXT("start_delivery_package_task") : TEXT("start_panel_task");
     const FString Command = FString::Printf(
-        TEXT("from unreal_asset_batch_auditor import start_panel_task; start_panel_task(r'%s')"),
-        *PythonPath);
+        TEXT("from unreal_asset_batch_auditor import %s; %s(r'%s')"),
+        *StartFunction, *StartFunction, *PythonPath);
     const bool bSucceeded = Python->ExecPythonCommand(*Command);
     if (!bSucceeded)
     {
@@ -1813,6 +2113,92 @@ EActiveTimerReturnType SUnrealAssetAuditPanel::PollAuditTask(double CurrentTime,
         if (FPaths::FileExists(ComparisonPath)) LoadComparison(ComparisonPath, SessionError);
     }
     return EActiveTimerReturnType::Stop;
+}
+
+bool SUnrealAssetAuditPanel::LoadDeliveryPackageSummary(const FString& Path, FString& OutError)
+{
+    FString Json;
+    if (!FFileHelper::LoadFileToString(Json, *Path))
+    {
+        OutError = TEXT("找不到交付包总检摘要");
+        return false;
+    }
+    TSharedPtr<FJsonObject> Root;
+    if (!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Json), Root)
+        || !Root.IsValid()
+        || Root->GetStringField(TEXT("schema_version"))
+            != TEXT("unreal-delivery-package-summary@1.0.0"))
+    {
+        OutError = TEXT("交付包摘要版本或 JSON 格式无效");
+        return false;
+    }
+    CurrentAssetType = TEXT("delivery_package");
+    for (const FAssetTypePtr& Option : AssetTypeOptions)
+    {
+        if (Option.IsValid() && Option->Id == CurrentAssetType)
+        {
+            SelectedAssetType = Option;
+            if (AssetTypeComboBox.IsValid()) AssetTypeComboBox->SetSelectedItem(Option);
+            break;
+        }
+    }
+    RebuildProfileOptions();
+    CurrentProfileId = Root->GetStringField(TEXT("recipe_id"));
+    CurrentProfileVersion = Root->GetStringField(TEXT("recipe_version"));
+    CurrentReportId = Root->GetStringField(TEXT("package_run_id"));
+    CurrentReportCreatedAt = Root->GetStringField(TEXT("created_at"));
+    AssetCount = Root->GetIntegerField(TEXT("supported_count"));
+    PassingAssetCount = Root->GetIntegerField(TEXT("passed_asset_count"));
+    IssueCount = Root->GetIntegerField(TEXT("issue_count"));
+    FailureCount = Root->GetIntegerField(TEXT("collection_failure_count"));
+    PackageBlockingIssueCount = Root->GetIntegerField(TEXT("blocking_issue_count"));
+    PackageLanes.Reset();
+    for (const TSharedPtr<FJsonValue>& Value : Root->GetArrayField(TEXT("lanes")))
+    {
+        const TSharedPtr<FJsonObject> LaneJson = Value->AsObject();
+        if (!LaneJson.IsValid()) continue;
+        FAuditPackageLane Lane;
+        Lane.AssetType = LaneJson->GetStringField(TEXT("asset_type"));
+        if (Lane.AssetType == TEXT("static_mesh"))
+        {
+            Lane.Label = TEXT("模型泳道");
+            Lane.TechnicalLabel = TEXT("Static Mesh");
+        }
+        else if (Lane.AssetType == TEXT("texture2d"))
+        {
+            Lane.Label = TEXT("纹理泳道");
+            Lane.TechnicalLabel = TEXT("Texture2D");
+        }
+        else
+        {
+            Lane.Label = TEXT("材质泳道");
+            Lane.TechnicalLabel = TEXT("Material / Instance");
+        }
+        Lane.State = LaneJson->GetStringField(TEXT("state"));
+        LaneJson->TryGetStringField(TEXT("profile_id"), Lane.ProfileId);
+        LaneJson->TryGetStringField(TEXT("report_path"), Lane.ReportPath);
+        LaneJson->TryGetStringField(TEXT("hotspot_path"), Lane.HotspotPath);
+        LaneJson->TryGetStringField(TEXT("error_message"), Lane.ErrorMessage);
+        Lane.RequestedCount = LaneJson->GetIntegerField(TEXT("requested_count"));
+        Lane.ProcessedCount = LaneJson->GetIntegerField(TEXT("processed_count"));
+        Lane.PassedAssetCount = LaneJson->GetIntegerField(TEXT("passed_asset_count"));
+        Lane.IssueAssetCount = LaneJson->GetIntegerField(TEXT("issue_asset_count"));
+        Lane.IssueCount = LaneJson->GetIntegerField(TEXT("issue_count"));
+        Lane.CollectionFailureCount = LaneJson->GetIntegerField(TEXT("collection_failure_count"));
+        Lane.CancelledCount = LaneJson->GetIntegerField(TEXT("cancelled_count"));
+        Lane.BlockingIssueCount = LaneJson->GetIntegerField(TEXT("blocking_issue_count"));
+        Lane.HotspotIssueCount = LaneJson->GetIntegerField(TEXT("hotspot_issue_count"));
+        PackageLanes.Add(MoveTemp(Lane));
+    }
+    ResultViewMode = 4;
+    const FString Decision = Root->GetStringField(TEXT("decision"));
+    StatusMessage = FString::Printf(
+        TEXT("三轨总检完成 · %d 个对象 · %d 个问题 · %d 个阻断 · %s"),
+        AssetCount, IssueCount, PackageBlockingIssueCount,
+        Decision == TEXT("ready") ? TEXT("可交付")
+            : (Decision == TEXT("attention") ? TEXT("待复核") : TEXT("已阻断")));
+    OutError.Reset();
+    return true;
 }
 
 bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
@@ -3051,6 +3437,25 @@ FReply SUnrealAssetAuditPanel::ShowDeliveryGroups()
     return FReply::Handled();
 }
 
+FReply SUnrealAssetAuditPanel::OpenPackageLane(int32 LaneIndex)
+{
+    if (!PackageLanes.IsValidIndex(LaneIndex) || !FPaths::FileExists(PackageLanes[LaneIndex].ReportPath))
+    {
+        StatusMessage = TEXT("该验收轨道没有可打开的独立报告");
+        return FReply::Handled();
+    }
+    const FString Label = PackageLanes[LaneIndex].Label;
+    FString Error;
+    if (!LoadReport(PackageLanes[LaneIndex].ReportPath, Error))
+    {
+        StatusMessage = FString::Printf(TEXT("无法打开%s台账：%s"), *Label, *Error);
+        return FReply::Handled();
+    }
+    StatusMessage = FString::Printf(
+        TEXT("已进入%s台账；在验收轨道切回“交付包总检”返回三轨总览"), *Label);
+    return FReply::Handled();
+}
+
 FReply SUnrealAssetAuditPanel::DrillIntoSelectedGroup(bool bShowIssues)
 {
     if (!SelectedDeliveryGroup.IsValid()) return FReply::Handled();
@@ -3074,8 +3479,9 @@ FReply SUnrealAssetAuditPanel::ClearDeliveryGroupDrilldown()
 
 FReply SUnrealAssetAuditPanel::OpenReportFolder()
 {
-    IFileManager::Get().MakeDirectory(*FPaths::GetPath(ReportPath), true);
-    FPlatformProcess::ExploreFolder(*FPaths::GetPath(ReportPath));
+    const FString CurrentPath = CurrentAssetType == TEXT("delivery_package") ? PackageSummaryPath : ReportPath;
+    IFileManager::Get().MakeDirectory(*FPaths::GetPath(CurrentPath), true);
+    FPlatformProcess::ExploreFolder(*FPaths::GetPath(CurrentPath));
     return FReply::Handled();
 }
 
@@ -3192,9 +3598,10 @@ FReply SUnrealAssetAuditPanel::RunComparison()
 
 FReply SUnrealAssetAuditPanel::OpenReportFile()
 {
-    if (FPaths::FileExists(ReportPath))
+    const FString CurrentPath = CurrentAssetType == TEXT("delivery_package") ? PackageSummaryPath : ReportPath;
+    if (FPaths::FileExists(CurrentPath))
     {
-        FPlatformProcess::LaunchFileInDefaultExternalApplication(*ReportPath);
+        FPlatformProcess::LaunchFileInDefaultExternalApplication(*CurrentPath);
     }
     return FReply::Handled();
 }
@@ -3206,6 +3613,13 @@ FText SUnrealAssetAuditPanel::GetSelectionText() const
     {
         return FText::FromString(FString::Printf(
             TEXT("未读取到 %s 交付批次\n选择资产或文件夹后，本轨道只纳入对应类型"), *TypeLabel));
+    }
+    if (CurrentAssetType == TEXT("delivery_package"))
+    {
+        return FText::FromString(FString::Printf(
+            TEXT("待总检：%d 个受支持对象\n模型 %d · 纹理 %d · 材质 %d · 忽略 %d"),
+            SelectedAssetPaths.Num(), PackageStaticMeshPaths.Num(), PackageTexturePaths.Num(),
+            PackageMaterialPaths.Num(), IgnoredSelectionCount));
     }
     return FText::FromString(FString::Printf(
         TEXT("待验收：%d 个 %s\n%d 个文件夹递归发现 %d 个 · 忽略其他类型 %d 个"),
@@ -3269,7 +3683,27 @@ void SUnrealAssetAuditPanel::RebuildProfileOptions()
         ? FPaths::Combine(Plugin->GetBaseDir(), TEXT("Resources/Profiles"))
         : FString();
     ProfileOptions.Reset();
-    if (CurrentAssetType == TEXT("texture2d"))
+    if (CurrentAssetType == TEXT("delivery_package"))
+    {
+        const FString RecipeRoot = Plugin.IsValid()
+            ? FPaths::Combine(Plugin->GetBaseDir(), TEXT("Resources/DeliveryRecipes"))
+            : FString();
+        ProfileOptions = {
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("桌面交付包（推荐演示）"),
+                TEXT("三轨桌面平衡 · error 阻断 · 保留三份原始 Report"),
+                FPaths::Combine(RecipeRoot, TEXT("desktop-delivery-balanced.v1.json"))}),
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("移动端交付包（严格）"),
+                TEXT("三轨移动端严格 · warning/error 阻断"),
+                FPaths::Combine(RecipeRoot, TEXT("mobile-delivery-strict.v1.json"))}),
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("宽松交付复核"),
+                TEXT("三轨宽松标准 · 仅 error 阻断 · 先盘点再分派"),
+                FPaths::Combine(RecipeRoot, TEXT("review-delivery-lenient.v1.json"))})
+        };
+    }
+    else if (CurrentAssetType == TEXT("texture2d"))
     {
         ProfileOptions = {
             MakeShared<FAuditProfileOption>(FAuditProfileOption{
@@ -3341,11 +3775,13 @@ void SUnrealAssetAuditPanel::RebuildProfileOptions()
         Root->TryGetStringField(TEXT("schema_version"), Schema);
         Root->TryGetStringField(TEXT("profile_id"), ProfileId);
         Root->TryGetStringField(TEXT("profile_version"), Version);
-        const bool bMatchesTrack = CurrentAssetType == TEXT("texture2d")
+        const bool bMatchesTrack = CurrentAssetType == TEXT("delivery_package")
+            ? false
+            : (CurrentAssetType == TEXT("texture2d")
             ? Schema == TEXT("unreal-texture-profile@1.0.0")
             : (CurrentAssetType == TEXT("material_interface")
                 ? Schema == TEXT("unreal-material-profile@1.0.0")
-                : Schema == TEXT("unreal-static-mesh-profile@3.0.0"));
+                : Schema == TEXT("unreal-static-mesh-profile@3.0.0")));
         if (!bMatchesTrack || ProfileId.IsEmpty()) continue;
         FString Description;
         Root->TryGetStringField(TEXT("description"), Description);
@@ -3373,11 +3809,23 @@ void SUnrealAssetAuditPanel::HandleAssetTypeChanged(
     CurrentAssetType = Item->Id;
     SelectedAssetPaths.Reset();
     SelectedFolderPaths.Reset();
+    PackageStaticMeshPaths.Reset();
+    PackageTexturePaths.Reset();
+    PackageMaterialPaths.Reset();
+    PackageIgnoredItems.Reset();
     DiscoveredFolderAssetCount = 0;
     IgnoredSelectionCount = 0;
     RebuildProfileOptions();
     StatusMessage = FString::Printf(
         TEXT("已切换到%s；请重新读取 Content Browser 选择"), *Item->Label);
+    if (CurrentAssetType == TEXT("delivery_package") && FPaths::FileExists(PackageSummaryPath))
+    {
+        FString Error;
+        if (!LoadDeliveryPackageSummary(PackageSummaryPath, Error))
+        {
+            StatusMessage = FString::Printf(TEXT("交付包总检摘要不可用：%s"), *Error);
+        }
+    }
 }
 
 void SUnrealAssetAuditPanel::HandleProfileChanged(FProfilePtr Item, ESelectInfo::Type SelectInfo)
@@ -3609,6 +4057,11 @@ EVisibility SUnrealAssetAuditPanel::GetComparisonViewVisibility() const
 EVisibility SUnrealAssetAuditPanel::GetDeliveryGroupViewVisibility() const
 {
     return ResultViewMode == 3 ? EVisibility::Visible : EVisibility::Collapsed;
+}
+
+EVisibility SUnrealAssetAuditPanel::GetPackageViewVisibility() const
+{
+    return ResultViewMode == 4 ? EVisibility::Visible : EVisibility::Collapsed;
 }
 
 EVisibility SUnrealAssetAuditPanel::GetDeliveryGroupContextVisibility() const

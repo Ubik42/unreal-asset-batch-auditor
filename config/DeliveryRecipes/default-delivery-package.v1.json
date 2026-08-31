@@ -1,0 +1,12 @@
+{
+  "schema_version": "unreal-delivery-package-recipe@1.0.0",
+  "recipe_id": "default-delivery-package-v1",
+  "recipe_version": "1.0.0",
+  "description": "源码开发默认配方；正式项目应复制并评审自己的三轨 Profile。",
+  "profiles": {
+    "static_mesh": "../../Resources/Profiles/desktop-balanced.v3.json",
+    "texture2d": "../../Resources/Profiles/texture-desktop-balanced.v1.json",
+    "material_interface": "../../Resources/Profiles/material-desktop-balanced.v1.json"
+  },
+  "blocking_severities": ["error"]
+}

@@ -104,6 +104,27 @@ struct FAuditDeliveryGroup
     double IssueDensity = 0.0;
 };
 
+struct FAuditPackageLane
+{
+    FString AssetType;
+    FString Label;
+    FString TechnicalLabel;
+    FString State = TEXT("skipped");
+    FString ProfileId;
+    FString ReportPath;
+    FString HotspotPath;
+    FString ErrorMessage;
+    int32 RequestedCount = 0;
+    int32 ProcessedCount = 0;
+    int32 PassedAssetCount = 0;
+    int32 IssueAssetCount = 0;
+    int32 IssueCount = 0;
+    int32 CollectionFailureCount = 0;
+    int32 CancelledCount = 0;
+    int32 BlockingIssueCount = 0;
+    int32 HotspotIssueCount = 0;
+};
+
 class SUnrealAssetAuditPanel final : public SCompoundWidget
 {
 public:
@@ -185,6 +206,7 @@ private:
     bool LoadSessionIndex(FString& OutError);
     bool LoadComparison(const FString& Path, FString& OutError);
     bool LoadTaskState(FString& OutError);
+    bool LoadDeliveryPackageSummary(const FString& Path, FString& OutError);
     bool RefreshDeliveryGroups(FString& OutError);
     bool LoadDeliveryGroupView(FString& OutError);
     EActiveTimerReturnType PollAuditTask(double CurrentTime, float DeltaTime);
@@ -199,6 +221,7 @@ private:
     FReply ShowDeliveryGroups();
     FReply DrillIntoSelectedGroup(bool bShowIssues);
     FReply ClearDeliveryGroupDrilldown();
+    FReply OpenPackageLane(int32 LaneIndex);
     FReply LocateReviewAsset();
     FReply OpenReviewAsset();
     FReply CopyReviewEvidence();
@@ -207,6 +230,7 @@ private:
     FReply SetReviewFilter(FString Decision);
     TSharedRef<SWidget> BuildSummaryCell(const FText& Label, TAttribute<FText> Value, const FLinearColor& Accent) const;
     TSharedRef<SWidget> BuildRiskCell(const FText& Label, const FString& Category, const FLinearColor& Accent);
+    TSharedRef<SWidget> BuildPackageLaneCard(int32 LaneIndex);
     FReply ToggleRiskCategory(FString Category);
     void RebuildSelectionFromInternalFolders(const TArray<FString>& InternalFolders, TSet<FString>& InOutAssetPaths);
     bool RefreshReviewData(FString& OutError);
@@ -249,6 +273,7 @@ private:
     EVisibility GetIssueViewVisibility() const;
     EVisibility GetComparisonViewVisibility() const;
     EVisibility GetDeliveryGroupViewVisibility() const;
+    EVisibility GetPackageViewVisibility() const;
     EVisibility GetDeliveryGroupContextVisibility() const;
     EVisibility GetIdleActionVisibility() const;
     EVisibility GetRunningActionVisibility() const;
@@ -266,6 +291,10 @@ private:
     void HandleProfileEditorSaved();
 
     TArray<FString> SelectedAssetPaths;
+    TArray<FString> PackageStaticMeshPaths;
+    TArray<FString> PackageTexturePaths;
+    TArray<FString> PackageMaterialPaths;
+    TArray<FString> PackageIgnoredItems;
     TArray<FString> SelectedFolderPaths;
     TArray<FIssuePtr> AllIssues;
     TArray<FIssuePtr> FilteredIssues;
@@ -284,6 +313,7 @@ private:
     TArray<FDeliveryGroupPtr> FilteredDeliveryGroups;
     TSharedPtr<SListView<FDeliveryGroupPtr>> DeliveryGroupList;
     FDeliveryGroupPtr SelectedDeliveryGroup;
+    TArray<FAuditPackageLane> PackageLanes;
     TArray<FProfilePtr> ProfileOptions;
     FProfilePtr SelectedProfile;
     TSharedPtr<SComboBox<FProfilePtr>> ProfileComboBox;
@@ -307,6 +337,9 @@ private:
     FString ReviewRequestPath;
     FString DeliveryGroupViewPath;
     FString DeliveryGroupRequestPath;
+    FString PackageSummaryPath;
+    FString PackageReportsRoot;
+    FString PackageTaskRoot;
     FString ProjectProfileRoot;
     FString ProfileCloneRequestPath;
     FString ProfileCloneResultPath;
@@ -327,6 +360,7 @@ private:
     FString DraftReviewDecision = TEXT("unreviewed");
     int32 DiscoveredFolderAssetCount = 0;
     int32 IgnoredSelectionCount = 0;
+    int32 PackageBlockingIssueCount = 0;
     int32 BatchSize = 64;
     int32 AssetCount = 0;
     int32 PassingAssetCount = 0;

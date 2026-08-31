@@ -1,0 +1,12 @@
+{
+  "schema_version": "unreal-delivery-package-recipe@1.0.0",
+  "recipe_id": "review-delivery-lenient-v1",
+  "recipe_version": "1.0.0",
+  "description": "宽松复核配方；仅 error 阻断，适合先盘点问题再决定修复范围。",
+  "profiles": {
+    "static_mesh": "../Profiles/review-lenient.v3.json",
+    "texture2d": "../Profiles/texture-review-lenient.v1.json",
+    "material_interface": "../Profiles/material-review-lenient.v1.json"
+  },
+  "blocking_severities": ["error"]
+}

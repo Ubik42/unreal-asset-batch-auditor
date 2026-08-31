@@ -1,19 +1,20 @@
 # Unreal Asset Batch Auditor
 
-面向 Unreal 美术团队的只读资产交付验收台。`main` 当前提供“模型交付 / 纹理交付 / 材质血缘”三条明确轨道：项目 Profile 定义预算和预期，Editor-only C++ 批量采集宿主事实，Python 负责规则编排与可追溯报告。插件不保存、重建或自动修复资产。
+面向 Unreal 美术团队的只读资产交付验收台。项目 Profile 定义预算和预期，Editor-only C++ 采集宿主事实，Python 负责任务编排与版本化报告。插件不保存、重建或自动修复资产。
 
-> **公开版本：v0.10.0 Beta** · `main` 开发线已加入 v0.11 项目标准工作台与材质血缘轨道 · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> **公开版本：v0.10.0 Beta** · `main` 开发线包含模型、纹理、材质三条专业轨道与“交付包总检”编排 · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.10.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
-![资产交付验收台：Material Interface 材质血缘轨道](docs/images/workflow/v0.11-material-interface/02-asset-overview.png)
+![资产交付验收台：批量审计结果](docs/images/workflow/v0.11-demo-flow/02-batch-results.png)
 
-<p align="center"><sub>真实 UE 5.8.1 原生 Slate：9 个 Material / Material Instance，展示渲染状态、父级链、纹理负载与 5 条 Profile 驱动证据。</sub></p>
+<p align="center"><sub>真实 UE 5.8.1 原生 Slate：从 Content Browser 读取显式选择，按项目 Profile 输出资产、问题与采集失败证据。</sub></p>
 
 ## 这个项目体现什么
 
 - **真实管线分层**：C++ 批量读取 Unreal 原生元数据，Python 负责项目规则、任务编排和报告，UI 不承载隐藏业务判断；
 - **三轨资产验收**：模型覆盖几何、LOD、碰撞和 Lightmap；纹理覆盖尺寸、Mip、压缩色彩、VT 与流送；材质覆盖 Domain、Blend、双面、Shading、父级链和纹理负载；
+- **交付包总检**：一次读取混合选择，稳定分类为模型、纹理、材质三条泳道；每条泳道保留自己的 Profile 与原始 Report，总摘要只负责交付决策、阻断计数和风险热区；
 - **上下文与证据设计**：Profile、Issue、Evidence、Report 均有版本化合同，每个问题都能追到实测值、期望值和规则指针；
 - **生产可靠性**：逐批任务、批次间取消、部分失败隔离、不可变会话和修复前后回归，不把“没有抛异常”当作成功；
 - **团队交付**：一键生成中文 HTML、Excel 可读 CSV 和 SHA-256 清单，无 Unreal 环境也能参与复核；
@@ -21,7 +22,15 @@
 - **面板与门禁同源**：项目预设把 Profile、显式目录和阻断等级固化为可评审 JSON；人工验收和命令行门禁消费同一规则源；
 - **可安装而非只在开发机运行**：发布 ZIP 经过确定性打包、全新项目安装、升级、卸载和两轮独立 UE 宿主验证。
 
-## 五步完成资产审计与交接
+## 从选择规则到交付结论
+
+插件不试图用一张“万能质量分”替代专业判断。单类资产可以直接进入对应轨道；需要验收一批混合交付时，选择“交付包总检”，由版本化 Recipe 把三类资产交给各自 Profile。未知类型会列入“未纳入”，不会静默扩大范围，也不会自动追踪依赖或修改资产。
+
+三条泳道允许独立完成、取消或采集失败。总摘要保留每条原始 Report 的路径，并汇总覆盖数、通过资产、需处理资产、阻断问题和目录热区；用户可以从总览下钻到模型、纹理或材质台账继续复核。
+
+![选择项目规则](docs/images/workflow/v0.11-demo-flow/01-select-profile.png)
+
+## 五步完成单轨审计与交接
 
 ### 1. 选择项目检查规则
 

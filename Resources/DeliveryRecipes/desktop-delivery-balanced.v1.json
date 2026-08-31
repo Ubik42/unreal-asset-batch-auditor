@@ -1,0 +1,12 @@
+{
+  "schema_version": "unreal-delivery-package-recipe@1.0.0",
+  "recipe_id": "desktop-delivery-balanced-v1",
+  "recipe_version": "1.0.0",
+  "description": "桌面环境资产交付包演示配方；三条轨道分别保留自己的 Profile 与 Report。",
+  "profiles": {
+    "static_mesh": "../Profiles/desktop-balanced.v3.json",
+    "texture2d": "../Profiles/texture-desktop-balanced.v1.json",
+    "material_interface": "../Profiles/material-desktop-balanced.v1.json"
+  },
+  "blocking_severities": ["error"]
+}

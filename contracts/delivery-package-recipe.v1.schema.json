@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unreal-delivery-package-recipe.v1.schema.json",
+  "title": "Unreal Delivery Package Recipe v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "recipe_id", "recipe_version", "description", "profiles", "blocking_severities"],
+  "properties": {
+    "schema_version": {"const": "unreal-delivery-package-recipe@1.0.0"},
+    "recipe_id": {"type": "string", "minLength": 1},
+    "recipe_version": {"type": "string", "minLength": 1},
+    "description": {"type": "string"},
+    "profiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["static_mesh", "texture2d", "material_interface"],
+      "properties": {
+        "static_mesh": {"type": "string", "minLength": 1},
+        "texture2d": {"type": "string", "minLength": 1},
+        "material_interface": {"type": "string", "minLength": 1}
+      }
+    },
+    "blocking_severities": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["info", "warning", "error"]}
+    }
+  }
+}

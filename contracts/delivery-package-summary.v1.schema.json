@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unreal-delivery-package-summary.v1.schema.json",
+  "title": "Unreal Delivery Package Summary v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "package_run_id", "created_at", "recipe_id", "recipe_version", "recipe_schema_version", "status", "decision", "real_unreal_validation", "host_engine_versions", "selected_count", "supported_count", "ignored_count", "processed_count", "passed_asset_count", "issue_asset_count", "issue_count", "collection_failure_count", "cancelled_count", "blocking_issue_count", "lanes", "ignored_assets"],
+  "properties": {
+    "schema_version": {"const": "unreal-delivery-package-summary@1.0.0"},
+    "package_run_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "minLength": 1},
+    "recipe_id": {"type": "string", "minLength": 1},
+    "recipe_version": {"type": "string", "minLength": 1},
+    "recipe_schema_version": {"const": "unreal-delivery-package-recipe@1.0.0"},
+    "status": {"enum": ["completed", "partial", "cancelled"]},
+    "decision": {"enum": ["ready", "attention", "blocked"]},
+    "real_unreal_validation": {"type": "boolean"},
+    "host_engine_versions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "selected_count": {"type": "integer", "minimum": 0},
+    "supported_count": {"type": "integer", "minimum": 0},
+    "ignored_count": {"type": "integer", "minimum": 0},
+    "processed_count": {"type": "integer", "minimum": 0},
+    "passed_asset_count": {"type": "integer", "minimum": 0},
+    "issue_asset_count": {"type": "integer", "minimum": 0},
+    "issue_count": {"type": "integer", "minimum": 0},
+    "collection_failure_count": {"type": "integer", "minimum": 0},
+    "cancelled_count": {"type": "integer", "minimum": 0},
+    "blocking_issue_count": {"type": "integer", "minimum": 0},
+    "lanes": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/lane"}},
+    "ignored_assets": {"type": "array", "items": {"$ref": "#/$defs/ignored"}}
+  },
+  "$defs": {
+    "nullableString": {"type": ["string", "null"]},
+    "lane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_type", "state", "profile_id", "profile_version", "report_path", "report_id", "requested_count", "processed_count", "passed_asset_count", "issue_asset_count", "issue_count", "collection_failure_count", "cancelled_count", "blocking_issue_count", "hotspot_path", "hotspot_issue_count", "error_code", "error_message"],
+      "properties": {
+        "asset_type": {"enum": ["static_mesh", "texture2d", "material_interface"]},
+        "state": {"enum": ["completed", "cancelled", "failed", "skipped"]},
+        "profile_id": {"$ref": "#/$defs/nullableString"},
+        "profile_version": {"$ref": "#/$defs/nullableString"},
+        "report_path": {"$ref": "#/$defs/nullableString"},
+        "report_id": {"$ref": "#/$defs/nullableString"},
+        "requested_count": {"type": "integer", "minimum": 0},
+        "processed_count": {"type": "integer", "minimum": 0},
+        "passed_asset_count": {"type": "integer", "minimum": 0},
+        "issue_asset_count": {"type": "integer", "minimum": 0},
+        "issue_count": {"type": "integer", "minimum": 0},
+        "collection_failure_count": {"type": "integer", "minimum": 0},
+        "cancelled_count": {"type": "integer", "minimum": 0},
+        "blocking_issue_count": {"type": "integer", "minimum": 0},
+        "hotspot_path": {"$ref": "#/$defs/nullableString"},
+        "hotspot_issue_count": {"type": "integer", "minimum": 0},
+        "error_code": {"$ref": "#/$defs/nullableString"},
+        "error_message": {"$ref": "#/$defs/nullableString"}
+      }
+    },
+    "ignored": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_path", "asset_class", "reason"],
+      "properties": {
+        "asset_path": {"type": "string", "minLength": 1},
+        "asset_class": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

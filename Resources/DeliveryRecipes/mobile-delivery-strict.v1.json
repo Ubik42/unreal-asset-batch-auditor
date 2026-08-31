@@ -1,0 +1,12 @@
+{
+  "schema_version": "unreal-delivery-package-recipe@1.0.0",
+  "recipe_id": "mobile-delivery-strict-v1",
+  "recipe_version": "1.0.0",
+  "description": "移动端资产交付包演示配方；warning 与 error 都会阻断交付结论。",
+  "profiles": {
+    "static_mesh": "../Profiles/mobile-strict.v3.json",
+    "texture2d": "../Profiles/texture-mobile-strict.v1.json",
+    "material_interface": "../Profiles/material-mobile-strict.v1.json"
+  },
+  "blocking_severities": ["warning", "error"]
+}
