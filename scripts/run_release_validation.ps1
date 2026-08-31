@@ -2,7 +2,7 @@ param(
     [string]$EngineRoot = "C:\Program Files\Epic Games\UE_5.8",
     [Parameter(Mandatory = $true)]
     [string]$ArchivePath,
-    [string]$ReleaseLabel = "v0.8.0-ue5.8.1-win64",
+    [string]$ReleaseLabel = "v0.9.0-ue5.8.1-win64",
     [int]$TimeoutSeconds = 120
 )
 
@@ -63,16 +63,11 @@ function Invoke-ReleaseSmoke([string]$Phase) {
     [void]$createdPids.Add($process.Id)
     $deadline = [DateTimeOffset]::UtcNow.AddSeconds($TimeoutSeconds)
     while (-not $process.HasExited -and [DateTimeOffset]::UtcNow -lt $deadline) {
-        foreach ($id in @(Get-Process UnrealEditor, UnrealEditor-Cmd -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)) {
-            if ($id -notin $existing) { [void]$createdPids.Add($id) }
-        }
         Start-Sleep -Milliseconds 250
     }
     $timedOut = -not $process.HasExited
     if ($timedOut) {
-        foreach ($id in $createdPids) {
-            Stop-Process -Id $id -Force -ErrorAction SilentlyContinue
-        }
+        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
     }
     $finishedAt = [DateTimeOffset]::UtcNow
     $logPath = Join-Path $projectRoot "Saved\Logs\UABAReleaseValidation.log"
@@ -104,6 +99,73 @@ function Invoke-ReleaseSmoke([string]$Phase) {
     }
 }
 
+function Invoke-UnattendedReleaseSmoke {
+    $installedRoot = Join-Path $projectRoot "Plugins\UnrealAssetBatchAuditor"
+    $wrapper = Join-Path $releaseRoot "run-unattended-audit.ps1"
+    $preset = Join-Path $installedRoot "Resources\ProjectPresets\engine-basic-shapes-ci.v1.json"
+    $summaryPath = Join-Path $projectRoot "Saved\UnrealAssetBatchAuditor\CI\latest-run-summary.json"
+    foreach ($required in @($wrapper, $preset)) {
+        if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
+            throw "随包无人值守文件不存在：$required"
+        }
+    }
+    $startInfo = [Diagnostics.ProcessStartInfo]::new()
+    $startInfo.FileName = Join-Path $PSHOME "pwsh.exe"
+    $startInfo.UseShellExecute = $false
+    $startInfo.CreateNoWindow = $true
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    $startInfo.StandardOutputEncoding = [Text.UTF8Encoding]::new($false)
+    $startInfo.StandardErrorEncoding = [Text.UTF8Encoding]::new($false)
+    foreach ($argument in @(
+        '-NoProfile', '-File', $wrapper,
+        '-EngineRoot', $EngineRoot,
+        '-ProjectPath', $projectFile,
+        '-PresetPath', $preset,
+        '-SummaryPath', $summaryPath,
+        '-TimeoutSeconds', '120'
+    )) { [void]$startInfo.ArgumentList.Add($argument) }
+    $startedAt = [DateTimeOffset]::UtcNow
+    $process = [Diagnostics.Process]::Start($startInfo)
+    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+    $stderrTask = $process.StandardError.ReadToEndAsync()
+    if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
+        $process.Kill($true)
+        throw "随包无人值守烟雾超时"
+    }
+    $finishedAt = [DateTimeOffset]::UtcNow
+    $stdout = $stdoutTask.Result.Trim()
+    $stderr = $stderrTask.Result.Trim()
+    if ($process.ExitCode -ne 0 -or -not (Test-Path -LiteralPath $summaryPath)) {
+        throw "随包无人值守烟雾失败；exit=$($process.ExitCode) stdout=$stdout stderr=$stderr"
+    }
+    $summary = Get-Content -LiteralPath $summaryPath -Raw | ConvertFrom-Json
+    $reportPath = [string]$summary.report_path
+    if ($summary.status -ne 'passed' -or $summary.exit_code -ne 0 -or
+        $summary.collection_failure_count -ne 0 -or -not (Test-Path -LiteralPath $reportPath)) {
+        throw "随包无人值守摘要不符合通过合同：$summaryPath"
+    }
+    $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
+    if (-not $report.real_unreal_validation -or @($report.assets).Count -lt 4) {
+        throw "随包无人值守 Report 缺少真实 Unreal 采集证据"
+    }
+    return [ordered]@{
+        wrapper_pid = $process.Id
+        exit_code = $process.ExitCode
+        status = $summary.status
+        asset_count = $summary.asset_count
+        issue_count = $summary.issue_count
+        collection_failure_count = $summary.collection_failure_count
+        stdout = $stdout
+        stderr = $stderr
+        started_at = $startedAt.ToString('o')
+        finished_at = $finishedAt.ToString('o')
+        duration_seconds = [Math]::Round(($finishedAt - $startedAt).TotalSeconds, 3)
+        runtime_summary_path = $summaryPath
+        runtime_report_path = $reportPath
+    }
+}
+
 & $installer -Action Install -ProjectPath $projectFile
 $installedRoot = Join-Path $projectRoot "Plugins\UnrealAssetBatchAuditor"
 $installedDescriptor = Join-Path $installedRoot "UnrealAssetBatchAuditor.uplugin"
@@ -120,6 +182,7 @@ $enabledAfterInstall = @($projectAfterInstall.Plugins | Where-Object {
 }).Count -eq 1
 if (-not $enabledAfterInstall) { throw "安装脚本未在 .uproject 中启用插件" }
 $installSmoke = Invoke-ReleaseSmoke "install"
+$unattendedSmoke = Invoke-UnattendedReleaseSmoke
 
 & $installer -Action Upgrade -ProjectPath $projectFile
 $upgradeBackups = @(Get-ChildItem -LiteralPath (Join-Path $projectRoot "PluginBackups") -Directory |
@@ -154,8 +217,13 @@ do {
     if ($residualCreated.Count -gt 0) { Start-Sleep -Milliseconds 250 }
 } while ($residualCreated.Count -gt 0 -and [DateTimeOffset]::UtcNow -lt $cleanupDeadline)
 $existingSurvived = @($existing | Where-Object { $_ -notin $after }).Count -eq 0
-if (-not $existingSurvived -or $residualCreated.Count -gt 0) {
-    throw "发布验证影响了已有 Unreal 进程，或留下了本轮创建的进程"
+$residualOwned = @(
+    Get-CimInstance Win32_Process -Filter "Name='UnrealEditor.exe' OR Name='UnrealEditor-Cmd.exe'" |
+        Where-Object { $_.CommandLine -and $_.CommandLine.Contains($projectRoot) } |
+        Select-Object -ExpandProperty ProcessId
+)
+if ($residualCreated.Count -gt 0 -or $residualOwned.Count -gt 0) {
+    throw "发布验证留下了本轮全新项目对应的 Unreal 进程"
 }
 
 $evidenceRoot = Join-Path $repoRoot "artifacts\host-validation\m7"
@@ -163,9 +231,13 @@ New-Item -ItemType Directory -Path $evidenceRoot -Force | Out-Null
 $committedReport = Join-Path $evidenceRoot "$ReleaseLabel-report.json"
 $installLogEvidence = Join-Path $evidenceRoot "$ReleaseLabel-install-log.txt"
 $upgradeLogEvidence = Join-Path $evidenceRoot "$ReleaseLabel-upgrade-log.txt"
+$unattendedSummaryEvidence = Join-Path $evidenceRoot "$ReleaseLabel-unattended-summary.json"
+$unattendedReportEvidence = Join-Path $evidenceRoot "$ReleaseLabel-unattended-report.json"
 Copy-Item -LiteralPath $reportPath -Destination $committedReport -Force
 Copy-Item -LiteralPath (Join-Path $runtime "install-log.txt") -Destination $installLogEvidence -Force
 Copy-Item -LiteralPath (Join-Path $runtime "upgrade-log.txt") -Destination $upgradeLogEvidence -Force
+Copy-Item -LiteralPath $unattendedSmoke.runtime_summary_path -Destination $unattendedSummaryEvidence -Force
+Copy-Item -LiteralPath $unattendedSmoke.runtime_report_path -Destination $unattendedReportEvidence -Force
 $installSmoke.log_excerpt_path = [IO.Path]::GetRelativePath($repoRoot, $installLogEvidence).Replace('\', '/')
 $installSmoke.log_excerpt_sha256 = (Get-FileHash -LiteralPath $installLogEvidence -Algorithm SHA256).Hash
 $upgradeSmoke.log_excerpt_path = [IO.Path]::GetRelativePath($repoRoot, $upgradeLogEvidence).Replace('\', '/')
@@ -196,6 +268,19 @@ $evidence = [ordered]@{
         backup_created = $upgradeBackups.Count -ge 1
         smoke = $upgradeSmoke
     }
+    unattended = [ordered]@{
+        wrapper_exit_code = $unattendedSmoke.exit_code
+        status = $unattendedSmoke.status
+        asset_count = $unattendedSmoke.asset_count
+        issue_count = $unattendedSmoke.issue_count
+        collection_failure_count = $unattendedSmoke.collection_failure_count
+        stdout = $unattendedSmoke.stdout
+        duration_seconds = $unattendedSmoke.duration_seconds
+        summary_path = [IO.Path]::GetRelativePath($repoRoot, $unattendedSummaryEvidence).Replace('\', '/')
+        summary_sha256 = (Get-FileHash -LiteralPath $unattendedSummaryEvidence -Algorithm SHA256).Hash
+        report_path = [IO.Path]::GetRelativePath($repoRoot, $unattendedReportEvidence).Replace('\', '/')
+        report_sha256 = (Get-FileHash -LiteralPath $unattendedReportEvidence -Algorithm SHA256).Hash
+    }
     uninstall = [ordered]@{
         plugin_directory_removed = -not (Test-Path -LiteralPath $installedRoot)
         recoverable_backup_created = $uninstallBackups.Count -ge 1
@@ -208,6 +293,8 @@ $evidence = [ordered]@{
     existing_unreal_pids_after = $after
     existing_processes_survived = $existingSurvived
     residual_created_processes = $residualCreated
+    residual_owned_processes = $residualOwned
+    preexisting_processes_managed_by_test = $false
     claims_user_interaction = $false
     claims_visible_editor_review = $false
     claims_cross_version_compatibility = $false

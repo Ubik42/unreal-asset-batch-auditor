@@ -59,7 +59,7 @@ descriptor 修改前的副本位于 `PluginBackups/ProjectDescriptors/`。恢复
 发布页同时提供 ZIP 的 `.sha256`。下载后执行：
 
 ```powershell
-Get-FileHash .\UnrealAssetBatchAuditor-0.8.0-UE5.8-Win64.zip -Algorithm SHA256
+Get-FileHash .\UnrealAssetBatchAuditor-0.9.0-UE5.8-Win64.zip -Algorithm SHA256
 ```
 
 结果应与 `.sha256` 文件一致。ZIP 内的 `SHA256SUMS.txt` 用于逐文件复核，`RELEASE-MANIFEST.json`
@@ -71,8 +71,22 @@ Get-FileHash .\UnrealAssetBatchAuditor-0.8.0-UE5.8-Win64.zip -Algorithm SHA256
 2. 打开 `工具 > 资产批量审计`；
 3. 选择“桌面平衡（推荐演示）”，点击“读取当前选择”；
 4. 设置批大小，执行“开始只读审计”；
-5. 查看资产总览、问题证据与回归页；
+5. 查看资产总览中的材质/纹理依赖、交付风险谱、问题证据与回归页；
 6. 点击“导出团队包”，在项目 `Saved/UnrealAssetBatchAuditor/Handoffs/` 查看 HTML 和 CSV。
 
 插件只读取元数据，不保存资产、不自动修改 Nanite，也不删除项目内容。单个 C++ 批次仍是同步边界；
 “批次间取消”会等待当前批次完成后保留部分 Report。
+
+## 无人值守门禁
+
+发布包根目录同时提供 `run-unattended-audit.ps1`，随包插件包含一个明确标注为演示数据的预设：
+
+```powershell
+.\run-unattended-audit.ps1 `
+  -EngineRoot "<UE 5.8 安装目录>" `
+  -ProjectPath "<项目目录或 .uproject 路径>" `
+  -PresetPath ".\UnrealAssetBatchAuditor\Resources\ProjectPresets\engine-basic-shapes-ci.v1.json"
+```
+
+正式项目应复制预设并替换 Profile 与显式 `/Game/...` 范围。退出码为：0 通过、10 规则阻断、
+20 采集不完整、30 配置错误、40 宿主运行错误。完整接入说明见源码仓 `docs/UNATTENDED_AUDIT.md`。

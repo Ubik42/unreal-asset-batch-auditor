@@ -65,6 +65,8 @@ def collect_release_entries(
             "Content/Python/*.py",
             "Content/Python/unreal_asset_batch_auditor/*.py",
             "Resources/Profiles/*.json",
+            "Resources/ProjectPresets/*.json",
+            "contracts/*.json",
             "Source/**/*.h",
             "Source/**/*.cpp",
             "Source/**/*.cs",
@@ -79,6 +81,8 @@ def collect_release_entries(
         "Binaries/Win64/",
         "Content/Python/",
         "Resources/Profiles/",
+        "Resources/ProjectPresets/",
+        "contracts/",
         "Source/UnrealAssetBatchAuditor/",
     )
     for prefix in required_prefixes:
@@ -98,7 +102,9 @@ def collect_release_entries(
 
     support_files = {
         "README_安装说明.md": repo_root / "docs" / "RELEASE_INSTALL.md",
+        "版本说明_v0.9.0.md": repo_root / "docs" / "releases" / "v0.9.0.md",
         "install-plugin.ps1": repo_root / "scripts" / "release" / "install-plugin.ps1",
+        "run-unattended-audit.ps1": repo_root / "scripts" / "run_unattended_audit.ps1",
         "LICENSE.txt": repo_root / "LICENSE",
     }
     for archive_path, source_path in support_files.items():

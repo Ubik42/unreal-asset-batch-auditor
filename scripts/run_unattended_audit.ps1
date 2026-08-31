@@ -12,8 +12,7 @@ param(
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $editorCmd = Join-Path $EngineRoot "Engine\Binaries\Win64\UnrealEditor-Cmd.exe"
-$entryScript = Join-Path (Split-Path -Parent $PSScriptRoot) "Content\Python\run_unattended_audit.py"
-foreach ($required in @($editorCmd, $ProjectPath, $PresetPath, $entryScript)) {
+foreach ($required in @($editorCmd, $ProjectPath, $PresetPath)) {
     if (-not (Test-Path -LiteralPath $required)) {
         throw "无人值守审计所需路径不存在：$required"
     }
@@ -31,6 +30,14 @@ if ($projectInput.PSIsContainer) {
     throw "ProjectPath 必须指向 .uproject 或只包含一个 .uproject 的目录"
 }
 $projectRoot = $projectFile.Directory.FullName
+$sourceEntry = Join-Path (Split-Path -Parent $PSScriptRoot) "Content\Python\run_unattended_audit.py"
+$installedEntry = Join-Path $projectRoot "Plugins\UnrealAssetBatchAuditor\Content\Python\run_unattended_audit.py"
+$entryScript = @($sourceEntry, $installedEntry) |
+    Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } |
+    Select-Object -First 1
+if (-not $entryScript) {
+    throw "找不到无人值守 Python 入口；请确认源码仓或项目插件安装完整"
+}
 if (-not $SummaryPath) {
     $SummaryPath = Join-Path $projectRoot "Saved\UnrealAssetBatchAuditor\CI\latest-run-summary.json"
 }
