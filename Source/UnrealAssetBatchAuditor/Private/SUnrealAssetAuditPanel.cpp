@@ -509,6 +509,7 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
             TEXT("texture2d"), TEXT("纹理交付轨道"), TEXT("Texture2D · 尺寸、Mip、分组、压缩、色彩空间与流送")})
     };
     SelectedAssetType = AssetTypeOptions[0];
+    ProjectProfileRoot = FPaths::Combine(FPaths::ProjectConfigDir(), TEXT("AssetAudit/Profiles"));
     RebuildProfileOptions();
     ReportPath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Reports/latest-report.json"));
     SessionRoot = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Sessions"));
@@ -523,6 +524,10 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
         FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Views/current-delivery-groups.v1.json"));
     DeliveryGroupRequestPath = FPaths::Combine(
         FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Views/delivery-groups-request.v1.json"));
+    ProfileCloneRequestPath = FPaths::Combine(
+        FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Profiles/clone-request.v1.json"));
+    ProfileCloneResultPath = FPaths::Combine(
+        FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Profiles/clone-result.v1.json"));
     StatusMessage = TEXT("选择交付轨道，再读取对应资产或文件夹");
 
     ChildSlot
@@ -626,7 +631,27 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         ]
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 8, 0, 0)
                         [
-                            SNew(SButton).Text(FText::FromString(TEXT("导入自定义规则…"))).OnClicked(this, &SUnrealAssetAuditPanel::BrowseProfile)
+                            SNew(SHorizontalBox)
+                            + SHorizontalBox::Slot().FillWidth(1).Padding(0, 0, 4, 0)
+                            [
+                                SNew(SButton)
+                                .Text(FText::FromString(TEXT("复制为项目标准")))
+                                .ToolTipText(FText::FromString(TEXT("内置模板保持只读；副本保存在工程 Config/AssetAudit/Profiles")))
+                                .OnClicked(this, &SUnrealAssetAuditPanel::CloneSelectedProfile)
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(4, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .Text(FText::FromString(TEXT("项目标准目录")))
+                                .OnClicked(this, &SUnrealAssetAuditPanel::OpenProjectProfileFolder)
+                            ]
+                        ]
+                        + SVerticalBox::Slot().AutoHeight().Padding(0, 5, 0, 0)
+                        [
+                            SNew(SButton)
+                            .Text(FText::FromString(TEXT("临时导入外部规则…")))
+                            .ToolTipText(FText::FromString(TEXT("仅用于本次编辑器会话；项目规则请复制到项目标准目录")))
+                            .OnClicked(this, &SUnrealAssetAuditPanel::BrowseProfile)
                         ]
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 18, 0, 4)
                         [
@@ -1393,6 +1418,60 @@ FReply SUnrealAssetAuditPanel::BrowseProfile()
         ProfileComboBox->RefreshOptions();
         ProfileComboBox->SetSelectedItem(Custom);
     }
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::CloneSelectedProfile()
+{
+    if (!SelectedProfile.IsValid() || !FPaths::FileExists(SelectedProfile->Path))
+    {
+        StatusMessage = TEXT("请先选择一个有效检查规则");
+        return FReply::Handled();
+    }
+    TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
+    Request->SetStringField(TEXT("source_path"), SelectedProfile->Path);
+    Request->SetStringField(TEXT("project_profile_root"), ProjectProfileRoot);
+    Request->SetStringField(TEXT("requested_version"), TEXT("1.0.0"));
+    Request->SetStringField(TEXT("result_path"), ProfileCloneResultPath);
+    FString Error;
+    if (!RunPanelPythonBridge(
+        TEXT("clone_project_profile_from_request_file"), Request,
+        ProfileCloneRequestPath, Error))
+    {
+        StatusMessage = FString::Printf(TEXT("项目标准创建失败：%s"), *Error);
+        return FReply::Handled();
+    }
+    FString ResultJson;
+    TSharedPtr<FJsonObject> Result;
+    if (!FFileHelper::LoadFileToString(ResultJson, *ProfileCloneResultPath)
+        || !FJsonSerializer::Deserialize(
+            TJsonReaderFactory<>::Create(ResultJson), Result)
+        || !Result.IsValid())
+    {
+        StatusMessage = TEXT("项目标准已请求创建，但未能读取返回结果");
+        return FReply::Handled();
+    }
+    const FString CreatedPath = Result->GetStringField(TEXT("profile_path"));
+    RebuildProfileOptions();
+    for (const FProfilePtr& Option : ProfileOptions)
+    {
+        if (Option.IsValid() && FPaths::IsSamePath(Option->Path, CreatedPath))
+        {
+            SelectedProfile = Option;
+            if (ProfileComboBox.IsValid()) ProfileComboBox->SetSelectedItem(Option);
+            break;
+        }
+    }
+    StatusMessage = FString::Printf(
+        TEXT("项目标准已创建并选中：%s"), *FPaths::GetCleanFilename(CreatedPath));
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::OpenProjectProfileFolder()
+{
+    IFileManager::Get().MakeDirectory(*ProjectProfileRoot, true);
+    FPlatformProcess::ExploreFolder(*ProjectProfileRoot);
+    StatusMessage = TEXT("已打开项目标准目录；该目录随工程配置交付");
     return FReply::Handled();
 }
 
@@ -2980,6 +3059,41 @@ void SUnrealAssetAuditPanel::RebuildProfileOptions()
                 FPaths::Combine(ProfilesRoot, TEXT("review-lenient.v3.json"))})
         };
     }
+    TArray<FString> ProjectFiles;
+    IFileManager::Get().FindFiles(
+        ProjectFiles, *FPaths::Combine(ProjectProfileRoot, TEXT("*.json")), true, false);
+    ProjectFiles.Sort();
+    for (const FString& Filename : ProjectFiles)
+    {
+        const FString Path = FPaths::Combine(ProjectProfileRoot, Filename);
+        FString Json;
+        TSharedPtr<FJsonObject> Root;
+        if (!FFileHelper::LoadFileToString(Json, *Path)
+            || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Json), Root)
+            || !Root.IsValid())
+        {
+            continue;
+        }
+        FString Schema;
+        FString ProfileId;
+        FString Version;
+        Root->TryGetStringField(TEXT("schema_version"), Schema);
+        Root->TryGetStringField(TEXT("profile_id"), ProfileId);
+        Root->TryGetStringField(TEXT("profile_version"), Version);
+        const bool bMatchesTrack = CurrentAssetType == TEXT("texture2d")
+            ? Schema == TEXT("unreal-texture-profile@1.0.0")
+            : Schema == TEXT("unreal-static-mesh-profile@3.0.0");
+        if (!bMatchesTrack || ProfileId.IsEmpty()) continue;
+        FString Description;
+        Root->TryGetStringField(TEXT("description"), Description);
+        ProfileOptions.Add(MakeShared<FAuditProfileOption>(FAuditProfileOption{
+            FString::Printf(TEXT("项目标准 · %s"), *ProfileId),
+            FString::Printf(
+                TEXT("项目自有 · v%s%s%s"), *Version,
+                Description.IsEmpty() ? TEXT("") : TEXT(" · "), *Description),
+            Path,
+            true}));
+    }
     SelectedProfile = ProfileOptions.IsEmpty() ? nullptr : ProfileOptions[0];
     if (ProfileComboBox.IsValid())
     {
@@ -3025,9 +3139,18 @@ TSharedRef<SWidget> SUnrealAssetAuditPanel::GenerateProfileOption(FProfilePtr It
 {
     return SNew(SVerticalBox)
         + SVerticalBox::Slot().AutoHeight().Padding(8, 5, 8, 1)
-        [SNew(STextBlock).Text(FText::FromString(Item->Label))]
+        [
+            SNew(STextBlock)
+            .Text(FText::FromString(Item->Label))
+            .ColorAndOpacity(Item->bCustom ? FSlateColor(CyanAccent) : FSlateColor::UseForeground())
+        ]
         + SVerticalBox::Slot().AutoHeight().Padding(8, 0, 8, 5)
-        [SNew(STextBlock).Text(FText::FromString(Item->Summary)).ColorAndOpacity(FSlateColor::UseSubduedForeground())];
+        [
+            SNew(STextBlock)
+            .Text(FText::FromString(
+                FString::Printf(TEXT("%s · %s"), Item->bCustom ? TEXT("项目自有") : TEXT("内置只读"), *Item->Summary)))
+            .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+        ];
 }
 
 TSharedRef<SWidget> SUnrealAssetAuditPanel::GenerateAssetTypeOption(FAssetTypePtr Item) const

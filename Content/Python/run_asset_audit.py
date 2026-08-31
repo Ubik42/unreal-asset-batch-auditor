@@ -10,6 +10,7 @@ from unreal_asset_batch_auditor import (
     SessionStore,
     UnrealCppCollector,
     audit_assets,
+    clone_as_project_profile,
     compare_reports,
     export_handoff,
     update_review,
@@ -136,3 +137,22 @@ def write_delivery_group_view_from_request_file(request_path: str) -> dict:
             else None
         ),
     )
+
+
+def clone_project_profile_from_request_file(request_path: str) -> dict:
+    """Clone an immutable built-in Profile into the project's owned standards directory."""
+
+    request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+    destination = clone_as_project_profile(
+        str(request["source_path"]),
+        str(request["project_profile_root"]),
+        requested_id=(str(request["requested_id"]) if request.get("requested_id") else None),
+        requested_version=str(request.get("requested_version", "1.0.0")),
+    )
+    result = {"status": "ready", "profile_path": str(destination)}
+    result_path = Path(str(request["result_path"]))
+    result_path.parent.mkdir(parents=True, exist_ok=True)
+    temp = result_path.with_suffix(result_path.suffix + ".tmp")
+    temp.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    temp.replace(result_path)
+    return result

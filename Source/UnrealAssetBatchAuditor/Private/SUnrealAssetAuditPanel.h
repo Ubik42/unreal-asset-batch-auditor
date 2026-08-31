@@ -146,6 +146,8 @@ public:
 private:
     FReply RefreshSelection();
     FReply BrowseProfile();
+    FReply CloneSelectedProfile();
+    FReply OpenProjectProfileFolder();
     FReply RunAudit();
     FReply CancelAudit();
     FReply ExportHandoff();
@@ -293,6 +295,9 @@ private:
     FString ReviewRequestPath;
     FString DeliveryGroupViewPath;
     FString DeliveryGroupRequestPath;
+    FString ProjectProfileRoot;
+    FString ProfileCloneRequestPath;
+    FString ProfileCloneResultPath;
     FString LastHandoffPath;
     FString ActiveTaskId;
     FString TaskState = TEXT("idle");

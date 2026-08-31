@@ -94,6 +94,40 @@ def test_native_panel_exposes_complete_asset_ledger_and_issue_detail_views() -> 
     assert 'TEXT("导出团队包")' in source
     assert "current-task-state.json" in source
     assert "start_panel_task" in source
+    assert 'TEXT("复制为项目标准")' in source
+    assert 'TEXT("项目标准目录")' in source
+    assert 'TEXT("内置只读")' in source
+    assert "Config/AssetAudit/Profiles" in (
+        ROOT / "docs" / "PROJECT_AUDIT_STANDARDS.md"
+    ).read_text(encoding="utf-8")
+
+
+def test_panel_bridge_clones_profile_and_writes_result(tmp_path: Path) -> None:
+    result_path = tmp_path / "Saved" / "clone-result.json"
+    request_path = tmp_path / "Saved" / "clone-request.json"
+    request_path.parent.mkdir(parents=True)
+    request_path.write_text(
+        json.dumps(
+            {
+                "source_path": str(
+                    ROOT / "Resources" / "Profiles" / "texture-desktop-balanced.v1.json"
+                ),
+                "project_profile_root": str(tmp_path / "Config" / "AssetAudit" / "Profiles"),
+                "requested_id": "portfolio-texture-standard",
+                "requested_version": "1.2.0",
+                "result_path": str(result_path),
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_asset_audit.clone_project_profile_from_request_file(str(request_path))
+
+    profile_path = Path(result["profile_path"])
+    assert profile_path.parent == tmp_path / "Config" / "AssetAudit" / "Profiles"
+    assert profile_path.name == "portfolio-texture-standard.v1.json"
+    assert json.loads(profile_path.read_text(encoding="utf-8"))["profile_version"] == "1.2.0"
+    assert json.loads(result_path.read_text(encoding="utf-8")) == result
 
 
 def test_panel_comparison_request_writes_versioned_result(tmp_path: Path) -> None:

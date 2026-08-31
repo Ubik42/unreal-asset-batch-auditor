@@ -1,7 +1,7 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 26,
+  "stateRevision": 27,
   "status": "active",
   "currentMilestone": "M17",
   "milestones": [
@@ -74,7 +74,7 @@
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0026.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0027.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -136,6 +136,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "v0.10.0 完成 67 文件确定性发布、全新双轨安装烟雾、公开 v0.9 升级、两次可恢复卸载与 GitHub Beta Release。"
+    },
+    {
+      "id": "m17s1-project-standard-foundation",
+      "status": "in_progress",
+      "blocking": false,
+      "reason": "M17 第一阶段已完成模型/纹理 Profile 的项目自有复制、合同校验、中文字段错误、稳定差异、原子保存、Slate 归属展示与重新发现；字段化编辑、差异面板和宿主截图仍待完成。"
     }
   ]
 }

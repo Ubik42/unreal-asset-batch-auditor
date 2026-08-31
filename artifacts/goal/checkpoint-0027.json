@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0027",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 27,
+  "completedSlice": "M17-S1-foundation",
+  "summary": "M17 项目验收标准编辑器完成第一阶段底座：内置模板只读，规则可复制为工程自有标准，并由共用 Python 合同负责校验、差异和原子保存。",
+  "evidence": [
+    "模型 v3 与纹理 v1 Profile 进入同一项目标准服务，返回字段路径和中文错误",
+    "结构化差异按稳定路径比较，JSON 对象键顺序变化不会形成假差异",
+    "项目副本写入 Config/AssetAudit/Profiles，重复复制使用稳定后缀且不覆盖内置模板",
+    "Slate 下拉项区分内置只读与青色项目自有标准，并提供复制、目录和临时导入三种明确动作",
+    "复制完成后项目标准会被当前轨道重新发现并立即选中",
+    "95 项 Python 回归与 Ruff 通过",
+    "UE 5.8 UE_5.8-v0.11.0-dev1 BuildPlugin 完成 UHT、C++ 编译、链接与打包"
+  ],
+  "nextSlice": "M17-S1",
+  "knownLimits": [
+    "当前尚未完成原生字段编辑卡片、保存前差异面板和字段就地错误展示",
+    "当前 BuildPlugin 只证明编译边界，不冒充独立宿主交互或可见截图",
+    "只支持模型 Profile v3 与纹理 Profile v1，不提供任意 JSON Schema 编辑",
+    "只写项目配置，不修改任何 Unreal 资产"
+  ]
+}

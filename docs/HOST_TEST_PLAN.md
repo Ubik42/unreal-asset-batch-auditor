@@ -253,3 +253,13 @@ Editor 宿主采集。本轮不证明 Cook 后尺寸、运行时 residency、显
 
 正式 ZIP SHA-256：`0D466D4779D32A8A563C387DC4A910BDBCA8F7C7AFFBACA82079C89F297F6A33`。
 本矩阵不声明 Marketplace、跨 UE 版本、人工鼠标交互或生产规模性能。
+
+## 2026-08-30 v0.11-dev1 项目验收标准底座
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| Python 项目标准语义层 | 通过；模型 v3 / 纹理 v1 校验、中文字段错误、稳定差异、原子保存与不覆盖复制进入 94 项回归 | `tests/test_profile_standards.py` |
+| Development Editor BuildPlugin | 通过；UE 5.8 Win64 完成 UHT、C++ 编译、链接和打包 | 本机忽略目录 `artifacts/host-build/UE_5.8-v0.11.0-dev1` |
+| 独立宿主与当前截图 | 待字段编辑与差异视图完成后一次性验证 | 不把本轮 BuildPlugin 宣称成交互完成 |
+
+当前只证明“内置只读、项目复制、重新发现”的底座，不声明已经完成原生字段编辑器。
