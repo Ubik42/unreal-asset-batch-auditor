@@ -1,7 +1,7 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 22,
+  "stateRevision": 23,
   "status": "active",
   "currentMilestone": "M14",
   "milestones": [
@@ -22,21 +22,21 @@
     { "id": "M14", "title": "Delivery hotspot and asset-group overview", "status": "in_progress", "dependsOn": ["M13"] }
   ],
   "nextSlice": {
-    "id": "M14-S1",
+    "id": "M14-S2",
     "milestoneId": "M14",
-    "title": "交付批次热区与目录分组下钻",
+    "title": "交付热区进入团队交接包",
     "scope": [
-      "从当前 Report 的真实 package path 确定性聚合目录组，不引入额外扫描",
-      "展示每组资产数、通过/问题/采集失败、问题密度、未复核和需修复数量",
-      "提供交付热区排序与目录组下钻，一次点击回到该组资产或问题明细",
-      "在真实 Demo 批次中覆盖轻量组、重资产组和错误目录组，形成可录制业务叙事"
+      "复用 M14-S1 的目录聚合模型，从已有 Report 和 Review Ledger 生成团队交付摘要，不重新扫描资产",
+      "在中文 HTML 中增加目录热区总览、排序依据和组级审阅进度，并提供组内问题锚点",
+      "增加 Excel 可读的目录组 CSV，并在交接清单中记录文件 SHA-256 与聚合合同版本",
+      "保持规则严重度、人工决定和目录聚合三类语义独立，形成从热区到单条 Evidence 的离线复核路径"
     ],
     "nonGoals": [
-      "不推断帧率、GPU 时间、Shader 成本或 Cook 体积",
-      "不默认扫描整个项目或越过当前 Report 范围",
-      "不引入数据库、云同步、AI 归因或自动修复",
-      "不修改、保存、重命名或移动资产",
-      "不重做当前审阅台账和报告合同",
+      "不增加新的 Unreal 采集字段或扩大资产类型",
+      "不推断帧率、GPU、Shader、Cook 或运行时性能",
+      "不引入工单、数据库、云同步、AI 归因或自动修复",
+      "不修改 Report、Review Ledger、Profile 或任何资产",
+      "不把目录问题密度包装成质量评分或性能评分",
       "不执行正式发布安装矩阵"
     ],
     "allowedPaths": [
@@ -55,21 +55,21 @@
       "README.md",
       "AGENTS.md"
     ],
-    "evidenceCeiling": "本切片最多证明 UE 5.8 中当前 Report 范围内的目录分组、风险计数和下钻；不等同于运行时性能分析、Cook 分析、生产全项目规模或资产修复。",
-    "realHostRequired": true,
+    "evidenceCeiling": "本切片最多证明真实 UE Report 的目录聚合可以确定性进入离线团队包；不等同于外部协作系统、性能分析、正式发布或人工签收。",
+    "realHostRequired": false,
     "acceptanceCriteria": [
-      "目录组只由 Report 资产和采集失败路径生成，计数之和与 Report 自洽",
-      "热区排序有稳定规则，空组、跨根目录和异常路径不会导致崩溃或错误归组",
-      "组级风险明确标注为规则问题聚合，不冒充性能采样",
-      "点击目录组可筛选资产总览或问题明细，并可清除下钻返回全批次",
-      "至少完成一次独立 UE 宿主分组/下钻验证并更新中文演示教程"
+      "HTML 和目录组 CSV 只消费已有 Report/Review Ledger，源文件哈希保持不变",
+      "目录组计数、排序和审阅数与 delivery-group-view v1 完全一致",
+      "HTML 可从热区组跳到对应问题证据，空组、失败组和无审阅记录均有明确中文状态",
+      "交接清单包含新增文件哈希、聚合合同版本和不推断性能的边界说明",
+      "离线导出测试、中文教程和一份真实 Report 交接样例同步更新"
     ],
     "validationCommands": [
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0022.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0023.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -113,6 +113,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "v0.10-dev2 完成独立 Review Ledger、审阅刻度、负责人/备注和交接导出；79 项测试、UE 5.8 BuildPlugin 与独立宿主持久化验证通过。"
+    },
+    {
+      "id": "m14s1-delivery-hotspots-host",
+      "status": "completed",
+      "blocking": false,
+      "reason": "v0.10-dev3 完成当前 Report 的目录聚合、稳定热区排序和资产/问题下钻；83 项测试、UE 5.8 BuildPlugin 与独立隐藏宿主验证通过。"
     }
   ]
 }

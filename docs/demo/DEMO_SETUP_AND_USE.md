@@ -32,7 +32,8 @@ D:\3D\_tools\unreal-asset-batch-auditor\Demo\UABADemo.uproject
 /Game/UABADemo
 ├─ 01_Light     8 个
 ├─ 02_Medium    8 个
-└─ 03_Heavy     8 个
+├─ 03_Heavy     7 个（含 1 个故意错误命名）
+└─ Developers   1 个（故意错误目录）
 ```
 
 文件夹只是相对复杂度分组。审核结论来自 Profile，不能把目录名当成质量结论。
@@ -45,9 +46,27 @@ D:\3D\_tools\unreal-asset-batch-auditor\Demo\UABADemo.uproject
 4. 在“检查规则”下拉框选择“桌面平衡（推荐演示）”；其下方会直接显示几何预算、简单碰撞、Lightmap UV 与分辨率阈值；
 5. 将单批资产数设为 8，点击“开始只读审计”；
 6. 观察左下任务卡：阶段、对象进度、批次进度会随 Editor Tick 更新；面板不会在扫描期间伪装成已完成；
-7. 在“资产总览”确认每个资产的状态、LOD0 三角形、顶点、材质槽/唯一材质、纹理依赖/最大边长、LOD、Nanite、碰撞、LM UV、LM 分辨率与问题数；
-8. 切换“问题明细”，用搜索框筛选规则、证据说明或资产名，并对照实测值与 Profile 阈值；
-9. 点击“打开最新报告”直接查看 JSON，或点击“打开报告目录”进入本次报告所在目录。
+7. 审计完成后默认进入“交付热区”。先看 6 个 Report 目录组：两个采集失败组、Developers、Heavy、Medium 和 Light；
+8. 选择 `03_Heavy`，点击“查看组内问题”，确认下钻条说明只筛选当前 Report、不会重新扫描 Content Browser；
+9. 点击“清除下钻”，再进入“资产总览”，确认每个资产的状态、LOD0 三角形、顶点、材质/纹理、LOD、Nanite、碰撞、LM UV、LM 分辨率与问题数；
+10. 切换“问题明细”，用搜索框筛选规则、证据说明或资产名，并对照实测值与 Profile 阈值；
+11. 点击“打开最新报告”直接查看 JSON，或点击“打开报告目录”进入本次报告所在目录。
+
+### 如何解释“交付热区”
+
+- 目录组完全来自当前 Report 中的 `asset_path`，不会偷偷扫描整个项目；
+- “问题/对象”是规则问题数量除以本组处理对象数，用于寻找复核工作集中处；
+- 排序依次考虑采集失败、已经人工判定需修复、问题密度、问题数和目录路径；
+- `Developers` 是故意放错目录的真实项目副本，`Missing` 是不存在路径，二者用于展示不同失败语义；
+- 该刻度不表示 FPS、GPU 时间、Shader 成本或 Cook 体积。
+
+目录聚合视图写入：
+
+```text
+<Project>/Saved/UnrealAssetBatchAuditor/Views/current-delivery-groups.v1.json
+```
+
+它是可重建的面板视图，不替代正式 Report，也不会修改 Report。
 
 ### 演示批次间取消
 
@@ -136,6 +155,7 @@ artifacts/demo/demo-desktop-balanced-v3-report.json
 - `requested/processed/cancelled`：本次批次执行统计；
 - `Tasks/current-task-state.json`：原生面板任务阶段、进度、批次计数和最终产物位置；
 - `Handoffs/<report-id>/`：HTML、CSV 与 SHA-256 交接清单；
+- `Views/current-delivery-groups.v1.json`：当前 Report 的目录热区、排序依据与下钻成员路径；
 - `real_unreal_validation=true`：数据来自真实 Unreal Editor；
 - Session 的 `integrity.unchanged=true`：本次扫描没有改写演示资产。
 

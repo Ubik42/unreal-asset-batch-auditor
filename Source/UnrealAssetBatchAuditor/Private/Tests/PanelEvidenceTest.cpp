@@ -107,7 +107,8 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         Panel->GetEvidenceIssueCount(),
         ExpectedIssues > 0 ? ExpectedIssues : 23);
 
-    Panel->SetFolderSelectionForEvidence({TEXT("/Engine/BasicShapes")});
+    Panel->SetFolderSelectionForEvidence({EvidenceMode == TEXT("hotspot")
+        ? TEXT("/Game/UABADemo") : TEXT("/Engine/BasicShapes")});
     TestTrue(
         TEXT("Recursive folder scope discovers real Engine Static Mesh assets"),
         Panel->GetEvidenceSelectedAssetCount() >= 4);
@@ -129,7 +130,7 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
     Capture(TEXT("04-assets-needing-work.png"));
     Panel->SetEvidenceView(false, TEXT(""));
     Capture(TEXT("05-issue-details.png"));
-    if (EvidenceMode == TEXT("v2") || EvidenceMode == TEXT("review"))
+    if (EvidenceMode == TEXT("v2") || EvidenceMode == TEXT("review") || EvidenceMode == TEXT("hotspot"))
     {
         Panel->SetEvidenceView(false, TEXT("简单碰撞"));
         Capture(TEXT("06-collision-evidence.png"));
@@ -233,6 +234,24 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         Panel->SelectIssueForEvidence(
             TEXT("/Engine/BasicShapes/Cone.Cone"), TEXT("static_mesh.object_name"));
     }
+    if (EvidenceMode == TEXT("hotspot"))
+    {
+        Panel->SetDeliveryGroupEvidenceView();
+        TestTrue(TEXT("Delivery hotspot view contains the real Demo directory groups"),
+            Panel->GetEvidenceDeliveryGroupCount() >= 5);
+        TestTrue(TEXT("A report directory group can be selected before drilldown"),
+            Panel->SelectDeliveryGroupForEvidence(TEXT("/Game/UABADemo/03_Heavy")));
+        Capture(TEXT("13-delivery-hotspots.png"));
+        TestTrue(TEXT("Heavy directory group drills into only its report issues"),
+            Panel->DrillIntoDeliveryGroupForEvidence(TEXT("/Game/UABADemo/03_Heavy"), true)
+                && Panel->GetEvidenceFilteredIssueCount() > 0
+                && Panel->GetEvidenceFilteredIssueCount() < Panel->GetEvidenceIssueCount());
+        Capture(TEXT("14-heavy-group-issues.png"));
+        Panel->ClearDeliveryGroupDrilldownForEvidence();
+        Panel->SetEvidenceView(true, TEXT(""));
+        TestEqual(TEXT("Clearing directory drilldown restores the full report batch"),
+            Panel->GetEvidenceFilteredAssetCount(), Panel->GetEvidenceAssetCount());
+    }
     if (Panel->SelectFirstResolvableIssueForEvidence())
     {
         const FString Summary = Panel->GetSelectedEvidenceSummaryForEvidence();
@@ -243,7 +262,8 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         if (!LocateError.IsEmpty()) AddError(LocateError);
         Capture(EvidenceMode == TEXT("review")
             ? TEXT("13-review-ledger.png")
-            : TEXT("13-review-actions.png"));
+            : (EvidenceMode == TEXT("hotspot")
+                ? TEXT("15-review-actions.png") : TEXT("13-review-actions.png")));
     }
     else
     {
@@ -252,9 +272,11 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
 
     Panel->SetEvidenceView(true, TEXT(""));
     Panel->SetTaskEvidenceState(TEXT("running"), 16, 64, 2, 8);
-    Capture(TEXT("14-running-batch-task.png"));
+    Capture(EvidenceMode == TEXT("hotspot")
+        ? TEXT("16-running-batch-task.png") : TEXT("14-running-batch-task.png"));
     Panel->SetTaskEvidenceState(TEXT("cancelling"), 24, 64, 3, 8);
-    Capture(TEXT("15-cancelling-task.png"));
+    Capture(EvidenceMode == TEXT("hotspot")
+        ? TEXT("17-cancelling-task.png") : TEXT("15-cancelling-task.png"));
 
     FSlateApplication::Get().RequestDestroyWindow(Window);
     return bPassed;

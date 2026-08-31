@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0023",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 23,
+  "completedSlice": "M14-S1",
+  "summary": "v0.10.0-dev3 把当前 Report 组织成资产体检热区：目录组稳定排序，能够从批次热区下钻到组内资产或规则问题，并随时返回完整批次。",
+  "evidence": [
+    "delivery-group-view v1 只消费 Report object path 与精确匹配的 Review Ledger，不查询 Asset Registry 或扩大扫描范围",
+    "成功资产、规则问题和采集失败分别计数；异常路径进入未归档组，无法绑定对象的问题不会被错误归组",
+    "排序固定为采集失败、需修复、问题密度、问题数、目录路径，问题密度明确为规则问题数/对象数",
+    "Slate 默认进入交付热区，选择目录后可查看组内资产或问题，清除下钻恢复完整 Report",
+    "真实 UE 5.8.1 Demo Report 包含 24 个 Static Mesh、47 条规则问题和 2 个采集失败，形成 6 个目录组",
+    "83 项 Python 测试、Ruff、全部 JSON 合同解析与 UE 5.8 BuildPlugin 通过",
+    "独立隐藏宿主验证 Heavy 组 23 条问题下钻与清除恢复，测试只管理精确启动 PID且前后没有其他 UE 进程",
+    "17 张生产 Slate 截图和结构化宿主记录位于 docs/images/workflow/v0.10-delivery-hotspots 与 artifacts/host-validation/m14"
+  ],
+  "nextSlice": "M14-S2",
+  "knownLimits": [
+    "只验证 Windows 11、Win64 与 UE 5.8.1",
+    "目录热区只覆盖当前 Report，不代表全项目或 Content Browser 实时状态",
+    "问题密度不是 FPS、GPU、Shader、Cook 或资产质量评分",
+    "本切片未把目录热区写入离线团队交接 HTML/CSV",
+    "所有功能保持只读，不修改、保存、重命名或移动资产"
+  ]
+}

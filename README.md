@@ -2,13 +2,13 @@
 
 面向 Unreal 项目 Static Mesh 的只读交付验收台。项目 Profile 定义预算和预期，Editor-only C++ 模块批量采集元数据，Python 负责规则编排与 JSON 报告。扫描接口不保存资产、不重建网格，也不修改 Nanite。
 
-> **当前源码：v0.10.0-dev2 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> **当前源码：v0.10.0-dev3 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.9.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
-![资产交付验收台：机器审计事实与人工交付决定](docs/images/workflow/v0.10-review-ledger/13-review-ledger.png)
+![资产交付验收台：目录热区与交付批次下钻](docs/images/workflow/v0.10-delivery-hotspots/13-delivery-hotspots.png)
 
-<p align="center"><sub>真实 UE 5.8.1 原生 Slate：规则事实保留在不可变 Report，制作决定、负责人和备注进入独立 Review Ledger。</sub></p>
+<p align="center"><sub>真实 UE 5.8.1 原生 Slate：24 个 Demo Static Mesh 与 2 个失败对象按 Report 路径形成 6 个交付目录组，先看热区再进入单资产证据。</sub></p>
 
 ## 这个项目体现什么
 
@@ -36,11 +36,15 @@ LOD、Nanite、碰撞与 Lightmap 阈值。普通用户无需接触 JSON 路径�
 
 ![文件夹递归形成交付批次](docs/images/workflow/v0.9-material/02-asset-overview.png)
 
-### 3. 查看可追溯报告
+### 3. 先找到交付热区，再查看可追溯报告
 
-切换“问题明细”即可看到严重度、规则、实测值、Profile 阈值和中文证据说明。面板把本次运行写入版本化 JSON Report，保留宿主版本、资产元数据、Issue、Evidence 与批次统计。
+“交付热区”只聚合当前 Report，按“采集失败 > 需修复 > 问题密度 > 问题数”稳定排序。每个目录组显示
+对象、通过、需处理、规则问题、采集失败和审阅进度；选择一行即可下钻组内资产或问题，不会重新扫描
+Content Browser。切换“问题明细”后仍能看到严重度、实测值、Profile 阈值和中文证据说明。
 
-![交付风险谱与可追溯问题明细](docs/images/workflow/v0.9-material/05-issue-details.png)
+![交付目录热区与稳定排序依据](docs/images/workflow/v0.10-delivery-hotspots/13-delivery-hotspots.png)
+
+![Heavy 目录组下钻后的可追溯问题](docs/images/workflow/v0.10-delivery-hotspots/14-heavy-group-issues.png)
 
 ### 4. 从问题回到资产复核
 
@@ -59,12 +63,21 @@ Content Browser 选择，`打开复核` 只打开 Static Mesh Editor；问题行
 
 ![独立审阅台账：需修复、批准例外与负责人](docs/images/workflow/v0.10-review-ledger/13-review-ledger.png)
 
-以上 v0.10.0-dev2 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件，数据来自真实
-Engine Static Mesh；不是网页复刻或设计稿。完整演示流程另使用 24 个本机生成的项目 Demo `.uasset`。生命周期记录保存测试 PID、
+以上 v0.10.0-dev3 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件，数据来自
+24 个本机生成的项目 Demo `.uasset` 与 2 条真实采集失败；不是网页复刻或设计稿。生命周期记录保存测试 PID、
 耗时、退出状态、截图、报告与交接包哈希。自动化证明面板渲染、任务状态、批次间取消和报告解析，
 不冒充鼠标点击人工测试。演示 Profile 使用模拟项目阈值，不代表行业统一标准。
 
 ## 真实状态画廊
+
+### 交付批次热区
+
+目录组只来自当前 Report 的 object path。问题密度表示“规则问题数 / 本组对象数”，不代表帧率、GPU、
+Shader 或 Cook 成本。双击目录组直接进入问题，下钻条可随时返回完整交付批次。
+
+![目录热区选中 Heavy 交付组](docs/images/workflow/v0.10-delivery-hotspots/13-delivery-hotspots.png)
+
+![只查看 Heavy 组规则问题](docs/images/workflow/v0.10-delivery-hotspots/14-heavy-group-issues.png)
 
 ### 材质与纹理风险
 
@@ -140,6 +153,7 @@ CSV 和带 SHA-256 的交接清单；制片、主美或外包同事无需安装 
 - UE 原生中文 Slate 面板：读取 Content Browser 选择、从预置规则下拉框切换 Profile、运行审计与共享搜索；
 - 显式资产与文件夹可以组成同一交付批次；文件夹递归只发现 Static Mesh，结果去重并稳定排序；
 - “交付风险谱”按几何预算、材质负载、构建就绪、命名路径和采集异常汇总真实问题，点击即可筛选明细；
+- “交付热区”按当前 Report 的 package path 形成稳定目录组，显示对象/问题/失败/审阅统计并一键下钻；
 - “资产总览”展示每个已采集资产的通过/需处理/失败状态、几何预算、材质/纹理依赖、LOD、Nanite、碰撞、Lightmap UV、Lightmap 分辨率和问题数，不再隐藏通过资产；
 - “问题明细”保留严重度、规则、实测值、Profile 阈值与本地化证据说明，并可直接打开最新 JSON 或报告目录；
 - 资产行和问题行可只读定位到 Content Browser、打开 Static Mesh Editor；规则问题可复制带 Evidence ID 的确定性复核摘要；
@@ -269,7 +283,9 @@ report = run(
 - 材质证据宿主以明确标注的模拟 Profile 产生 9 条纹理风险，14 张原生 Slate 图与生命周期记录位于 `docs/images/workflow/v0.9-material/` 和 `artifacts/host-validation/m9/`；这不代表运行时 GPU 成本、完整 Cook 依赖或人工点击测试；
 - v0.9-dev3 增加项目预设与稳定退出码；独立 UE 5.8.1 命令行宿主按显式 `/Engine/BasicShapes` 范围审计 6 个资产，生成 12 条非阻断告警、0 个采集失败并以退出码 0 结束；
 - v0.9.0 发布包包含 55 个白名单文件；相同输入双次 ZIP 完全一致；全新安装、真实 Cube 采集、随包无人值守、升级和可恢复卸载均通过。ZIP SHA-256：`1D555A6A525A0C22436E8B3CFF6F0A1F70D7ACD0B6F7447E9E3CB9ACC7865BCC`；
-- 后续开发回到资产定位与复核效率，不加入泛 AI 对话或 PCG；
+- v0.10-dev1/2 完成资产定位、Evidence 摘要和独立 Review Ledger；人工决定不会改写规则事实或源 Report；
+- v0.10-dev3 已通过 83 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主使用 24 个 Demo Static Mesh 与 2 个采集失败验证 6 个交付目录组、Heavy 组下钻和清除恢复，并生成 17 张生产 Slate 图；
+- 下一切片把目录热区带入离线团队交接 HTML/CSV，不加入泛 AI 对话或 PCG；
 - 不声明 Marketplace 就绪、其他 UE 版本兼容或生产规模绝对无卡顿。
 
 ## 许可证与演示素材

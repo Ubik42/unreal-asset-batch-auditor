@@ -13,6 +13,7 @@ from unreal_asset_batch_auditor import (
     compare_reports,
     export_handoff,
     update_review,
+    write_delivery_group_view,
     write_review_view,
 )
 
@@ -118,4 +119,19 @@ def update_review_from_request_file(request_path: str) -> dict:
         str(request["report_path"]),
         str(request["review_ledger_root"]),
         str(request["review_view_path"]),
+    )
+
+
+def write_delivery_group_view_from_request_file(request_path: str) -> dict:
+    """Build the panel's directory hotspot view from the current Report only."""
+
+    request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+    return write_delivery_group_view(
+        str(request["report_path"]),
+        str(request["output_path"]),
+        (
+            str(request["review_ledger_root"])
+            if request.get("review_ledger_root")
+            else None
+        ),
     )

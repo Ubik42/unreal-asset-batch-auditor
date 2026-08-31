@@ -71,6 +71,25 @@ struct FAuditComparisonRow
     FString Message;
 };
 
+struct FAuditDeliveryGroup
+{
+    FString GroupPath;
+    FString GroupLabel;
+    FString RiskBand;
+    FString HotspotReason;
+    TSet<FString> AssetPaths;
+    int32 HotspotRank = 0;
+    int32 AssetCount = 0;
+    int32 PassedAssetCount = 0;
+    int32 IssueAssetCount = 0;
+    int32 IssueCount = 0;
+    int32 CollectionFailureCount = 0;
+    int32 UnreviewedIssueCount = 0;
+    int32 FixRequiredCount = 0;
+    int32 ApprovedExceptionCount = 0;
+    double IssueDensity = 0.0;
+};
+
 class SUnrealAssetAuditPanel final : public SCompoundWidget
 {
 public:
@@ -82,6 +101,7 @@ public:
     using FAssetPtr = TSharedPtr<FAuditPanelAsset>;
     using FSessionPtr = TSharedPtr<FAuditSessionOption>;
     using FComparisonPtr = TSharedPtr<FAuditComparisonRow>;
+    using FDeliveryGroupPtr = TSharedPtr<FAuditDeliveryGroup>;
 
     void Construct(const FArguments& InArgs);
 
@@ -107,6 +127,12 @@ public:
     bool SetSelectedReviewForEvidence(
         const FString& Decision, const FString& Owner, const FString& Note, FString& OutError);
     int32 GetEvidenceReviewedCount() const;
+    void SetDeliveryGroupEvidenceView();
+    bool DrillIntoDeliveryGroupForEvidence(const FString& GroupPath, bool bShowIssues);
+    bool SelectDeliveryGroupForEvidence(const FString& GroupPath);
+    int32 GetEvidenceDeliveryGroupCount() const { return AllDeliveryGroups.Num(); }
+    int32 GetEvidenceFilteredAssetCount() const { return FilteredAssets.Num(); }
+    void ClearDeliveryGroupDrilldownForEvidence() { ClearDeliveryGroupDrilldown(); }
 #endif
 
 private:
@@ -128,21 +154,30 @@ private:
     void HandleAssetSelectionChanged(FAssetPtr Item, ESelectInfo::Type SelectInfo);
     void HandleIssueDoubleClick(FIssuePtr Item);
     void HandleAssetDoubleClick(FAssetPtr Item);
+    void HandleDeliveryGroupSelectionChanged(FDeliveryGroupPtr Item, ESelectInfo::Type SelectInfo);
+    void HandleDeliveryGroupDoubleClick(FDeliveryGroupPtr Item);
     void RebuildFilteredIssues();
     void RebuildFilteredAssets();
     void RebuildFilteredComparisons();
+    void RebuildFilteredDeliveryGroups();
     bool LoadReport(const FString& Path, FString& OutError);
     bool LoadSessionIndex(FString& OutError);
     bool LoadComparison(const FString& Path, FString& OutError);
     bool LoadTaskState(FString& OutError);
+    bool RefreshDeliveryGroups(FString& OutError);
+    bool LoadDeliveryGroupView(FString& OutError);
     EActiveTimerReturnType PollAuditTask(double CurrentTime, float DeltaTime);
     TSharedRef<ITableRow> GenerateIssueRow(FIssuePtr Item, const TSharedRef<STableViewBase>& OwnerTable);
     TSharedRef<ITableRow> GenerateAssetRow(FAssetPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
     TSharedRef<ITableRow> GenerateComparisonRow(FComparisonPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
+    TSharedRef<ITableRow> GenerateDeliveryGroupRow(FDeliveryGroupPtr Item, const TSharedRef<STableViewBase>& OwnerTable);
     TSharedRef<SWidget> GenerateSessionOption(FSessionPtr Item) const;
     FReply ShowAssetOverview();
     FReply ShowIssueDetails();
     FReply ShowComparison();
+    FReply ShowDeliveryGroups();
+    FReply DrillIntoSelectedGroup(bool bShowIssues);
+    FReply ClearDeliveryGroupDrilldown();
     FReply LocateReviewAsset();
     FReply OpenReviewAsset();
     FReply CopyReviewEvidence();
@@ -155,8 +190,9 @@ private:
     void RebuildSelectionFromInternalFolders(const TArray<FString>& InternalFolders, TSet<FString>& InOutAssetPaths);
     bool RefreshReviewData(FString& OutError);
     bool LoadReviewView(FString& OutError);
-    bool RunReviewBridge(
-        const FString& FunctionName, const TSharedRef<FJsonObject>& Request, FString& OutError);
+    bool RunPanelPythonBridge(
+        const FString& FunctionName, const TSharedRef<FJsonObject>& Request,
+        const FString& RequestPath, FString& OutError);
 
     FText GetSelectionText() const;
     FText GetStatusText() const;
@@ -173,6 +209,8 @@ private:
     FText GetReviewProgressText() const;
     FText GetReviewFilterLabel(FString Decision) const;
     FText GetReviewOrphanText() const;
+    FText GetDeliveryGroupSummaryText() const;
+    FText GetDeliveryGroupDrilldownText() const;
     FText GetSelectedSessionLabel() const;
     FText GetComparisonBaselineText() const;
     FText GetNewIssueCountText() const;
@@ -185,6 +223,8 @@ private:
     EVisibility GetAssetViewVisibility() const;
     EVisibility GetIssueViewVisibility() const;
     EVisibility GetComparisonViewVisibility() const;
+    EVisibility GetDeliveryGroupViewVisibility() const;
+    EVisibility GetDeliveryGroupContextVisibility() const;
     EVisibility GetIdleActionVisibility() const;
     EVisibility GetRunningActionVisibility() const;
     bool CanRunAudit() const;
@@ -211,6 +251,10 @@ private:
     TArray<FComparisonPtr> AllComparisons;
     TArray<FComparisonPtr> FilteredComparisons;
     TSharedPtr<SListView<FComparisonPtr>> ComparisonList;
+    TArray<FDeliveryGroupPtr> AllDeliveryGroups;
+    TArray<FDeliveryGroupPtr> FilteredDeliveryGroups;
+    TSharedPtr<SListView<FDeliveryGroupPtr>> DeliveryGroupList;
+    FDeliveryGroupPtr SelectedDeliveryGroup;
     TArray<FProfilePtr> ProfileOptions;
     FProfilePtr SelectedProfile;
     TSharedPtr<SComboBox<FProfilePtr>> ProfileComboBox;
@@ -229,6 +273,8 @@ private:
     FString ReviewLedgerRoot;
     FString ReviewViewPath;
     FString ReviewRequestPath;
+    FString DeliveryGroupViewPath;
+    FString DeliveryGroupRequestPath;
     FString LastHandoffPath;
     FString ActiveTaskId;
     FString TaskState = TEXT("idle");
@@ -241,6 +287,7 @@ private:
     FString SearchText;
     FString ActiveRiskCategory;
     FString ActiveReviewFilter;
+    FString ActiveDeliveryGroupPath;
     FString DraftReviewDecision = TEXT("unreviewed");
     int32 DiscoveredFolderAssetCount = 0;
     int32 BatchSize = 64;

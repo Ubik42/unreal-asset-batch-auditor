@@ -1,0 +1,148 @@
+{
+  "asset_count": 26,
+  "collection_failure_count": 2,
+  "group_count": 6,
+  "grouping_rule": "package_parent_first_3_segments",
+  "groups": [
+    {
+      "approved_exception_count": 0,
+      "asset_count": 1,
+      "asset_paths": [
+        "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"
+      ],
+      "collection_failure_count": 1,
+      "fix_required_count": 0,
+      "group_label": "BasicShapes",
+      "group_path": "/Engine/BasicShapes",
+      "hotspot_rank": 1,
+      "hotspot_reason": "1 个对象采集失败",
+      "issue_asset_count": 0,
+      "issue_count": 0,
+      "issue_density": 0.0,
+      "passed_asset_count": 0,
+      "risk_band": "采集阻断",
+      "unreviewed_issue_count": 0
+    },
+    {
+      "approved_exception_count": 0,
+      "asset_count": 1,
+      "asset_paths": [
+        "/Game/UABADemo/Missing/SM_DoesNotExist.SM_DoesNotExist"
+      ],
+      "collection_failure_count": 1,
+      "fix_required_count": 0,
+      "group_label": "Missing",
+      "group_path": "/Game/UABADemo/Missing",
+      "hotspot_rank": 2,
+      "hotspot_reason": "1 个对象采集失败",
+      "issue_asset_count": 0,
+      "issue_count": 0,
+      "issue_density": 0.0,
+      "passed_asset_count": 0,
+      "risk_band": "采集阻断",
+      "unreviewed_issue_count": 0
+    },
+    {
+      "approved_exception_count": 0,
+      "asset_count": 1,
+      "asset_paths": [
+        "/Game/UABADemo/Developers/SM_UABA_23_SM_MatPreviewMesh_01.SM_UABA_23_SM_MatPreviewMesh_01"
+      ],
+      "collection_failure_count": 0,
+      "fix_required_count": 0,
+      "group_label": "Developers",
+      "group_path": "/Game/UABADemo/Developers",
+      "hotspot_rank": 3,
+      "hotspot_reason": "每个对象 4.00 条规则问题",
+      "issue_asset_count": 1,
+      "issue_count": 4,
+      "issue_density": 4.0,
+      "passed_asset_count": 0,
+      "risk_band": "高密度",
+      "unreviewed_issue_count": 4
+    },
+    {
+      "approved_exception_count": 0,
+      "asset_count": 7,
+      "asset_paths": [
+        "/Game/UABADemo/03_Heavy/BAD_UABA_22_EditorShaderBall.BAD_UABA_22_EditorShaderBall",
+        "/Game/UABADemo/03_Heavy/SM_UABA_17_SimplePivotPainterExample.SM_UABA_17_SimplePivotPainterExample",
+        "/Game/UABADemo/03_Heavy/SM_UABA_18_SM_CineCam.SM_UABA_18_SM_CineCam",
+        "/Game/UABADemo/03_Heavy/SM_UABA_19_VivePreController_Trimlines.SM_UABA_19_VivePreController_Trimlines",
+        "/Game/UABADemo/03_Heavy/SM_UABA_20_TransformGizmoFreeRotation.SM_UABA_20_TransformGizmoFreeRotation",
+        "/Game/UABADemo/03_Heavy/SM_UABA_21_SM_ColorCalibrator.SM_UABA_21_SM_ColorCalibrator",
+        "/Game/UABADemo/03_Heavy/SM_UABA_24_SM_Room_01.SM_UABA_24_SM_Room_01"
+      ],
+      "collection_failure_count": 0,
+      "fix_required_count": 0,
+      "group_label": "03_Heavy",
+      "group_path": "/Game/UABADemo/03_Heavy",
+      "hotspot_rank": 4,
+      "hotspot_reason": "每个对象 3.29 条规则问题",
+      "issue_asset_count": 7,
+      "issue_count": 23,
+      "issue_density": 3.29,
+      "passed_asset_count": 0,
+      "risk_band": "高密度",
+      "unreviewed_issue_count": 23
+    },
+    {
+      "approved_exception_count": 0,
+      "asset_count": 8,
+      "asset_paths": [
+        "/Game/UABADemo/02_Medium/SM_UABA_09_RotationHandle.SM_UABA_09_RotationHandle",
+        "/Game/UABADemo/02_Medium/SM_UABA_10_Cylinder.SM_UABA_10_Cylinder",
+        "/Game/UABADemo/02_Medium/SM_UABA_11_SM_ContentWindow_01.SM_UABA_11_SM_ContentWindow_01",
+        "/Game/UABADemo/02_Medium/SM_UABA_12_RotationHandleQuarter.SM_UABA_12_RotationHandleQuarter",
+        "/Game/UABADemo/02_Medium/SM_UABA_13_SM_CraneRig_Base.SM_UABA_13_SM_CraneRig_Base",
+        "/Game/UABADemo/02_Medium/SM_UABA_14_SM_Cube_01.SM_UABA_14_SM_Cube_01",
+        "/Game/UABADemo/02_Medium/SM_UABA_15_SM_Radial_Disk.SM_UABA_15_SM_Radial_Disk",
+        "/Game/UABADemo/02_Medium/SM_UABA_16_S_EV_FogVolume_Sphere_01.SM_UABA_16_S_EV_FogVolume_Sphere_01"
+      ],
+      "collection_failure_count": 0,
+      "fix_required_count": 0,
+      "group_label": "02_Medium",
+      "group_path": "/Game/UABADemo/02_Medium",
+      "hotspot_rank": 5,
+      "hotspot_reason": "每个对象 1.38 条规则问题",
+      "issue_asset_count": 5,
+      "issue_count": 11,
+      "issue_density": 1.38,
+      "passed_asset_count": 3,
+      "risk_band": "高密度",
+      "unreviewed_issue_count": 11
+    },
+    {
+      "approved_exception_count": 0,
+      "asset_count": 8,
+      "asset_paths": [
+        "/Game/UABADemo/01_Light/SM_UABA_01_LineSegmentCylinder.SM_UABA_01_LineSegmentCylinder",
+        "/Game/UABADemo/01_Light/SM_UABA_02_DemoBoxMesh.SM_UABA_02_DemoBoxMesh",
+        "/Game/UABADemo/01_Light/SM_UABA_03_GizmoCornerHandle.SM_UABA_03_GizmoCornerHandle",
+        "/Game/UABADemo/01_Light/SM_UABA_04_StretchingHandle.SM_UABA_04_StretchingHandle",
+        "/Game/UABADemo/01_Light/SM_UABA_05_TranslateArrowHandle.SM_UABA_05_TranslateArrowHandle",
+        "/Game/UABADemo/01_Light/SM_UABA_06_BackgroundCube.SM_UABA_06_BackgroundCube",
+        "/Game/UABADemo/01_Light/SM_UABA_07_SM_Dialog_Move.SM_UABA_07_SM_Dialog_Move",
+        "/Game/UABADemo/01_Light/SM_UABA_08_RotationHandleIndicator.SM_UABA_08_RotationHandleIndicator"
+      ],
+      "collection_failure_count": 0,
+      "fix_required_count": 0,
+      "group_label": "01_Light",
+      "group_path": "/Game/UABADemo/01_Light",
+      "hotspot_rank": 6,
+      "hotspot_reason": "每个对象 1.12 条规则问题",
+      "issue_asset_count": 6,
+      "issue_count": 9,
+      "issue_density": 1.12,
+      "passed_asset_count": 2,
+      "risk_band": "高密度",
+      "unreviewed_issue_count": 9
+    }
+  ],
+  "issue_count": 47,
+  "ranking_rule": "采集失败 > 需修复 > 问题密度 > 问题数 > 目录路径",
+  "report_id": "report-8a19ab6cca63e661",
+  "review_orphan_count": 0,
+  "schema_version": "unreal-audit-delivery-groups@1.0.0",
+  "unbound_issue_count": 0
+}

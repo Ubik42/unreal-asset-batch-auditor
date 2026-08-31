@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ubik42.github.io/unreal-asset-batch-auditor/delivery-group-view.v1.schema.json",
+  "title": "Unreal Asset Audit Delivery Group View v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "report_id", "grouping_rule", "ranking_rule", "group_count", "asset_count", "issue_count", "collection_failure_count", "unbound_issue_count", "review_orphan_count", "groups"],
+  "properties": {
+    "schema_version": { "const": "unreal-audit-delivery-groups@1.0.0" },
+    "report_id": { "type": "string", "minLength": 1 },
+    "grouping_rule": { "const": "package_parent_first_3_segments" },
+    "ranking_rule": { "type": "string", "minLength": 1 },
+    "group_count": { "type": "integer", "minimum": 0 },
+    "asset_count": { "type": "integer", "minimum": 0 },
+    "issue_count": { "type": "integer", "minimum": 0 },
+    "collection_failure_count": { "type": "integer", "minimum": 0 },
+    "unbound_issue_count": { "type": "integer", "minimum": 0 },
+    "review_orphan_count": { "type": "integer", "minimum": 0 },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["group_path", "group_label", "asset_paths", "asset_count", "passed_asset_count", "issue_asset_count", "issue_count", "collection_failure_count", "unreviewed_issue_count", "fix_required_count", "approved_exception_count", "issue_density", "risk_band", "hotspot_reason", "hotspot_rank"],
+        "properties": {
+          "group_path": { "type": "string", "minLength": 1 },
+          "group_label": { "type": "string", "minLength": 1 },
+          "asset_paths": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "asset_count": { "type": "integer", "minimum": 1 },
+          "passed_asset_count": { "type": "integer", "minimum": 0 },
+          "issue_asset_count": { "type": "integer", "minimum": 0 },
+          "issue_count": { "type": "integer", "minimum": 0 },
+          "collection_failure_count": { "type": "integer", "minimum": 0 },
+          "unreviewed_issue_count": { "type": "integer", "minimum": 0 },
+          "fix_required_count": { "type": "integer", "minimum": 0 },
+          "approved_exception_count": { "type": "integer", "minimum": 0 },
+          "issue_density": { "type": "number", "minimum": 0 },
+          "risk_band": { "enum": ["采集阻断", "需修复", "高密度", "待复核", "清洁"] },
+          "hotspot_reason": { "type": "string", "minLength": 1 },
+          "hotspot_rank": { "type": "integer", "minimum": 1 }
+        }
+      }
+    }
+  }
+}

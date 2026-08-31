@@ -12,7 +12,7 @@ param(
     [int]$TimeoutSeconds = 120,
     [string]$EvidenceMilestone = "m9",
     [string]$EvidenceLabelSuffix = "",
-    [ValidateSet("v2", "v3-material", "review")]
+    [ValidateSet("v2", "v3-material", "review", "hotspot")]
     [string]$EvidenceMode = "v2",
     [switch]$PanelOnly
 )
@@ -26,6 +26,9 @@ if (-not $ReportPath) {
 }
 if (-not $OutputDirectory) {
     $OutputDirectory = Join-Path $repoRoot "docs\images\workflow\v0.8"
+}
+elseif (-not [IO.Path]::IsPathRooted($OutputDirectory)) {
+    $OutputDirectory = [IO.Path]::GetFullPath((Join-Path $repoRoot $OutputDirectory))
 }
 if (-not $ComparisonPath) {
     $ComparisonPath = Join-Path $repoRoot "artifacts\demo\session-history\latest-comparison.v1.json"
@@ -45,6 +48,15 @@ $plugins = Join-Path $runtime "Plugins"
 New-Item -ItemType Directory -Path $plugins -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $repoRoot "tests\host\UnrealAssetBatchAuditorHost.uproject") -Destination $runtime
 Copy-Item -LiteralPath $build -Destination (Join-Path $plugins "UnrealAssetBatchAuditor") -Recurse
+if ($EvidenceMode -eq "hotspot") {
+    $demoContent = Join-Path $repoRoot "Demo\Content\UABADemo"
+    $runtimeContent = Join-Path $runtime "Content"
+    if (-not (Test-Path -LiteralPath $demoContent)) {
+        throw "Hotspot evidence requires generated Demo content: $demoContent"
+    }
+    New-Item -ItemType Directory -Path $runtimeContent -Force | Out-Null
+    Copy-Item -LiteralPath $demoContent -Destination (Join-Path $runtimeContent "UABADemo") -Recurse
+}
 $runtimeSessionRoot = Join-Path $runtime "Saved\UnrealAssetBatchAuditor\Sessions"
 New-Item -ItemType Directory -Path (Split-Path -Parent $runtimeSessionRoot) -Force | Out-Null
 Copy-Item -LiteralPath $SessionRootPath -Destination $runtimeSessionRoot -Recurse
@@ -154,6 +166,24 @@ if ($reviewSourceFiles.Count -gt 0) {
         }
     })
 } else { @() }
+$deliveryGroupSource = Join-Path $runtime "Saved\UnrealAssetBatchAuditor\Views\current-delivery-groups.v1.json"
+$deliveryGroupEvidenceRoot = Join-Path $repoRoot "artifacts\host-validation\$EvidenceMilestone\delivery-groups-$evidenceLabel"
+if ($EvidenceMode -eq "hotspot" -and -not (Test-Path -LiteralPath $deliveryGroupSource)) {
+    throw "Delivery-group host artifact is missing: $deliveryGroupSource"
+}
+if (Test-Path -LiteralPath $deliveryGroupSource) {
+    New-Item -ItemType Directory -Path $deliveryGroupEvidenceRoot -Force | Out-Null
+    Copy-Item -LiteralPath $deliveryGroupSource -Destination (Join-Path $deliveryGroupEvidenceRoot "current-delivery-groups.v1.json") -Force
+}
+[array]$deliveryGroupArtifacts = if (Test-Path -LiteralPath $deliveryGroupEvidenceRoot) {
+    @(Get-ChildItem -LiteralPath $deliveryGroupEvidenceRoot -File | Sort-Object Name | ForEach-Object {
+        [ordered]@{
+            path = [IO.Path]::GetRelativePath($repoRoot, $_.FullName).Replace('\', '/')
+            bytes = $_.Length
+            sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+        }
+    })
+} else { @() }
 $afterObserved = @(Get-Process UnrealEditor, UnrealEditor-Cmd -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 $ownedPidVisibleAtSnapshot = $process.Id -in $afterObserved
 $after = @($afterObserved | Where-Object { $_ -ne $process.Id })
@@ -205,6 +235,8 @@ $result = [ordered]@{
     task_artifacts = $taskArtifacts
     review_artifact_count = $reviewArtifacts.Count
     review_artifacts = $reviewArtifacts
+    delivery_group_artifact_count = $deliveryGroupArtifacts.Count
+    delivery_group_artifacts = $deliveryGroupArtifacts
     claims_user_interaction = $false
     claims_visible_editor_review = $false
 }

@@ -1,6 +1,15 @@
 # 工作流截图说明
 
-## v0.9-dev2 当前源码界面
+## v0.10-dev3 当前源码界面
+
+`v0.10-delivery-hotspots/` 中的 01–17 来自独立 UE 5.8.1 `-RenderOffscreen` 宿主，使用 24 个
+项目 Demo Static Mesh 与 2 个采集失败形成的真实 Report。13 展示 6 个交付目录组与稳定热区排序，
+14 展示 Heavy 目录组下钻，15–17 展示资产复核与任务状态。图片哈希、精确测试 PID、进程隔离、
+源 Report 和目录聚合 JSON 位于：
+
+`artifacts/host-validation/m14/panel-lifecycle-UE_5.8-v0.10.0-dev3-delivery-hotspots.json`
+
+## v0.9-dev2 材质依赖历史
 
 `v0.9-material/` 中的 01–14 来自独立 UE 5.8.1 宿主，展示材质/纹理依赖台账、材质风险谱、
 纹理依赖与尺寸证据、回归对比和任务状态。源 Report 真实采集 5 个 Engine Static Mesh；证据位于：

@@ -192,6 +192,15 @@ FLinearColor ReviewDecisionColor(const FString& Decision)
     return GraphiteAccent;
 }
 
+FLinearColor DeliveryRiskColor(const FString& RiskBand)
+{
+    if (RiskBand == TEXT("采集阻断")) return RedAccent;
+    if (RiskBand == TEXT("需修复")) return RedAccent;
+    if (RiskBand == TEXT("高密度")) return AmberAccent;
+    if (RiskBand == TEXT("待复核")) return CyanAccent;
+    return GreenAccent;
+}
+
 FString LocalizedComparisonMessage(const FString& ChangeType)
 {
     if (ChangeType == TEXT("new"))
@@ -373,6 +382,58 @@ private:
     SUnrealAssetAuditPanel::FComparisonPtr Item;
 };
 
+class SAuditDeliveryGroupRow final
+    : public SMultiColumnTableRow<SUnrealAssetAuditPanel::FDeliveryGroupPtr>
+{
+public:
+    SLATE_BEGIN_ARGS(SAuditDeliveryGroupRow) {}
+        SLATE_ARGUMENT(SUnrealAssetAuditPanel::FDeliveryGroupPtr, Item)
+    SLATE_END_ARGS()
+
+    void Construct(const FArguments& InArgs, const TSharedRef<STableViewBase>& OwnerTable)
+    {
+        Item = InArgs._Item;
+        SMultiColumnTableRow::Construct(
+            FSuperRowType::FArguments().Padding(FMargin(4.0f, 4.0f)), OwnerTable);
+    }
+
+    virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& ColumnName) override
+    {
+        if (ColumnName == TEXT("Rank"))
+            return SNew(STextBlock)
+                .Text(FText::Format(FText::FromString(TEXT("#{0}")), Item->HotspotRank))
+                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+                .ColorAndOpacity(DeliveryRiskColor(Item->RiskBand));
+        if (ColumnName == TEXT("Group"))
+            return SNew(SVerticalBox)
+                + SVerticalBox::Slot().AutoHeight()
+                [SNew(STextBlock).Text(FText::FromString(Item->GroupLabel)).Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))]
+                + SVerticalBox::Slot().AutoHeight()
+                [SNew(STextBlock).Text(FText::FromString(Item->GroupPath)).ColorAndOpacity(FSlateColor::UseSubduedForeground())];
+        if (ColumnName == TEXT("Risk"))
+            return SNew(STextBlock)
+                .Text(FText::FromString(Item->RiskBand))
+                .ColorAndOpacity(DeliveryRiskColor(Item->RiskBand))
+                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+                .ToolTipText(FText::FromString(Item->HotspotReason));
+        if (ColumnName == TEXT("Assets")) return SNew(STextBlock).Text(FText::AsNumber(Item->AssetCount));
+        if (ColumnName == TEXT("Passed")) return SNew(STextBlock).Text(FText::AsNumber(Item->PassedAssetCount)).ColorAndOpacity(GreenAccent);
+        if (ColumnName == TEXT("IssueAssets")) return SNew(STextBlock).Text(FText::AsNumber(Item->IssueAssetCount));
+        if (ColumnName == TEXT("Issues")) return SNew(STextBlock).Text(FText::AsNumber(Item->IssueCount)).ColorAndOpacity(Item->IssueCount > 0 ? FSlateColor(AmberAccent) : FSlateColor::UseSubduedForeground());
+        if (ColumnName == TEXT("Density"))
+            return SNew(STextBlock)
+                .Text(FText::FromString(FString::Printf(TEXT("%.2f"), Item->IssueDensity)))
+                .ToolTipText(FText::FromString(TEXT("规则问题数 / 本组对象数；不是运行时性能指标")));
+        if (ColumnName == TEXT("Failures")) return SNew(STextBlock).Text(FText::AsNumber(Item->CollectionFailureCount)).ColorAndOpacity(Item->CollectionFailureCount > 0 ? FSlateColor(RedAccent) : FSlateColor::UseSubduedForeground());
+        if (ColumnName == TEXT("Unreviewed")) return SNew(STextBlock).Text(FText::AsNumber(Item->UnreviewedIssueCount));
+        if (ColumnName == TEXT("Fix")) return SNew(STextBlock).Text(FText::AsNumber(Item->FixRequiredCount)).ColorAndOpacity(Item->FixRequiredCount > 0 ? FSlateColor(RedAccent) : FSlateColor::UseSubduedForeground());
+        return SNew(STextBlock).Text(FText::FromString(Item->HotspotReason)).ToolTipText(FText::FromString(Item->HotspotReason));
+    }
+
+private:
+    SUnrealAssetAuditPanel::FDeliveryGroupPtr Item;
+};
+
 void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
 {
     const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("UnrealAssetBatchAuditor"));
@@ -403,6 +464,10 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
     ReviewLedgerRoot = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Reviews"));
     ReviewViewPath = FPaths::Combine(ReviewLedgerRoot, TEXT("current-review-view.v1.json"));
     ReviewRequestPath = FPaths::Combine(ReviewLedgerRoot, TEXT("review-request.v1.json"));
+    DeliveryGroupViewPath = FPaths::Combine(
+        FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Views/current-delivery-groups.v1.json"));
+    DeliveryGroupRequestPath = FPaths::Combine(
+        FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Views/delivery-groups-request.v1.json"));
     StatusMessage = TEXT("选择 Static Mesh，然后开始只读审计");
 
     ChildSlot
@@ -639,6 +704,14 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         [
                             SNew(SButton)
                             .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                            .Text(FText::FromString(TEXT("交付热区")))
+                            .ForegroundColor_Lambda([this] { return ResultViewMode == 3 ? FSlateColor(AmberAccent) : FSlateColor::UseForeground(); })
+                            .OnClicked(this, &SUnrealAssetAuditPanel::ShowDeliveryGroups)
+                        ]
+                        + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                        [
+                            SNew(SButton)
+                            .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
                             .Text(FText::FromString(TEXT("资产总览")))
                             .ForegroundColor_Lambda([this] { return ResultViewMode == 0 ? FSlateColor(CyanAccent) : FSlateColor::UseForeground(); })
                             .OnClicked(this, &SUnrealAssetAuditPanel::ShowAssetOverview)
@@ -717,13 +790,59 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                     ]
                     + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
                     [
+                        SNew(SBorder)
+                        .Visibility(this, &SUnrealAssetAuditPanel::GetDeliveryGroupContextVisibility)
+                        .BorderImage(FAppStyle::GetBrush(TEXT("Brushes.Header")))
+                        .BorderBackgroundColor(FLinearColor(0.08f, 0.055f, 0.02f, 1.0f))
+                        .Padding(FMargin(10, 7))
+                        [
+                            SNew(SHorizontalBox)
+                            + SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)
+                            [
+                                SNew(SVerticalBox)
+                                + SVerticalBox::Slot().AutoHeight()
+                                [SNew(STextBlock).Text(this, &SUnrealAssetAuditPanel::GetDeliveryGroupSummaryText).Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold"))).ColorAndOpacity(AmberAccent)]
+                                + SVerticalBox::Slot().AutoHeight()
+                                [SNew(STextBlock).Text(this, &SUnrealAssetAuditPanel::GetDeliveryGroupDrilldownText).ColorAndOpacity(FSlateColor::UseSubduedForeground())]
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(8, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .Text(FText::FromString(TEXT("查看组内资产")))
+                                .IsEnabled_Lambda([this] { return SelectedDeliveryGroup.IsValid(); })
+                                .OnClicked_Lambda([this] { return DrillIntoSelectedGroup(false); })
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .Text(FText::FromString(TEXT("查看组内问题")))
+                                .IsEnabled_Lambda([this] { return SelectedDeliveryGroup.IsValid(); })
+                                .OnClicked_Lambda([this] { return DrillIntoSelectedGroup(true); })
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                                .Text(FText::FromString(TEXT("清除下钻")))
+                                .IsEnabled_Lambda([this] { return !ActiveDeliveryGroupPath.IsEmpty(); })
+                                .OnClicked(this, &SUnrealAssetAuditPanel::ClearDeliveryGroupDrilldown)
+                            ]
+                        ]
+                    ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
+                    [
                         SAssignNew(SearchInput, SSearchBox)
-                        .HintText(FText::FromString(TEXT("搜索资产、规则、证据说明、负责人或审阅备注")))
+                        .HintText(FText::FromString(TEXT("搜索目录、资产、规则、证据说明、负责人或审阅备注")))
                         .OnTextChanged(this, &SUnrealAssetAuditPanel::HandleSearchChanged)
                     ]
                     + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
                     [
                         SNew(SBorder)
+                        .Visibility_Lambda([this]
+                        {
+                            return ResultViewMode == 0 || ResultViewMode == 1
+                                ? EVisibility::Visible : EVisibility::Collapsed;
+                        })
                         .BorderImage(FAppStyle::GetBrush(TEXT("Brushes.Header")))
                         .BorderBackgroundColor(FLinearColor(0.045f, 0.055f, 0.058f, 1.0f))
                         .Padding(FMargin(10, 6))
@@ -826,6 +945,32 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                     + SVerticalBox::Slot().FillHeight(1).Padding(14, 0, 14, 10)
                     [
                         SNew(SOverlay)
+                        + SOverlay::Slot()
+                        [
+                            SAssignNew(DeliveryGroupList, SListView<FDeliveryGroupPtr>)
+                            .Visibility(this, &SUnrealAssetAuditPanel::GetDeliveryGroupViewVisibility)
+                            .ListItemsSource(&FilteredDeliveryGroups)
+                            .SelectionMode(ESelectionMode::Single)
+                            .OnGenerateRow(this, &SUnrealAssetAuditPanel::GenerateDeliveryGroupRow)
+                            .OnSelectionChanged(this, &SUnrealAssetAuditPanel::HandleDeliveryGroupSelectionChanged)
+                            .OnMouseButtonDoubleClick(this, &SUnrealAssetAuditPanel::HandleDeliveryGroupDoubleClick)
+                            .HeaderRow
+                            (
+                                SNew(SHeaderRow)
+                                + SHeaderRow::Column(TEXT("Rank")).DefaultLabel(FText::FromString(TEXT("热区"))).FixedWidth(52)
+                                + SHeaderRow::Column(TEXT("Group")).DefaultLabel(FText::FromString(TEXT("交付目录组"))).FillWidth(0.27f)
+                                + SHeaderRow::Column(TEXT("Risk")).DefaultLabel(FText::FromString(TEXT("体检刻度"))).FixedWidth(78)
+                                + SHeaderRow::Column(TEXT("Assets")).DefaultLabel(FText::FromString(TEXT("对象"))).FixedWidth(52)
+                                + SHeaderRow::Column(TEXT("Passed")).DefaultLabel(FText::FromString(TEXT("通过"))).FixedWidth(52)
+                                + SHeaderRow::Column(TEXT("IssueAssets")).DefaultLabel(FText::FromString(TEXT("需处理"))).FixedWidth(58)
+                                + SHeaderRow::Column(TEXT("Issues")).DefaultLabel(FText::FromString(TEXT("问题"))).FixedWidth(52)
+                                + SHeaderRow::Column(TEXT("Density")).DefaultLabel(FText::FromString(TEXT("问题/对象"))).FixedWidth(72)
+                                + SHeaderRow::Column(TEXT("Failures")).DefaultLabel(FText::FromString(TEXT("采集失败"))).FixedWidth(68)
+                                + SHeaderRow::Column(TEXT("Unreviewed")).DefaultLabel(FText::FromString(TEXT("未复核"))).FixedWidth(58)
+                                + SHeaderRow::Column(TEXT("Fix")).DefaultLabel(FText::FromString(TEXT("需修复"))).FixedWidth(58)
+                                + SHeaderRow::Column(TEXT("Reason")).DefaultLabel(FText::FromString(TEXT("热区依据"))).FillWidth(0.28f)
+                            )
+                        ]
                         + SOverlay::Slot()
                         [
                             SAssignNew(AssetList, SListView<FAssetPtr>)
@@ -1330,7 +1475,7 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
     AssetCount = Root->GetIntegerField(TEXT("asset_count"));
     IssueCount = Root->GetIntegerField(TEXT("issue_count"));
     FailureCount = Root->GetIntegerField(TEXT("collection_failure_count"));
-    ResultViewMode = 0;
+    ResultViewMode = 3;
     CurrentProfileId = Root->GetStringField(TEXT("profile_id"));
     CurrentReportId = Root->GetStringField(TEXT("report_id"));
     CurrentProfileVersion = Root->GetStringField(TEXT("profile_version"));
@@ -1481,25 +1626,38 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
     PassingAssetCount = FMath::Max(0, AssetCount - AssetsWithIssues.Num());
     FString ReviewError;
     const bool bReviewReady = RefreshReviewData(ReviewError);
+    FString GroupError;
+    const bool bGroupsReady = RefreshDeliveryGroups(GroupError);
     RebuildFilteredIssues();
     RebuildFilteredAssets();
-    StatusMessage = bReviewReady
-        ? FString::Printf(TEXT("已载入报告 · %d 个资产 · %d 个问题 · 审阅台账已就绪"), AssetCount, IssueCount)
-        : FString::Printf(TEXT("已载入报告；审阅台账暂不可用：%s"), *ReviewError);
+    RebuildFilteredDeliveryGroups();
+    if (bReviewReady && bGroupsReady)
+    {
+        StatusMessage = FString::Printf(
+            TEXT("已载入报告 · %d 个资产 · %d 个问题 · %d 个交付目录组"),
+            AssetCount, IssueCount, AllDeliveryGroups.Num());
+    }
+    else
+    {
+        StatusMessage = FString::Printf(
+            TEXT("已载入报告；附加视图暂不可用：%s%s%s"),
+            *ReviewError, (!ReviewError.IsEmpty() && !GroupError.IsEmpty()) ? TEXT("；") : TEXT(""), *GroupError);
+    }
     return true;
 }
 
-bool SUnrealAssetAuditPanel::RunReviewBridge(
-    const FString& FunctionName, const TSharedRef<FJsonObject>& Request, FString& OutError)
+bool SUnrealAssetAuditPanel::RunPanelPythonBridge(
+    const FString& FunctionName, const TSharedRef<FJsonObject>& Request,
+    const FString& RequestPath, FString& OutError)
 {
-    IFileManager::Get().MakeDirectory(*ReviewLedgerRoot, true);
+    IFileManager::Get().MakeDirectory(*FPaths::GetPath(RequestPath), true);
     FString Json;
     const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Json);
     FJsonSerializer::Serialize(Request, Writer);
     if (!FFileHelper::SaveStringToFile(
-        Json, *ReviewRequestPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
+        Json, *RequestPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
     {
-        OutError = TEXT("无法写入审阅请求；原始 Report 未改变");
+        OutError = TEXT("无法写入面板视图请求；原始 Report 未改变");
         return false;
     }
     IPythonScriptPlugin* Python = IPythonScriptPlugin::Get();
@@ -1508,13 +1666,13 @@ bool SUnrealAssetAuditPanel::RunReviewBridge(
         OutError = TEXT("Python Script Plugin 未就绪");
         return false;
     }
-    FString PythonPath = ReviewRequestPath.Replace(TEXT("\\"), TEXT("/"));
+    FString PythonPath = RequestPath.Replace(TEXT("\\"), TEXT("/"));
     PythonPath.ReplaceInline(TEXT("'"), TEXT("\\'"));
     const FString Command = FString::Printf(
         TEXT("import run_asset_audit; run_asset_audit.%s(r'%s')"), *FunctionName, *PythonPath);
     if (!Python->ExecPythonCommand(*Command))
     {
-        OutError = TEXT("审阅台账操作失败；原始 Report 和资产均未改变");
+        OutError = TEXT("面板视图生成失败；原始 Report 和资产均未改变");
         return false;
     }
     OutError.Reset();
@@ -1532,11 +1690,91 @@ bool SUnrealAssetAuditPanel::RefreshReviewData(FString& OutError)
     Request->SetStringField(TEXT("report_path"), ReportPath);
     Request->SetStringField(TEXT("review_ledger_root"), ReviewLedgerRoot);
     Request->SetStringField(TEXT("review_view_path"), ReviewViewPath);
-    if (!RunReviewBridge(TEXT("refresh_review_view_from_request_file"), Request, OutError))
+    if (!RunPanelPythonBridge(
+        TEXT("refresh_review_view_from_request_file"), Request, ReviewRequestPath, OutError))
     {
         return false;
     }
     return LoadReviewView(OutError);
+}
+
+bool SUnrealAssetAuditPanel::RefreshDeliveryGroups(FString& OutError)
+{
+    if (CurrentReportId.IsEmpty() || !FPaths::FileExists(ReportPath))
+    {
+        OutError = TEXT("当前没有可分组的 Report");
+        return false;
+    }
+    TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
+    Request->SetStringField(TEXT("report_path"), ReportPath);
+    Request->SetStringField(TEXT("review_ledger_root"), ReviewLedgerRoot);
+    Request->SetStringField(TEXT("output_path"), DeliveryGroupViewPath);
+    if (!RunPanelPythonBridge(
+        TEXT("write_delivery_group_view_from_request_file"), Request,
+        DeliveryGroupRequestPath, OutError))
+    {
+        return false;
+    }
+    return LoadDeliveryGroupView(OutError);
+}
+
+bool SUnrealAssetAuditPanel::LoadDeliveryGroupView(FString& OutError)
+{
+    FString Json;
+    if (!FFileHelper::LoadFileToString(Json, *DeliveryGroupViewPath))
+    {
+        OutError = TEXT("找不到交付目录组视图");
+        return false;
+    }
+    TSharedPtr<FJsonObject> Root;
+    const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
+    if (!FJsonSerializer::Deserialize(Reader, Root) || !Root.IsValid()
+        || Root->GetStringField(TEXT("schema_version")) != TEXT("unreal-audit-delivery-groups@1.0.0")
+        || Root->GetStringField(TEXT("report_id")) != CurrentReportId)
+    {
+        OutError = TEXT("交付目录组视图版本或 Report 身份不匹配");
+        return false;
+    }
+    const FString PreviousSelectedPath = SelectedDeliveryGroup.IsValid()
+        ? SelectedDeliveryGroup->GroupPath : ActiveDeliveryGroupPath;
+    AllDeliveryGroups.Reset();
+    SelectedDeliveryGroup.Reset();
+    for (const TSharedPtr<FJsonValue>& Value : Root->GetArrayField(TEXT("groups")))
+    {
+        const TSharedPtr<FJsonObject> Group = Value->AsObject();
+        if (!Group.IsValid()) continue;
+        FDeliveryGroupPtr Item = MakeShared<FAuditDeliveryGroup>();
+        Item->GroupPath = Group->GetStringField(TEXT("group_path"));
+        Item->GroupLabel = Group->GetStringField(TEXT("group_label"));
+        Item->RiskBand = Group->GetStringField(TEXT("risk_band"));
+        Item->HotspotReason = Group->GetStringField(TEXT("hotspot_reason"));
+        Item->HotspotRank = Group->GetIntegerField(TEXT("hotspot_rank"));
+        Item->AssetCount = Group->GetIntegerField(TEXT("asset_count"));
+        Item->PassedAssetCount = Group->GetIntegerField(TEXT("passed_asset_count"));
+        Item->IssueAssetCount = Group->GetIntegerField(TEXT("issue_asset_count"));
+        Item->IssueCount = Group->GetIntegerField(TEXT("issue_count"));
+        Item->CollectionFailureCount = Group->GetIntegerField(TEXT("collection_failure_count"));
+        Item->UnreviewedIssueCount = Group->GetIntegerField(TEXT("unreviewed_issue_count"));
+        Item->FixRequiredCount = Group->GetIntegerField(TEXT("fix_required_count"));
+        Item->ApprovedExceptionCount = Group->GetIntegerField(TEXT("approved_exception_count"));
+        Item->IssueDensity = Group->GetNumberField(TEXT("issue_density"));
+        for (const TSharedPtr<FJsonValue>& Path : Group->GetArrayField(TEXT("asset_paths")))
+        {
+            Item->AssetPaths.Add(Path->AsString());
+        }
+        AllDeliveryGroups.Add(Item);
+        if (!PreviousSelectedPath.IsEmpty() && Item->GroupPath == PreviousSelectedPath)
+        {
+            SelectedDeliveryGroup = Item;
+        }
+    }
+    if (!ActiveDeliveryGroupPath.IsEmpty() && !SelectedDeliveryGroup.IsValid())
+    {
+        ActiveDeliveryGroupPath.Reset();
+    }
+    RebuildFilteredDeliveryGroups();
+    OutError.Reset();
+    return true;
 }
 
 bool SUnrealAssetAuditPanel::LoadReviewView(FString& OutError)
@@ -1831,8 +2069,10 @@ bool SUnrealAssetAuditPanel::SetSelectedReviewForEvidence(
     Request->SetStringField(TEXT("decision"), Decision);
     Request->SetStringField(TEXT("owner"), Owner);
     Request->SetStringField(TEXT("note"), Note);
-    return RunReviewBridge(TEXT("update_review_from_request_file"), Request, OutError)
-        && LoadReviewView(OutError);
+    return RunPanelPythonBridge(
+        TEXT("update_review_from_request_file"), Request, ReviewRequestPath, OutError)
+        && LoadReviewView(OutError)
+        && RefreshDeliveryGroups(OutError);
 }
 
 int32 SUnrealAssetAuditPanel::GetEvidenceReviewedCount() const
@@ -1843,6 +2083,43 @@ int32 SUnrealAssetAuditPanel::GetEvidenceReviewedCount() const
         if (!Item->IssueId.IsEmpty() && Item->ReviewDecision != TEXT("unreviewed")) ++Count;
     }
     return Count;
+}
+
+void SUnrealAssetAuditPanel::SetDeliveryGroupEvidenceView()
+{
+    ResultViewMode = 3;
+    SearchText.Reset();
+    if (SearchInput.IsValid()) SearchInput->SetText(FText::GetEmpty());
+    RebuildFilteredDeliveryGroups();
+}
+
+bool SUnrealAssetAuditPanel::DrillIntoDeliveryGroupForEvidence(
+    const FString& GroupPath, bool bShowIssues)
+{
+    for (const FDeliveryGroupPtr& Item : AllDeliveryGroups)
+    {
+        if (Item->GroupPath == GroupPath)
+        {
+            SelectedDeliveryGroup = Item;
+            DrillIntoSelectedGroup(bShowIssues);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool SUnrealAssetAuditPanel::SelectDeliveryGroupForEvidence(const FString& GroupPath)
+{
+    for (const FDeliveryGroupPtr& Item : AllDeliveryGroups)
+    {
+        if (Item->GroupPath == GroupPath)
+        {
+            SelectedDeliveryGroup = Item;
+            if (DeliveryGroupList.IsValid()) DeliveryGroupList->SetSelection(Item);
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -1901,6 +2178,7 @@ void SUnrealAssetAuditPanel::HandleSearchChanged(const FText& Text)
     RebuildFilteredIssues();
     RebuildFilteredAssets();
     RebuildFilteredComparisons();
+    RebuildFilteredDeliveryGroups();
 }
 
 void SUnrealAssetAuditPanel::RebuildFilteredIssues()
@@ -1922,8 +2200,11 @@ void SUnrealAssetAuditPanel::RebuildFilteredIssues()
             || Item->Message.Contains(SearchText, ESearchCase::IgnoreCase);
         const bool bMatchesReview = ActiveReviewFilter.IsEmpty()
             || (!Item->IssueId.IsEmpty() && Item->ReviewDecision == ActiveReviewFilter);
+        const bool bMatchesGroup = ActiveDeliveryGroupPath.IsEmpty()
+            || (SelectedDeliveryGroup.IsValid()
+                && SelectedDeliveryGroup->AssetPaths.Contains(Item->AssetPath));
         if (bMatchesSearch && bMatchesReview
-            && RuleBelongsToRiskCategory(Item->RuleId, ActiveRiskCategory))
+            && bMatchesGroup && RuleBelongsToRiskCategory(Item->RuleId, ActiveRiskCategory))
         {
             FilteredIssues.Add(Item);
         }
@@ -1937,15 +2218,35 @@ void SUnrealAssetAuditPanel::RebuildFilteredAssets()
     for (const FAssetPtr& Item : AllAssets)
     {
         const FString StatusText = AssetStatusLabel(Item->Status).ToString();
-        if (SearchText.IsEmpty()
+        const bool bMatchesGroup = ActiveDeliveryGroupPath.IsEmpty()
+            || (SelectedDeliveryGroup.IsValid()
+                && SelectedDeliveryGroup->AssetPaths.Contains(Item->AssetPath));
+        if (bMatchesGroup && (SearchText.IsEmpty()
             || Item->AssetPath.Contains(SearchText, ESearchCase::IgnoreCase)
             || Item->AssetName.Contains(SearchText, ESearchCase::IgnoreCase)
-            || StatusText.Contains(SearchText, ESearchCase::IgnoreCase))
+            || StatusText.Contains(SearchText, ESearchCase::IgnoreCase)))
         {
             FilteredAssets.Add(Item);
         }
     }
     if (AssetList.IsValid()) AssetList->RequestListRefresh();
+}
+
+void SUnrealAssetAuditPanel::RebuildFilteredDeliveryGroups()
+{
+    FilteredDeliveryGroups.Reset();
+    for (const FDeliveryGroupPtr& Item : AllDeliveryGroups)
+    {
+        if (SearchText.IsEmpty()
+            || Item->GroupPath.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->GroupLabel.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->RiskBand.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->HotspotReason.Contains(SearchText, ESearchCase::IgnoreCase))
+        {
+            FilteredDeliveryGroups.Add(Item);
+        }
+    }
+    if (DeliveryGroupList.IsValid()) DeliveryGroupList->RequestListRefresh();
 }
 
 void SUnrealAssetAuditPanel::RebuildFilteredComparisons()
@@ -1984,6 +2285,24 @@ TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateComparisonRow(
     FComparisonPtr Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
     return SNew(SAuditComparisonRow, OwnerTable).Item(Item);
+}
+
+TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateDeliveryGroupRow(
+    FDeliveryGroupPtr Item, const TSharedRef<STableViewBase>& OwnerTable)
+{
+    return SNew(SAuditDeliveryGroupRow, OwnerTable).Item(Item);
+}
+
+void SUnrealAssetAuditPanel::HandleDeliveryGroupSelectionChanged(
+    FDeliveryGroupPtr Item, ESelectInfo::Type SelectInfo)
+{
+    SelectedDeliveryGroup = Item;
+}
+
+void SUnrealAssetAuditPanel::HandleDeliveryGroupDoubleClick(FDeliveryGroupPtr Item)
+{
+    SelectedDeliveryGroup = Item;
+    DrillIntoSelectedGroup(true);
 }
 
 void SUnrealAssetAuditPanel::HandleIssueSelectionChanged(FIssuePtr Item, ESelectInfo::Type SelectInfo)
@@ -2215,8 +2534,10 @@ FReply SUnrealAssetAuditPanel::SaveReviewDecision()
     Request->SetStringField(
         TEXT("note"), ReviewNoteInput.IsValid() ? ReviewNoteInput->GetText().ToString() : FString());
     FString Error;
-    if (!RunReviewBridge(TEXT("update_review_from_request_file"), Request, Error)
-        || !LoadReviewView(Error))
+    if (!RunPanelPythonBridge(
+            TEXT("update_review_from_request_file"), Request, ReviewRequestPath, Error)
+        || !LoadReviewView(Error)
+        || !RefreshDeliveryGroups(Error))
     {
         StatusMessage = Error;
         return FReply::Handled();
@@ -2244,6 +2565,33 @@ FReply SUnrealAssetAuditPanel::ShowComparison()
     ResultViewMode = 2;
     FString Error;
     if (FPaths::FileExists(ComparisonPath)) LoadComparison(ComparisonPath, Error);
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::ShowDeliveryGroups()
+{
+    ResultViewMode = 3;
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::DrillIntoSelectedGroup(bool bShowIssues)
+{
+    if (!SelectedDeliveryGroup.IsValid()) return FReply::Handled();
+    ActiveDeliveryGroupPath = SelectedDeliveryGroup->GroupPath;
+    ResultViewMode = bShowIssues ? 1 : 0;
+    RebuildFilteredIssues();
+    RebuildFilteredAssets();
+    StatusMessage = FString::Printf(
+        TEXT("已下钻 %s · 仍只显示当前 Report 中的对象"), *ActiveDeliveryGroupPath);
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::ClearDeliveryGroupDrilldown()
+{
+    ActiveDeliveryGroupPath.Reset();
+    RebuildFilteredIssues();
+    RebuildFilteredAssets();
+    StatusMessage = TEXT("已返回完整交付批次");
     return FReply::Handled();
 }
 
@@ -2506,6 +2854,11 @@ TOptional<float> SUnrealAssetAuditPanel::GetTaskProgressFraction() const
 
 FText SUnrealAssetAuditPanel::GetResultViewHint() const
 {
+    if (ResultViewMode == 3)
+    {
+        return FText::Format(
+            FText::FromString(TEXT("显示 {0} 个 Report 目录组")), FilteredDeliveryGroups.Num());
+    }
     if (ResultViewMode == 0)
     {
         return FText::Format(
@@ -2516,6 +2869,29 @@ FText SUnrealAssetAuditPanel::GetResultViewHint() const
         return FText::Format(FText::FromString(TEXT("显示 {0} 条可追溯问题")), FilteredIssues.Num());
     }
     return FText::Format(FText::FromString(TEXT("显示 {0} 条质量变化")), FilteredComparisons.Num());
+}
+
+FText SUnrealAssetAuditPanel::GetDeliveryGroupSummaryText() const
+{
+    return FText::Format(
+        FText::FromString(TEXT("资产体检热区 · {0} 个目录组")), AllDeliveryGroups.Num());
+}
+
+FText SUnrealAssetAuditPanel::GetDeliveryGroupDrilldownText() const
+{
+    if (!ActiveDeliveryGroupPath.IsEmpty())
+    {
+        return FText::FromString(FString::Printf(
+            TEXT("下钻中：%s · 只筛选当前 Report，不重新扫描 Content Browser"),
+            *ActiveDeliveryGroupPath));
+    }
+    if (SelectedDeliveryGroup.IsValid())
+    {
+        return FText::FromString(FString::Printf(
+            TEXT("已选 #%d %s · %s"), SelectedDeliveryGroup->HotspotRank,
+            *SelectedDeliveryGroup->GroupPath, *SelectedDeliveryGroup->HotspotReason));
+    }
+    return FText::FromString(TEXT("排序：采集失败 > 需修复 > 问题密度 > 问题数；双击目录直接看问题"));
 }
 
 FText SUnrealAssetAuditPanel::GetReviewProgressText() const
@@ -2562,6 +2938,17 @@ EVisibility SUnrealAssetAuditPanel::GetIssueViewVisibility() const
 EVisibility SUnrealAssetAuditPanel::GetComparisonViewVisibility() const
 {
     return ResultViewMode == 2 ? EVisibility::Visible : EVisibility::Collapsed;
+}
+
+EVisibility SUnrealAssetAuditPanel::GetDeliveryGroupViewVisibility() const
+{
+    return ResultViewMode == 3 ? EVisibility::Visible : EVisibility::Collapsed;
+}
+
+EVisibility SUnrealAssetAuditPanel::GetDeliveryGroupContextVisibility() const
+{
+    return ResultViewMode == 3 || !ActiveDeliveryGroupPath.IsEmpty()
+        ? EVisibility::Visible : EVisibility::Collapsed;
 }
 
 EVisibility SUnrealAssetAuditPanel::GetIdleActionVisibility() const

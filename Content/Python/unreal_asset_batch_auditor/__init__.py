@@ -5,6 +5,13 @@ from .batching import BatchedCollectionResult, BatchProgress, collect_in_batches
 from .benchmark import BENCHMARK_VERSION, run_benchmark
 from .collectors import CollectionBatch, FixtureCollector, MetadataCollector, UnrealCppCollector
 from .contracts import AuditProfile, CollectionFailure, Evidence, Issue, Report, StaticMeshMetadata
+from .delivery_groups import (
+    DELIVERY_GROUP_VIEW_VERSION,
+    DeliveryGroupError,
+    build_delivery_group_view,
+    delivery_group_path,
+    write_delivery_group_view,
+)
 from .handoff import HANDOFF_VERSION, HandoffError, HandoffResult, export_handoff
 from .panel_task import (
     TASK_STATE_VERSION,
@@ -48,6 +55,7 @@ from .unattended import (
 __all__ = [
     "BENCHMARK_VERSION",
     "COMPARISON_VERSION",
+    "DELIVERY_GROUP_VIEW_VERSION",
     "EXIT_COLLECTION_FAILED",
     "EXIT_CONFIG_ERROR",
     "EXIT_PASSED",
@@ -66,6 +74,7 @@ __all__ = [
     "BatchedCollectionResult",
     "CollectionBatch",
     "CollectionFailure",
+    "DeliveryGroupError",
     "Evidence",
     "FixtureCollector",
     "HandoffError",
@@ -84,9 +93,11 @@ __all__ = [
     "StaticMeshMetadata",
     "UnrealCppCollector",
     "audit_assets",
+    "build_delivery_group_view",
     "build_report_from_collection",
     "collect_in_batches",
     "compare_reports",
+    "delivery_group_path",
     "export_handoff",
     "load_review_snapshot",
     "request_panel_cancel",
@@ -96,5 +107,6 @@ __all__ = [
     "run_project_preset",
     "start_panel_task",
     "update_review",
+    "write_delivery_group_view",
     "write_review_view",
 ]

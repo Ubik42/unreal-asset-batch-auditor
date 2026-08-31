@@ -209,3 +209,18 @@ Editor 的入口已完成 UE 编译；当前宿主门禁不声明人工可见打
 
 本轮证明本地单用户 sidecar、精确 Issue/Evidence 映射和离线团队交接；不声明多人并发、账号权限、
 外部工单同步或资产修复。自动化截图与 Content Browser 同步不冒充人工可见鼠标操作。
+
+## 2026-08-30 v0.10-dev3 交付目录热区
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| Python 聚合合同 | 通过；83 项测试、Ruff、全部 JSON 可解析 | `tests/test_delivery_groups.py`、`contracts/delivery-group-view.v1.schema.json` |
+| BuildPlugin | 通过；UE 5.8 Win64 完成 UHT、C++ 编译、链接与打包 | 本机忽略目录 `artifacts/host-build/UE_5.8-v0.10.0-dev3` |
+| 真实 Demo Report | 通过；24 个 Static Mesh、47 条规则问题、2 个采集失败 | `artifacts/demo/demo-desktop-balanced-v3-report.json` |
+| 目录自洽 | 通过；26 个处理对象形成 6 组，对象、问题和失败计数分别与 Report 一致 | 宿主生成的 `current-delivery-groups.v1.json` 与自动化断言 |
+| 下钻与恢复 | 通过；Heavy 组只显示本组 23 条问题，清除下钻恢复 26 个处理对象 | `artifacts/host-validation/m14/panel-lifecycle-UE_5.8-v0.10.0-dev3-delivery-hotspots.json` |
+| 原生 Slate | 通过；17 张当前截图，热区表显示 Light、Medium、Heavy、Developers 与两类失败组 | `docs/images/workflow/v0.10-delivery-hotspots/13-delivery-hotspots.png` |
+| 进程隔离 | 通过；测试只管理精确启动 PID，测试前后没有其他 UE 进程 | 同上宿主 JSON |
+
+本轮只证明当前 Report 范围内的目录聚合、规则问题密度与下钻。它不是运行时性能、Cook、Shader、
+GPU 或全项目规模分析；自动化截图不冒充人工鼠标验收。
