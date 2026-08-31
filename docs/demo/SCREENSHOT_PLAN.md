@@ -1,9 +1,15 @@
 # 当前版本真实截图与验收清单
 
-状态：v0.10-dev3 交付热区面板证据已完成。01–17 位于
+状态：v0.10-dev4 Texture2D 双轨证据已完成。纹理轨道 13 张图位于
+`docs/images/workflow/v0.10-texture-audit/`，生命周期与哈希记录于
+`artifacts/host-validation/m15/panel-lifecycle-UE_5.8-v0.10.0-dev4-texture2d.json`。模型交付热区 01–17 位于
 `docs/images/workflow/v0.10-delivery-hotspots/`，哈希、测试 PID、退出状态与源报告记录于
 `artifacts/host-validation/m14/panel-lifecycle-UE_5.8-v0.10.0-dev3-delivery-hotspots.json`。旧版几何、
-材质、定位和审阅截图保留用于版本历史；README 第一屏优先使用当前交付热区图。
+材质、定位和审阅截图保留用于版本历史；README 第一屏优先使用当前纹理双轨图。
+
+纹理轨道稳定截图为：空状态、资产总览、通过/待处理筛选、问题明细、源尺寸、2 次幂、Mip、
+压缩/色彩、流送、复核动作、运行和取消。素材必须保持 1 个通过、2 个待处理，避免把插件展示成
+只会制造告警；具体问题数以当前版本化 Profile 与真实宿主报告为准。
 
 截图必须来自当前打包版本的真实 Unreal Editor 会话。离线 fixture、UI 草图、旧版截图和合成图不能代替以下证据。
 

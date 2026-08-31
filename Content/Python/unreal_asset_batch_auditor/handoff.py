@@ -94,6 +94,13 @@ def _rule_label(rule_id: str) -> str:
         ("unique_materials", "唯一材质"),
         ("texture_dependencies", "纹理依赖"),
         ("texture_dimension", "纹理尺寸"),
+        ("source_dimension", "源尺寸"),
+        ("power_of_two", "2 次幂尺寸"),
+        ("mip_count", "Mip 链"),
+        ("texture_group", "Texture Group"),
+        ("compression_color_space", "压缩 / 色彩空间"),
+        ("virtual_texture", "Virtual Texture"),
+        ("texture2d.streaming", "纹理流送"),
         ("lod_count", "LOD 数量"),
         ("nanite_state", "Nanite 状态"),
         ("simple_collision", "简单碰撞"),
@@ -123,6 +130,16 @@ def _localized_issue(rule_id: str, observed: str, expected: str) -> str:
         ("unique_materials", f"唯一材质为 {observed} 个，超过 Profile 上限 {expected}。"),
         ("texture_dependencies", f"纹理依赖为 {observed} 个，超过 Profile 上限 {expected}。"),
         ("texture_dimension", f"最大纹理边长为 {observed}，超过 Profile 上限 {expected}。"),
+        ("source_dimension", f"源纹理尺寸为 {observed}，超过 Profile 上限 {expected}。"),
+        ("power_of_two", f"源尺寸 2 次幂状态为 {observed}，Profile 期望为 {expected}。"),
+        ("mip_count", f"Mip 数量为 {observed}，低于 Profile 下限 {expected}。"),
+        ("texture_group", f"Texture Group 为 {observed}，不在 Profile 允许范围 {expected}。"),
+        (
+            "compression_color_space",
+            f"压缩与色彩空间组合为 {observed}，Profile 允许 {expected}。",
+        ),
+        ("virtual_texture", f"Virtual Texture 状态为 {observed}，Profile 期望为 {expected}。"),
+        ("texture2d.streaming", f"纹理可流送状态为 {observed}，Profile 期望为 {expected}。"),
         ("lod_count", f"LOD 数量为 {observed}，低于 Profile 下限 {expected}。"),
         ("nanite_state", f"Nanite 状态为 {observed}，Profile 期望为 {expected}。"),
         ("simple_collision", f"碰撞实测为 {observed}；Profile 要求 {expected}。"),
@@ -155,6 +172,9 @@ def _rows(
         str(item.get("evidence_id", "")): item for item in report.get("evidence", [])
     }
     rows: list[dict[str, str]] = []
+    expected_asset_type = (
+        "可读取的 Texture2D" if report.get("asset_type") == "texture2d" else "可读取的 Static Mesh"
+    )
     for issue in report.get("issues", []):
         evidence = evidence_by_id.get(str(issue.get("evidence_id", "")), {})
         rule_id = str(issue.get("rule_id", ""))
@@ -195,7 +215,7 @@ def _rows(
                 "规则 ID": "collection.failure",
                 "指标": str(failure.get("collector", "")),
                 "实测": str(failure.get("code", "")),
-                "期望": "可读取的 Static Mesh",
+                "期望": expected_asset_type,
                 "Profile 指针": "—",
                 "说明": (
                     "资产无法作为 Static Mesh 读取；该对象未进入规则评估，"

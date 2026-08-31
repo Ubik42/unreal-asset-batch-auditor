@@ -38,6 +38,20 @@ from .sessions import (
     SessionStore,
     compare_reports,
 )
+from .texture_audit import audit_textures, build_texture_report_from_collection
+from .texture_collectors import (
+    TextureFixtureCollector,
+    TextureMetadataCollector,
+    TextureUnrealCppCollector,
+)
+from .texture_contracts import (
+    TEXTURE_FIXTURE_VERSION,
+    TEXTURE_PROFILE_VERSION,
+    TEXTURE_REPORT_VERSION,
+    Texture2DMetadata,
+    TextureAuditProfile,
+    TextureAuditReport,
+)
 from .unattended import (
     EXIT_COLLECTION_FAILED,
     EXIT_CONFIG_ERROR,
@@ -69,6 +83,9 @@ __all__ = [
     "SESSION_INDEX_VERSION",
     "SUMMARY_VERSION",
     "TASK_STATE_VERSION",
+    "TEXTURE_FIXTURE_VERSION",
+    "TEXTURE_PROFILE_VERSION",
+    "TEXTURE_REPORT_VERSION",
     "AuditProfile",
     "BatchProgress",
     "BatchedCollectionResult",
@@ -91,10 +108,18 @@ __all__ = [
     "SessionError",
     "SessionStore",
     "StaticMeshMetadata",
+    "Texture2DMetadata",
+    "TextureAuditProfile",
+    "TextureAuditReport",
+    "TextureFixtureCollector",
+    "TextureMetadataCollector",
+    "TextureUnrealCppCollector",
     "UnrealCppCollector",
     "audit_assets",
+    "audit_textures",
     "build_delivery_group_view",
     "build_report_from_collection",
+    "build_texture_report_from_collection",
     "collect_in_batches",
     "compare_reports",
     "delivery_group_path",

@@ -1,0 +1,15 @@
+{
+  "schema_version": "unreal-texture-profile@1.0.0",
+  "profile_id": "default-texture-delivery-v1",
+  "profile_version": "1.0.0",
+  "description": "复制到项目后由 TA 与目标平台负责人共同评审；这里的阈值仅是格式示例。",
+  "rules": {
+    "source_dimension": {"enabled": true, "max_size": 4096, "severity": "error"},
+    "power_of_two": {"enabled": true, "required": true, "severity": "warning"},
+    "mip_count": {"enabled": true, "min_count": 2, "severity": "warning"},
+    "texture_group": {"enabled": true, "allowed_values": ["TEXTUREGROUP_World", "TEXTUREGROUP_WorldNormalMap", "TEXTUREGROUP_WorldSpecular", "TEXTUREGROUP_UI"], "severity": "warning"},
+    "compression_color_space": {"enabled": true, "allowed_combinations": [{"compression": "TC_Default", "srgb": true}, {"compression": "TC_Normalmap", "srgb": false}, {"compression": "TC_Masks", "srgb": false}], "severity": "error"},
+    "virtual_texture": {"enabled": false, "expected": "any", "severity": "info"},
+    "streaming": {"enabled": true, "expected": "enabled", "severity": "warning"}
+  }
+}

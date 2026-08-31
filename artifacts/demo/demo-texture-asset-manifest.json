@@ -1,0 +1,39 @@
+{
+  "schema_version": "unreal-texture-demo-manifest@1.0.0",
+  "created_at": "2026-08-31T04:04:31.887508+00:00",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "generation": "deterministic solid-color RGBA PNG imported into the isolated demo project",
+  "asset_count": 3,
+  "assets": [
+    {
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_Good_BaseColor.T_UABA_Good_BaseColor",
+      "source_size": [
+        1024,
+        1024
+      ],
+      "scenario": "good",
+      "source_sha256": "85f3f42dfa00356e966daea6d75b8f19a9e8bcc127ef6d2f21ccdde3e16b60b1"
+    },
+    {
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_Oversize_BaseColor.T_UABA_Oversize_BaseColor",
+      "source_size": [
+        4096,
+        4096
+      ],
+      "scenario": "oversize",
+      "source_sha256": "ea780c934ef0e8d2acc12f704b3d3cb06a881b24d17cc63c2769ea7908bb85fc"
+    },
+    {
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "source_size": [
+        1500,
+        900
+      ],
+      "scenario": "npot_mask",
+      "source_sha256": "e945ed877040e22850536e004fa3d6927616e1b24732f5fd001b75860795adfb"
+    }
+  ],
+  "report_path": "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\demo\\demo-texture-mobile-strict-v1-report.json",
+  "report_sha256": "3113749b704f7679d1db10022e7616e548f19fc254582d124ba187a0dfde209a",
+  "claims_runtime_performance": false
+}

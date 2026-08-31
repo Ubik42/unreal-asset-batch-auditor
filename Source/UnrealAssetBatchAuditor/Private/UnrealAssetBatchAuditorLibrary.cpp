@@ -1,7 +1,9 @@
 #include "UnrealAssetBatchAuditorLibrary.h"
 
+#include "AssetCompilingManager.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/Texture.h"
+#include "Engine/Texture2D.h"
 #include "Materials/MaterialInterface.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "Runtime/Launch/Resources/Version.h"
@@ -20,6 +22,13 @@ FString CollisionTraceFlagToString(const ECollisionTraceFlag Flag)
     case CTF_UseComplexAsSimple: return TEXT("use_complex_as_simple");
     default: return TEXT("unknown");
     }
+}
+
+template <typename EnumType>
+FString EnumName(const EnumType Value)
+{
+    const UEnum* Enum = StaticEnum<EnumType>();
+    return Enum ? Enum->GetNameStringByValue(static_cast<int64>(Value)) : TEXT("unknown");
 }
 }
 
@@ -125,6 +134,57 @@ TArray<FStaticMeshAuditMetadata> UUnrealAssetBatchAuditorLibrary::CollectStaticM
             Result.LodMetadata.Add(LOD);
         }
 
+        Result.bCollected = true;
+        Results.Add(MoveTemp(Result));
+    }
+
+    return Results;
+}
+
+TArray<FTexture2DAuditMetadata> UUnrealAssetBatchAuditorLibrary::CollectTexture2DMetadata(
+    const TArray<FString>& AssetPaths)
+{
+    TArray<FTexture2DAuditMetadata> Results;
+    Results.Reserve(AssetPaths.Num());
+
+    for (const FString& AssetPath : AssetPaths)
+    {
+        FTexture2DAuditMetadata Result;
+        Result.AssetPath = AssetPath;
+
+        const FSoftObjectPath SoftPath(AssetPath);
+        UObject* LoadedObject = SoftPath.TryLoad();
+        UTexture2D* Texture = Cast<UTexture2D>(LoadedObject);
+        if (Texture == nullptr)
+        {
+            Result.ErrorCode = TEXT("NOT_TEXTURE2D");
+            Result.Error = TEXT("Object could not be loaded as UTexture2D.");
+            Results.Add(MoveTemp(Result));
+            continue;
+        }
+
+        FAssetCompilingManager::Get().FinishCompilationForObjects({Texture});
+        Result.AssetName = Texture->GetName();
+        Result.SourceWidth = Texture->Source.GetSizeX();
+        Result.SourceHeight = Texture->Source.GetSizeY();
+        if (Result.SourceWidth <= 0 || Result.SourceHeight <= 0)
+        {
+            Result.ErrorCode = TEXT("MISSING_SOURCE_DATA");
+            Result.Error = TEXT("Texture2D has no readable editor source dimensions.");
+            Results.Add(MoveTemp(Result));
+            continue;
+        }
+
+        Result.PlatformWidth = FMath::Max(1, FMath::RoundToInt(Texture->GetSurfaceWidth()));
+        Result.PlatformHeight = FMath::Max(1, FMath::RoundToInt(Texture->GetSurfaceHeight()));
+        Result.MipCount = FMath::Max(1, Texture->GetNumMips());
+        Result.MipGenSettings = EnumName<TextureMipGenSettings>(Texture->MipGenSettings.GetValue());
+        Result.TextureGroup = EnumName<TextureGroup>(Texture->LODGroup.GetValue());
+        Result.CompressionSettings =
+            EnumName<TextureCompressionSettings>(Texture->CompressionSettings.GetValue());
+        Result.bSrgb = Texture->SRGB;
+        Result.bVirtualTextureStreaming = Texture->VirtualTextureStreaming;
+        Result.bNeverStream = Texture->NeverStream;
         Result.bCollected = true;
         Results.Add(MoveTemp(Result));
     }

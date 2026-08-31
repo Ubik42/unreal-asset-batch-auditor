@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0025",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 25,
+  "completedSlice": "M15-S1",
+  "summary": "资产交付验收台已形成模型与 Texture2D 两条明确的只读验收轨道，并以真实 UE 5.8.1 素材、报告和中文 Slate 证据完成闭环。",
+  "evidence": [
+    "Texture Profile / Report v1 与 Static Mesh 合同独立版本化，所有纹理阈值来自 Profile",
+    "Editor-only C++ 批量采集源/平台尺寸、Mip、Texture Group、Compression、sRGB、Virtual Texture 与 Streaming，并保留逐对象失败",
+    "Python 覆盖尺寸、2 次幂、Mip、分组、压缩/色彩组合、VT 与流送规则，面板任务按 asset_type 路由",
+    "Slate 增加模型交付与纹理交付轨道、专用 Profile、专用资产列、筛选和对应资产编辑器复核入口",
+    "独立 UE 5.8.1 宿主真实生成并导入 3 张 Texture2D，采到 1024/1500x900/4096 平台尺寸和 11/1/13 级 Mip",
+    "移动端演示 Profile 得到 1 个通过对象、2 个待处理对象、7 条 Issue、0 个采集失败",
+    "88 项测试、Ruff、UE 5.8 BuildPlugin、独立面板生命周期和 13 张当前中文 Slate 截图通过"
+  ],
+  "nextSlice": "M16-S1",
+  "knownLimits": [
+    "纹理宿主证据只覆盖 Windows 11、Win64、UE 5.8.1",
+    "Editor 平台尺寸与 Mip 不等于最终 Cook 体积、运行时 residency、显存或 GPU 成本",
+    "Demo PNG 与项目阈值是确定性教学素材，不代表行业统一标准",
+    "自动化截图证明生产控件状态和对象解析，不冒充人工可见鼠标点击",
+    "插件保持只读，不修改尺寸、Mip、分组、压缩、VT、Nanite 或其他资产属性"
+  ]
+}

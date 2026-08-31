@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 24,
+  "stateRevision": 25,
   "status": "active",
-  "currentMilestone": "M15",
+  "currentMilestone": "M16",
   "milestones": [
     { "id": "M0", "title": "Scope and repository baseline", "status": "completed", "dependsOn": [] },
     { "id": "M1", "title": "Read-only Static Mesh audit MVP", "status": "completed", "dependsOn": ["M0"] },
@@ -20,25 +20,26 @@
     { "id": "M12", "title": "Asset location and review efficiency", "status": "completed", "dependsOn": ["M11"] },
     { "id": "M13", "title": "Review decisions and ownership handoff", "status": "completed", "dependsOn": ["M12"] },
     { "id": "M14", "title": "Delivery hotspot and asset-group overview", "status": "completed", "dependsOn": ["M13"] },
-    { "id": "M15", "title": "Texture2D delivery audit", "status": "in_progress", "dependsOn": ["M14"] }
+    { "id": "M15", "title": "Texture2D delivery audit", "status": "completed", "dependsOn": ["M14"] },
+    { "id": "M16", "title": "v0.10 dual-track installable portfolio release", "status": "in_progress", "dependsOn": ["M15"] }
   ],
   "nextSlice": {
-    "id": "M15-S1",
-    "milestoneId": "M15",
-    "title": "Texture2D 只读审计 MVP",
+    "id": "M16-S1",
+    "milestoneId": "M16",
+    "title": "v0.10 双轨可安装作品版本",
     "scope": [
-      "为 Texture2D 定义独立版本化 Profile、采集元数据、Issue、Evidence 与 Report 合同，不破坏现有 Static Mesh 合同",
-      "在 Editor-only C++ 中批量采集所选 Texture2D 的源尺寸、平台尺寸、Mip、Texture Group、Compression、sRGB、Virtual Texture 与 Streaming 状态",
-      "Python 负责 Profile 加载、规则判定和报告，首批覆盖尺寸上限、非 2 次幂、Mip 政策、Texture Group、Compression/sRGB 组合与 Virtual Texture 政策",
-      "原生 Slate 面板增加明确的资产类型与纹理规则选择，保持 Static Mesh 原有路径可用",
-      "使用自行合成的纹理场景覆盖合格、常见错误和边界案例，并完成一次独立 UE 5.8 宿主验证"
+      "冻结 v0.10 模型交付与纹理交付双轨能力，清理 dev 标识、过时文档和发布白名单",
+      "生成包含 C++/Python、两类 Profile/Report 合同、内置规则与中文说明的确定性 Win64 插件包",
+      "在独立 UE 5.8.1 临时项目验证全新安装、生产 Tab、Static Mesh 与 Texture2D 两条真实采集烟雾",
+      "从公开 v0.9 包验证升级，再验证可恢复卸载，不复用用户已有 Unreal 会话",
+      "收口 README、安装教程、录屏脚本、截图索引、Release Notes 与准确能力边界，并发布 GitHub Beta"
     ],
     "nonGoals": [
-      "不修改纹理压缩、尺寸、Mip、Texture Group 或任何资产属性",
-      "不估算显存、帧率、采样成本、Shader 成本或最终 Cook 体积",
-      "不审计 Material、Render Target、Virtual Texture Stack 或运行时生成纹理",
-      "不引入 AI 建议、自动修复、云服务或资产数据库",
-      "不执行正式发布安装矩阵或跨 UE 版本兼容声明"
+      "不新增第三种资产类型、规则体系或大型 UI 重构",
+      "不引入 AI 对话、PCG、云服务、自动修复或资产写回",
+      "不执行 UE 5.8.1 以外的跨版本兼容矩阵",
+      "不把小样本烟雾宣称成生产规模性能、Cook、显存或 GPU 验证",
+      "不为了发布重复重跑与本切片无关的全部历史宿主场景"
     ],
     "allowedPaths": [
       "Content/Python",
@@ -54,24 +55,27 @@
       "Resources",
       "contracts",
       "README.md",
-      "AGENTS.md"
+      "AGENTS.md",
+      "release",
+      "dist",
+      "LICENSE"
     ],
-    "evidenceCeiling": "本切片最多证明 UE 5.8.1 中显式选择的 Texture2D 可以被只读采集并按版本化 Profile 判定；不等同于运行时性能、Cook 结果、跨平台内存或跨版本兼容验证。",
+    "evidenceCeiling": "本切片最多证明 v0.10 插件包可在 Windows 11 + UE 5.8.1 Win64 中安装、升级、卸载，并真实运行 Static Mesh 与 Texture2D 两条只读烟雾；不等同于 Marketplace 审核、跨版本兼容、生产规模性能或运行时成本验证。",
     "realHostRequired": true,
     "acceptanceCriteria": [
-      "Texture Profile 与 Report 合同通过 schema 和确定性 fixture 测试，所有阈值均来自 Profile",
-      "C++ 只读取 Texture2D 元数据，批量接口保留逐对象失败并稳定返回，不保存或修改资产",
-      "面板能明确切换 Static Mesh 与 Texture2D 工作流，错误类型选择不会静默扩大扫描范围",
-      "自行合成纹理至少覆盖合格、超尺寸、非 2 次幂、无 Mip、错误分组或色彩空间组合",
-      "UE 5.8 BuildPlugin 与独立隐藏宿主完成真实 Texture2D 批量审计，保存结构化记录和关键中文截图",
-      "README、教程、合同与已知限制同步更新，不把 fixture 或元数据规则宣称成性能分析"
+      "版本统一为 v0.10.0，发布白名单包含双轨运行所需二进制、Python、Profile、Schema 与中文文档且不夹带缓存",
+      "相同输入连续两次生成相同 ZIP SHA-256，并保存逐文件清单与源修订",
+      "全新安装后生产 Tab 可打开，Static Mesh 与 Texture2D 均由真实 C++ collector 生成合法 Report",
+      "从 v0.9 升级后双轨烟雾继续通过，卸载保留可恢复备份并恢复项目描述文件",
+      "README 第一屏、安装教程和录屏脚本使用当前双轨截图与准确验证边界",
+      "提交、标签、GitHub Beta Release 与发布资产一致，仓库结束时无意外未提交文件"
     ],
     "validationCommands": [
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0024.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0025.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -121,6 +125,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "v0.10-dev3 完成当前 Report 的目录聚合、稳定热区排序和资产/问题下钻；83 项测试、UE 5.8 BuildPlugin 与独立隐藏宿主验证通过。"
+    },
+    {
+      "id": "m15s1-texture2d-host",
+      "status": "completed",
+      "blocking": false,
+      "reason": "v0.10-dev4 完成独立 Texture 合同、七类 Profile 规则、C++ 批量采集和双轨 Slate；88 项测试、UE 5.8 BuildPlugin、真实 3 纹理宿主与 13 张截图通过。"
     }
   ]
 }

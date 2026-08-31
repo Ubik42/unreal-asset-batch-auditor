@@ -221,8 +221,20 @@ Demo Static Mesh 与 2 个采集失败形成 6 个目录组；独立隐藏宿主
 本切片没有修改 C++、Slate 或采集字段，因此不重复 BuildPlugin 和宿主生命周期测试；真实宿主来源沿用
 M14-S1 已保存的 UE 5.8.1 Report，新增证据只证明离线交接导出。
 
-## 后续候选路线
+## M15：Texture2D 交付审计（已完成）
+
+- Texture Profile / Report v1 与现有 Static Mesh v1/v2/v3 并列，Issue 与 Evidence 仍保持统一证据形状；
+- C++ 批量采集源/平台尺寸、Mip、Texture Group、Compression、sRGB、Virtual Texture 与 Streaming；
+- Python 按 Profile 判断尺寸、2 次幂、Mip、分组、压缩/色彩组合、VT 与流送，不携带隐藏阈值；
+- Slate 增加“模型交付 / 纹理交付”轨道，类型选择、规则下拉、资产列和复核入口均随报告边界切换；
+- 确定性生成 3 张 PNG 并由独立 UE 5.8.1 宿主真实导入，得到 1 个通过、2 个待处理和 7 条问题；
+- 88 项离线测试、Ruff、UE 5.8 BuildPlugin、独立真实采集与 13 张当前 Slate 截图通过。
+
+证据位于 `artifacts/host-validation/m15/` 与 `docs/images/workflow/v0.10-texture-audit/`。本里程碑只
+证明 Editor 元数据与 Profile 判定，不声明最终 Cook 体积、运行时显存、GPU 成本或跨版本兼容。
+
+## 下一条唯一路线
 
 | 里程碑 | 方向 | 边界 |
 | --- | --- | --- |
-| M15-S1 | Texture2D 只读审计合同 | 先定义纹理事实、Profile 规则和独立报告边界，不修改纹理资产 |
+| M16-S1 | v0.10 双轨可安装作品版本 | 收口安装包、升级、双轨烟雾、中文教程与 GitHub Beta；不新增第三种资产、AI、PCG 或自动修复 |

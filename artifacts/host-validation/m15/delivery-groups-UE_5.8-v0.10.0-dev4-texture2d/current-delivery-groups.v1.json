@@ -1,0 +1,35 @@
+{
+  "asset_count": 3,
+  "collection_failure_count": 0,
+  "group_count": 1,
+  "grouping_rule": "package_parent_first_3_segments",
+  "groups": [
+    {
+      "approved_exception_count": 0,
+      "asset_count": 3,
+      "asset_paths": [
+        "/Game/UABADemo/Textures/T_UABA_Good_BaseColor.T_UABA_Good_BaseColor",
+        "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+        "/Game/UABADemo/Textures/T_UABA_Oversize_BaseColor.T_UABA_Oversize_BaseColor"
+      ],
+      "collection_failure_count": 0,
+      "fix_required_count": 0,
+      "group_label": "Textures",
+      "group_path": "/Game/UABADemo/Textures",
+      "hotspot_rank": 1,
+      "hotspot_reason": "每个对象 2.33 条规则问题",
+      "issue_asset_count": 2,
+      "issue_count": 7,
+      "issue_density": 2.33,
+      "passed_asset_count": 1,
+      "risk_band": "高密度",
+      "unreviewed_issue_count": 7
+    }
+  ],
+  "issue_count": 7,
+  "ranking_rule": "采集失败 > 需修复 > 问题密度 > 问题数 > 目录路径",
+  "report_id": "texture-report-3052a62959921b33",
+  "review_orphan_count": 0,
+  "schema_version": "unreal-audit-delivery-groups@1.0.0",
+  "unbound_issue_count": 0
+}

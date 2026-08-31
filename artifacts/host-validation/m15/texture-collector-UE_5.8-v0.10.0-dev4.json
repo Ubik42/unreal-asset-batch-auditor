@@ -1,0 +1,30 @@
+{
+  "schema_version": "unreal-texture-host-validation@1.0.0",
+  "created_at": "2026-08-31T04:04:35.1977390+00:00",
+  "engine": "5.8.1-56057345+++UE5+Release-5.8",
+  "plugin_build": "UE_5.8-v0.10.0-dev4",
+  "execution": "independent hidden UnrealEditor-Cmd -ExecutePythonScript",
+  "test_pid": 45700,
+  "existing_unreal_pids_before": [],
+  "existing_unreal_pids_after": [
+    37752,
+    47532
+  ],
+  "existing_processes_survived": true,
+  "preexisting_processes_managed_by_test": false,
+  "started_at": "2026-08-31T04:04:13.8930071+00:00",
+  "finished_at": "2026-08-31T04:04:35.1977390+00:00",
+  "duration_seconds": 21.305,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "passed": true,
+  "asset_type": "texture2d",
+  "asset_count": 3,
+  "issue_count": 7,
+  "collection_failure_count": 0,
+  "report_path": "artifacts/demo/demo-texture-mobile-strict-v1-report.json",
+  "report_sha256": "3113749B704F7679D1DB10022E7616E548F19FC254582D124BA187A0DFDE209A",
+  "claims_runtime_performance": false,
+  "claims_asset_mutation_by_plugin": false
+}

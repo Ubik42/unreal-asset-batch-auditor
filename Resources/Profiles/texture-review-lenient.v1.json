@@ -1,0 +1,24 @@
+{
+  "schema_version": "unreal-texture-profile@1.0.0",
+  "profile_id": "texture-review-lenient-v1",
+  "profile_version": "1.0.0",
+  "description": "宽松纹理复核规则；保留基础尺寸、Mip 与色彩空间检查。",
+  "rules": {
+    "source_dimension": {"enabled": true, "max_size": 8192, "severity": "warning"},
+    "power_of_two": {"enabled": true, "required": true, "severity": "info"},
+    "mip_count": {"enabled": true, "min_count": 2, "severity": "info"},
+    "texture_group": {"enabled": false, "allowed_values": ["TEXTUREGROUP_World"], "severity": "info"},
+    "compression_color_space": {
+      "enabled": true,
+      "allowed_combinations": [
+        {"compression": "TC_Default", "srgb": true},
+        {"compression": "TC_Normalmap", "srgb": false},
+        {"compression": "TC_Masks", "srgb": false},
+        {"compression": "TC_Grayscale", "srgb": false}
+      ],
+      "severity": "warning"
+    },
+    "virtual_texture": {"enabled": false, "expected": "any", "severity": "info"},
+    "streaming": {"enabled": false, "expected": "any", "severity": "info"}
+  }
+}

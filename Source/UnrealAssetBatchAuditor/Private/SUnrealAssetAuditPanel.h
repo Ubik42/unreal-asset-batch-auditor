@@ -36,6 +36,13 @@ struct FAuditProfileOption
     bool bCustom = false;
 };
 
+struct FAuditAssetTypeOption
+{
+    FString Id;
+    FString Label;
+    FString Summary;
+};
+
 struct FAuditPanelAsset
 {
     FString AssetPath;
@@ -98,6 +105,7 @@ public:
 
     using FIssuePtr = TSharedPtr<FAuditPanelIssue>;
     using FProfilePtr = TSharedPtr<FAuditProfileOption>;
+    using FAssetTypePtr = TSharedPtr<FAuditAssetTypeOption>;
     using FAssetPtr = TSharedPtr<FAuditPanelAsset>;
     using FSessionPtr = TSharedPtr<FAuditSessionOption>;
     using FComparisonPtr = TSharedPtr<FAuditComparisonRow>;
@@ -147,7 +155,10 @@ private:
     FReply OpenHandoffFolder();
     FReply RunComparison();
     void HandleProfileChanged(FProfilePtr Item, ESelectInfo::Type SelectInfo);
+    void HandleAssetTypeChanged(FAssetTypePtr Item, ESelectInfo::Type SelectInfo);
     TSharedRef<SWidget> GenerateProfileOption(FProfilePtr Item) const;
+    TSharedRef<SWidget> GenerateAssetTypeOption(FAssetTypePtr Item) const;
+    void RebuildProfileOptions();
     void HandleSearchChanged(const FText& Text);
     void HandleSessionChanged(FSessionPtr Item, ESelectInfo::Type SelectInfo);
     void HandleIssueSelectionChanged(FIssuePtr Item, ESelectInfo::Type SelectInfo);
@@ -203,6 +214,8 @@ private:
     FText GetRiskCategoryCountText(FString Category) const;
     FText GetSelectedProfileLabel() const;
     FText GetSelectedProfileSummary() const;
+    FText GetSelectedAssetTypeLabel() const;
+    FText GetSelectedAssetTypeSummary() const;
     FText GetResultViewHint() const;
     FText GetReviewContextText() const;
     FText GetReviewActionTooltip() const;
@@ -221,6 +234,7 @@ private:
     FText GetTaskProgressText() const;
     TOptional<float> GetTaskProgressFraction() const;
     EVisibility GetAssetViewVisibility() const;
+    EVisibility GetTextureAssetViewVisibility() const;
     EVisibility GetIssueViewVisibility() const;
     EVisibility GetComparisonViewVisibility() const;
     EVisibility GetDeliveryGroupViewVisibility() const;
@@ -246,6 +260,7 @@ private:
     TArray<FAssetPtr> AllAssets;
     TArray<FAssetPtr> FilteredAssets;
     TSharedPtr<SListView<FAssetPtr>> AssetList;
+    TSharedPtr<SListView<FAssetPtr>> TextureAssetList;
     FAssetPtr SelectedReviewAsset;
     FIssuePtr SelectedReviewIssue;
     TArray<FComparisonPtr> AllComparisons;
@@ -258,6 +273,9 @@ private:
     TArray<FProfilePtr> ProfileOptions;
     FProfilePtr SelectedProfile;
     TSharedPtr<SComboBox<FProfilePtr>> ProfileComboBox;
+    TArray<FAssetTypePtr> AssetTypeOptions;
+    FAssetTypePtr SelectedAssetType;
+    TSharedPtr<SComboBox<FAssetTypePtr>> AssetTypeComboBox;
     TArray<FSessionPtr> SessionOptions;
     FSessionPtr SelectedSession;
     TSharedPtr<SComboBox<FSessionPtr>> SessionComboBox;
@@ -279,6 +297,7 @@ private:
     FString ActiveTaskId;
     FString TaskState = TEXT("idle");
     FString CurrentProfileId;
+    FString CurrentAssetType = TEXT("static_mesh");
     FString CurrentReportId;
     FString CurrentProfileVersion;
     FString CurrentReportCreatedAt;
@@ -290,6 +309,7 @@ private:
     FString ActiveDeliveryGroupPath;
     FString DraftReviewDecision = TEXT("unreviewed");
     int32 DiscoveredFolderAssetCount = 0;
+    int32 IgnoredSelectionCount = 0;
     int32 BatchSize = 64;
     int32 AssetCount = 0;
     int32 PassingAssetCount = 0;

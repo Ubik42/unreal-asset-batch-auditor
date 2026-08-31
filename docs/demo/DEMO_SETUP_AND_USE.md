@@ -33,10 +33,32 @@ D:\3D\_tools\unreal-asset-batch-auditor\Demo\UABADemo.uproject
 ├─ 01_Light     8 个
 ├─ 02_Medium    8 个
 ├─ 03_Heavy     7 个（含 1 个故意错误命名）
-└─ Developers   1 个（故意错误目录）
+├─ Developers   1 个（故意错误目录）
+└─ Textures     3 个（合格、超尺寸、非 2 次幂/错误设置）
 ```
 
 文件夹只是相对复杂度分组。审核结论来自 Profile，不能把目录名当成质量结论。
+
+### Texture2D 快速演示（推荐作为开场）
+
+若 `Textures` 尚未生成，关闭 Demo Editor 后执行：
+
+```powershell
+.\scripts\build_plugin.ps1 -EngineRoot "C:\Program Files\Epic Games\UE_5.8" -Label "UE_5.8-v0.10.0-dev4"
+.\scripts\link_demo_plugin.ps1 -BuildLabel "UE_5.8-v0.10.0-dev4"
+.\scripts\run_texture_host_validation.ps1 -EngineRoot "C:\Program Files\Epic Games\UE_5.8" -BuildLabel "UE_5.8-v0.10.0-dev4"
+```
+
+重新打开 Demo Project 后：
+
+1. 打开 `工具 > 资产批量审计`，把“验收轨道”切到“纹理交付轨道”；
+2. 在 Content Browser 选中 `/Game/UABADemo/Textures` 文件夹，再点击“读取资产 / 文件夹选择”；
+3. 选择“纹理移动端严格”，确认规则摘要显示源尺寸、2 次幂、Mip、VT 与流送政策；
+4. 点击“开始只读审计”，在资产总览对比 1024、1500×900 与 4096 三类真实平台数据；
+5. 合格 BaseColor 应通过；NPOT Mask 显示 2 次幂、Mip、Group、压缩/色彩与流送问题；Oversize BaseColor 显示源尺寸与 VT 问题；
+6. 切换“问题明细”，分别搜索“压缩”“Mip”“Virtual Texture”，再用“定位资产 / 打开复核 / 复制证据”完成闭环。
+
+这 3 个 `.uasset` 来自仓库脚本确定性生成的 PNG，并由独立 UE 5.8.1 宿主真实导入。生成素材的脚本会写入 Demo；正式审计路径只读，不会替用户修改纹理设置。演示阈值是模拟项目 Profile，不是通用行业标准。
 
 ## 3. 在 Editor 面板内完成一次审计
 

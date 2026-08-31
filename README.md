@@ -1,18 +1,19 @@
 # Unreal Asset Batch Auditor
 
-面向 Unreal 项目 Static Mesh 的只读交付验收台。项目 Profile 定义预算和预期，Editor-only C++ 模块批量采集元数据，Python 负责规则编排与 JSON 报告。扫描接口不保存资产、不重建网格，也不修改 Nanite。
+面向 Unreal 美术团队的只读资产交付验收台。当前提供“模型交付 / 纹理交付”两条明确轨道：项目 Profile 定义预算和预期，Editor-only C++ 批量采集宿主事实，Python 负责规则编排与可追溯报告。插件不保存、重建或自动修复资产。
 
-> **当前源码：v0.10.0-dev3 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> **当前源码：v0.10.0-dev4 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.9.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
-![资产交付验收台：目录热区与交付批次下钻](docs/images/workflow/v0.10-delivery-hotspots/13-delivery-hotspots.png)
+![资产交付验收台：Texture2D 交付轨道](docs/images/workflow/v0.10-texture-audit/02-asset-overview.png)
 
-<p align="center"><sub>真实 UE 5.8.1 原生 Slate：24 个 Demo Static Mesh 与 2 个失败对象按 Report 路径形成 6 个交付目录组，先看热区再进入单资产证据。</sub></p>
+<p align="center"><sub>真实 UE 5.8.1 原生 Slate：自行合成并导入 3 张 Texture2D，展示 1 个通过对象、2 个待处理对象与 7 条 Profile 驱动证据。</sub></p>
 
 ## 这个项目体现什么
 
 - **真实管线分层**：C++ 批量读取 Unreal 原生元数据，Python 负责项目规则、任务编排和报告，UI 不承载隐藏业务判断；
+- **双轨资产验收**：模型轨道覆盖几何、材质、LOD、碰撞和 Lightmap；纹理轨道覆盖尺寸、Mip、分组、压缩/色彩、VT 与流送；
 - **上下文与证据设计**：Profile、Issue、Evidence、Report 均有版本化合同，每个问题都能追到实测值、期望值和规则指针；
 - **生产可靠性**：逐批任务、批次间取消、部分失败隔离、不可变会话和修复前后回归，不把“没有抛异常”当作成功；
 - **团队交付**：一键生成中文 HTML、Excel 可读 CSV 和 SHA-256 清单，无 Unreal 环境也能参与复核；
@@ -23,14 +24,13 @@
 
 ### 1. 选择项目检查规则
 
-从插件内置的规则下拉框选择审计 Profile，界面直接展示三角形、顶点、材质、纹理依赖、最大纹理尺寸、
-LOD、Nanite、碰撞与 Lightmap 阈值。普通用户无需接触 JSON 路径；项目可以通过“导入自定义规则”接入自己的标准。
+先选择“模型交付轨道”或“纹理交付轨道”，再从内置下拉框选择对应 Profile。界面直接展示本轨道规则摘要；普通用户无需接触 JSON 路径，项目也可以通过“导入自定义规则”接入自己的标准。
 
 ![选择项目检查规则与空状态](docs/images/workflow/v0.8/01-empty-state.png)
 
 ### 2. 选择资源并执行批量审计
 
-在 Content Browser 中显式选择多个资产，或选择一个/多个文件夹。插件会递归发现文件夹内的 Static Mesh，
+在 Content Browser 中显式选择多个资产，或选择一个/多个文件夹。插件只递归发现当前轨道的 Static Mesh 或 Texture2D，
 与单独选择的对象合并、去重并稳定排序；不会默认扫描整个项目。资产总览不会隐藏通过项，同一批次内
 可以直接对比通过、需处理和采集失败对象。
 
@@ -49,8 +49,8 @@ Content Browser。切换“问题明细”后仍能看到严重度、实测值�
 ### 4. 从问题回到资产复核
 
 在“资产总览”或“问题明细”选择一行，复核条会显示当前资产与检查项。`定位资产` 只同步
-Content Browser 选择，`打开复核` 只打开 Static Mesh Editor；问题行还可复制包含资产路径、规则、
-实测、阈值、Evidence ID 和中文说明的确定性摘要。报告路径已失效、对象不是 Static Mesh 或该行属于
+Content Browser 选择，`打开复核` 只打开对应的 Static Mesh Editor 或纹理编辑器；问题行还可复制包含资产路径、规则、
+实测、阈值、Evidence ID 和中文说明的确定性摘要。报告路径已失效、对象类型与当前报告不一致或该行属于
 采集失败时，动作保持禁用并说明原因，不会误开其他资产。
 
 ![问题行定位、打开与复制证据](docs/images/workflow/v0.10-review/13-review-actions.png)
@@ -63,8 +63,8 @@ Content Browser 选择，`打开复核` 只打开 Static Mesh Editor；问题行
 
 ![独立审阅台账：需修复、批准例外与负责人](docs/images/workflow/v0.10-review-ledger/13-review-ledger.png)
 
-以上 v0.10.0-dev3 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件，数据来自
-24 个本机生成的项目 Demo `.uasset` 与 2 条真实采集失败；不是网页复刻或设计稿。生命周期记录保存测试 PID、
+以上 v0.10 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件；模型数据来自
+24 个本机生成的项目 Demo `.uasset` 与 2 条采集失败，纹理数据来自 3 张确定性生成并真实导入的 PNG；不是网页复刻或设计稿。生命周期记录保存测试 PID、
 耗时、退出状态、截图、报告与交接包哈希。自动化证明面板渲染、任务状态、批次间取消和报告解析，
 不冒充鼠标点击人工测试。演示 Profile 使用模拟项目阈值，不代表行业统一标准。
 
@@ -79,7 +79,17 @@ Shader 或 Cook 成本。双击目录组直接进入问题，下钻条可随时�
 
 ![只查看 Heavy 组规则问题](docs/images/workflow/v0.10-delivery-hotspots/14-heavy-group-issues.png)
 
-### 材质与纹理风险
+### Texture2D 交付轨道
+
+纹理不是模型依赖栏里的一个附属数字。切换“纹理交付轨道”后，面板使用独立 Texture Profile 与
+Report，显示源尺寸、平台尺寸、Mip、Texture Group、Compression、色彩空间、Virtual Texture 和
+Streaming 状态；类型不匹配的选择会被明确忽略，不会静默扩大扫描范围。
+
+![Texture2D 资产总览](docs/images/workflow/v0.10-texture-audit/02-asset-overview.png)
+
+![压缩与色彩空间组合证据](docs/images/workflow/v0.10-texture-audit/09-compression-color.png)
+
+### 模型材质与纹理依赖风险
 
 资产台账用“槽/材”和“纹理/最大”同时表达材质槽、唯一有效材质、已加载纹理依赖数与最大边长。
 风险谱可只查看材质链路，问题仍保留实测值、Profile 阈值和 JSON Pointer。
@@ -149,6 +159,7 @@ Evidence 与人工决定。目录问题密度只表示规则问题数 / 处理�
 ## 当前已实现
 
 - 版本化 JSON `Profile`、`Issue`、`Evidence`、`Report` 合同；
+- 独立版本化 Texture Profile / Report：源尺寸上限、2 次幂、Mip、Texture Group、Compression/sRGB、Virtual Texture 与 Streaming 政策；
 - LOD0 三角形预算、LOD0 顶点预算、材质槽上限、LOD 数量下限、Nanite 预期状态；
 - 简单碰撞体数量与碰撞复杂度政策，可由 Profile 决定是否接受 `Complex As Simple`；
 - 缺失材质槽、唯一有效材质数、已加载纹理依赖数与最大纹理尺寸政策；
@@ -156,14 +167,14 @@ Evidence 与人工决定。目录问题密度只表示规则问题数 / 处理�
 - 可选资产名前缀、完整正则、允许项目根目录与禁用目录段；旧 v2 Profile 不配置时保持兼容；
 - 每条 Evidence 记录观测值、Profile 期望值及其 JSON Pointer；
 - Report 同时保存所有成功资产的采集元数据，因此通过项也可与 Editor 复核；
-- Unreal Editor-only 插件和只读 C++ 批量采集接口；
+- Unreal Editor-only 插件和 Static Mesh / Texture2D 两组只读 C++ 批量采集接口；
 - UE 原生中文 Slate 面板：读取 Content Browser 选择、从预置规则下拉框切换 Profile、运行审计与共享搜索；
-- 显式资产与文件夹可以组成同一交付批次；文件夹递归只发现 Static Mesh，结果去重并稳定排序；
+- 显式资产与文件夹可以组成同一交付批次；文件夹递归只发现当前验收轨道的资产类型，结果去重并稳定排序；
 - “交付风险谱”按几何预算、材质负载、构建就绪、命名路径和采集异常汇总真实问题，点击即可筛选明细；
 - “交付热区”按当前 Report 的 package path 形成稳定目录组，显示对象/问题/失败/审阅统计并一键下钻；
 - “资产总览”展示每个已采集资产的通过/需处理/失败状态、几何预算、材质/纹理依赖、LOD、Nanite、碰撞、Lightmap UV、Lightmap 分辨率和问题数，不再隐藏通过资产；
 - “问题明细”保留严重度、规则、实测值、Profile 阈值与本地化证据说明，并可直接打开最新 JSON 或报告目录；
-- 资产行和问题行可只读定位到 Content Browser、打开 Static Mesh Editor；规则问题可复制带 Evidence ID 的确定性复核摘要；
+- 资产行和问题行可只读定位到 Content Browser、打开对应资产编辑器；规则问题可复制带 Evidence ID 的确定性复核摘要；
 - 独立 Review Ledger 支持未复核、需修复、批准例外、负责人和备注；台账原子写入，损坏文件隔离，未知旧记录不套用；
 - 面板运行会在项目 `Saved/UnrealAssetBatchAuditor/Sessions` 中保存不可变历史报告和版本化轻量索引，不再只留下会被覆盖的 `latest-report.json`；
 - 中文面板可选择同 Profile 历史会话作为回归基线，查看新增、持续、已解决和采集失败变化；比较结果使用版本化 JSON，可供后续 CI 或团队看板消费；
@@ -261,9 +272,10 @@ Demo Profile 是为了形成清晰对比而模拟的项目数据，不代表行�
 6. 启动 Editor，在 `工具 > 资产批量审计` 打开工作台，再按
    [宿主测试清单](docs/HOST_TEST_PLAN.md)执行真实验证。
 
-插件 descriptor 只声明 `Editor` 模块。C++ collector 仅接收显式 object path，并读取
-`UStaticMesh` render data、材质/已加载纹理依赖、Nanite、BodySetup 碰撞聚合体和 Lightmap 设置。当前实现为了获得
-顶点/三角形和 UV 通道数据会加载指定网格；没有扫描整个项目，也没有逐顶点 Python 循环。
+插件 descriptor 只声明 `Editor` 模块。C++ collector 仅接收显式 object path：模型轨道读取
+`UStaticMesh` render data、材质/已加载纹理依赖、Nanite、BodySetup 与 Lightmap；纹理轨道读取
+`UTexture2D` 的源/平台尺寸、Mip、分组、压缩、色彩、VT 与流送状态。两条轨道都不会扫描整个项目，
+也不会在 Python 中逐顶点或逐像素处理。
 
 Editor Python 的便捷入口默认每批 128 个显式 object path，也允许调用方注入取消和进度回调：
 
@@ -293,7 +305,8 @@ report = run(
 - v0.9.0 发布包包含 55 个白名单文件；相同输入双次 ZIP 完全一致；全新安装、真实 Cube 采集、随包无人值守、升级和可恢复卸载均通过。ZIP SHA-256：`1D555A6A525A0C22436E8B3CFF6F0A1F70D7ACD0B6F7447E9E3CB9ACC7865BCC`；
 - v0.10-dev1/2 完成资产定位、Evidence 摘要和独立 Review Ledger；人工决定不会改写规则事实或源 Report；
 - v0.10-dev3 已通过 83 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主使用 24 个 Demo Static Mesh 与 2 个采集失败验证 6 个交付目录组、Heavy 组下钻和清除恢复，并生成 17 张生产 Slate 图；
-- 下一切片把目录热区带入离线团队交接 HTML/CSV，不加入泛 AI 对话或 PCG；
+- v0.10-dev4 已通过 88 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主真实导入并采集 3 张 Texture2D，得到 1 个通过对象、2 个待处理对象与 7 条问题，并生成 13 张纹理轨道 Slate 图；
+- 下一切片收口 v0.10 双轨可安装作品版本，不加入泛 AI 对话、PCG、自动修复或未经测量的性能评分；
 - 不声明 Marketplace 就绪、其他 UE 版本兼容或生产规模绝对无卡顿。
 
 ## 许可证与演示素材

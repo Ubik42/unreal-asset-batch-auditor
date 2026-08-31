@@ -1,0 +1,205 @@
+{
+  "schema_version": "unreal-texture-audit@1.0.0",
+  "report_id": "texture-report-3052a62959921b33",
+  "created_at": "2026-08-31T04:04:31.886508+00:00",
+  "profile_id": "texture-mobile-strict-v1",
+  "profile_version": "1.0.0",
+  "profile_schema_version": "unreal-texture-profile@1.0.0",
+  "asset_type": "texture2d",
+  "collection_mode": "unreal_editor",
+  "real_unreal_validation": true,
+  "host_engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "asset_count": 3,
+  "issue_count": 7,
+  "collection_failure_count": 0,
+  "requested_asset_count": 3,
+  "processed_asset_count": 3,
+  "cancelled_asset_count": 0,
+  "completed_batch_count": 2,
+  "batch_size": 2,
+  "assets": [
+    {
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_Good_BaseColor.T_UABA_Good_BaseColor",
+      "asset_name": "T_UABA_Good_BaseColor",
+      "source_width": 1024,
+      "source_height": 1024,
+      "platform_width": 1024,
+      "platform_height": 1024,
+      "mip_count": 11,
+      "mip_gen_settings": "TMGS_FromTextureGroup",
+      "texture_group": "TEXTUREGROUP_World",
+      "compression_settings": "TC_Default",
+      "srgb": true,
+      "virtual_texture_streaming": false,
+      "never_stream": false
+    },
+    {
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "asset_name": "T_UABA_NPOT_Mask",
+      "source_width": 1500,
+      "source_height": 900,
+      "platform_width": 1500,
+      "platform_height": 900,
+      "mip_count": 1,
+      "mip_gen_settings": "TMGS_NoMipmaps",
+      "texture_group": "TEXTUREGROUP_Pixels2D",
+      "compression_settings": "TC_Default",
+      "srgb": false,
+      "virtual_texture_streaming": false,
+      "never_stream": true
+    },
+    {
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_Oversize_BaseColor.T_UABA_Oversize_BaseColor",
+      "asset_name": "T_UABA_Oversize_BaseColor",
+      "source_width": 4096,
+      "source_height": 4096,
+      "platform_width": 4096,
+      "platform_height": 4096,
+      "mip_count": 13,
+      "mip_gen_settings": "TMGS_FromTextureGroup",
+      "texture_group": "TEXTUREGROUP_World",
+      "compression_settings": "TC_Default",
+      "srgb": true,
+      "virtual_texture_streaming": true,
+      "never_stream": false
+    }
+  ],
+  "issues": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-c4bf15cd0a81ff7b",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "rule_id": "texture2d.power_of_two",
+      "severity": "error",
+      "message": "Texture source size 1500x900 power-of-two state is False; profile expects True.",
+      "evidence_id": "ev-ecd5fd1381a9434e"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-0181f6d4aa5756f3",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "rule_id": "texture2d.mip_count",
+      "severity": "error",
+      "message": "Texture has 1 mip levels; profile minimum is 2.",
+      "evidence_id": "ev-7baa98ec67f5a78c"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-3008e66dc87ce8ba",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "rule_id": "texture2d.texture_group",
+      "severity": "warning",
+      "message": "Texture group 'TEXTUREGROUP_Pixels2D' is outside profile allowlist ['TEXTUREGROUP_World', 'TEXTUREGROUP_WorldNormalMap', 'TEXTUREGROUP_WorldSpecular', 'TEXTUREGROUP_UI'].",
+      "evidence_id": "ev-08dadb9e0d70437b"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-1f4a7b60a890138a",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "rule_id": "texture2d.compression_color_space",
+      "severity": "error",
+      "message": "Compression/color-space pair ('TC_Default', False) is not allowed by profile.",
+      "evidence_id": "ev-96ad69386bc4adf7"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-32b514f7389630b9",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "rule_id": "texture2d.streaming",
+      "severity": "error",
+      "message": "Texture streamable state is False; profile expects enabled.",
+      "evidence_id": "ev-1bccbab91ed719d9"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-9069d6d8406c30cc",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_Oversize_BaseColor.T_UABA_Oversize_BaseColor",
+      "rule_id": "texture2d.source_dimension",
+      "severity": "error",
+      "message": "Texture source size 4096x4096 exceeds profile limit 2048.",
+      "evidence_id": "ev-6d83cd4774b5a886"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-053aede2b1092e20",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_Oversize_BaseColor.T_UABA_Oversize_BaseColor",
+      "rule_id": "texture2d.virtual_texture",
+      "severity": "warning",
+      "message": "Virtual Texture Streaming is True; profile expects disabled.",
+      "evidence_id": "ev-e2d55026debdcd18"
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-ecd5fd1381a9434e",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "metric": "source_is_power_of_two",
+      "observed": false,
+      "expected": true,
+      "profile_pointer": "/rules/power_of_two/required",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-7baa98ec67f5a78c",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "metric": "mip_count",
+      "observed": 1,
+      "expected": 2,
+      "profile_pointer": "/rules/mip_count/min_count",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-08dadb9e0d70437b",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "metric": "texture_group",
+      "observed": "TEXTUREGROUP_Pixels2D",
+      "expected": "TEXTUREGROUP_World | TEXTUREGROUP_WorldNormalMap | TEXTUREGROUP_WorldSpecular | TEXTUREGROUP_UI",
+      "profile_pointer": "/rules/texture_group/allowed_values",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-96ad69386bc4adf7",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "metric": "compression_color_space",
+      "observed": "TC_Default+Linear",
+      "expected": "TC_Default+sRGB, TC_Normalmap+Linear, TC_Masks+Linear",
+      "profile_pointer": "/rules/compression_color_space/allowed_combinations",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-1bccbab91ed719d9",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_NPOT_Mask.T_UABA_NPOT_Mask",
+      "metric": "never_stream",
+      "observed": false,
+      "expected": true,
+      "profile_pointer": "/rules/streaming/expected",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-6d83cd4774b5a886",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_Oversize_BaseColor.T_UABA_Oversize_BaseColor",
+      "metric": "source_max_dimension",
+      "observed": "4096x4096",
+      "expected": "max 2048",
+      "profile_pointer": "/rules/source_dimension/max_size",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-e2d55026debdcd18",
+      "asset_path": "/Game/UABADemo/Textures/T_UABA_Oversize_BaseColor.T_UABA_Oversize_BaseColor",
+      "metric": "virtual_texture_streaming",
+      "observed": true,
+      "expected": false,
+      "profile_pointer": "/rules/virtual_texture/expected",
+      "collector": "unreal_editor"
+    }
+  ],
+  "collection_failures": []
+}

@@ -82,6 +82,60 @@ struct FStaticMeshAuditMetadata
     FString Error;
 };
 
+USTRUCT(BlueprintType)
+struct FTexture2DAuditMetadata
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString AssetPath;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString AssetName;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 SourceWidth = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 SourceHeight = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 PlatformWidth = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 PlatformHeight = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 MipCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString MipGenSettings;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString TextureGroup;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString CompressionSettings;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    bool bSrgb = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    bool bVirtualTextureStreaming = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    bool bNeverStream = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    bool bCollected = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString ErrorCode;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString Error;
+};
+
 /**
  * Read-only Editor boundary used by Python orchestration.
  *
@@ -99,5 +153,9 @@ class UNREALASSETBATCHAUDITOR_API UUnrealAssetBatchAuditorLibrary final
 public:
     UFUNCTION(BlueprintCallable, Category = "Asset Audit")
     static TArray<FStaticMeshAuditMetadata> CollectStaticMeshMetadata(
+        const TArray<FString>& AssetPaths);
+
+    UFUNCTION(BlueprintCallable, Category = "Asset Audit")
+    static TArray<FTexture2DAuditMetadata> CollectTexture2DMetadata(
         const TArray<FString>& AssetPaths);
 };

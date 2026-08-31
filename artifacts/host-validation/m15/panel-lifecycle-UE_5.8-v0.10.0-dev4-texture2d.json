@@ -1,0 +1,123 @@
+{
+  "schema_version": "unreal-panel-lifecycle@1.0.0",
+  "created_at": "2026-08-31T04:05:11.4210049+00:00",
+  "engine": "UE 5.8.1",
+  "plugin_build": "UE_5.8-v0.10.0-dev4",
+  "execution": "independent hidden UnrealEditor-Cmd -RenderOffscreen",
+  "test_pid": 2980,
+  "created_unreal_pids": [
+    2980
+  ],
+  "concurrent_unreal_pids_observed": [],
+  "existing_unreal_pids_before": [
+    37752,
+    47532
+  ],
+  "existing_unreal_pids_after": [],
+  "existing_processes_survived": false,
+  "missing_preexisting_pids": [
+    37752,
+    47532
+  ],
+  "preexisting_processes_managed_by_test": false,
+  "started_at": "2026-08-31T04:04:42.0613095+00:00",
+  "finished_at": "2026-08-31T04:05:11.4210049+00:00",
+  "duration_seconds": 29.36,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "owned_pid_visible_at_snapshot": true,
+  "automation_tests": "UnrealAssetBatchAuditor.PanelEvidence",
+  "automation_passed": true,
+  "panel_evidence_passed": true,
+  "panel_task_lifecycle_passed": true,
+  "report_path": "artifacts/demo/demo-texture-mobile-strict-v1-report.json",
+  "report_sha256": "3113749B704F7679D1DB10022E7616E548F19FC254582D124BA187A0DFDE209A",
+  "comparison_path": "artifacts/demo/session-history/latest-comparison.v1.json",
+  "comparison_sha256": "4C8B5029591D6E47A7983D9398B2823B44E00835ED5DBF2D543BA32DBBE4514F",
+  "log_path": "artifacts/host-runtime/panel-20260830-220441/Saved/Logs/UnrealAssetBatchAuditorHost.log",
+  "committed_log_excerpt": "artifacts/host-validation/m15/panel-lifecycle-UE_5.8-v0.10.0-dev4-texture2d-log.txt",
+  "committed_log_excerpt_sha256": "70AF5AB8AC2B34BC1D56BBD76D36A0F27841112CBB3E00D2C58E9375CF213056",
+  "screenshot_count": 13,
+  "screenshots": [
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/01-empty-state.png",
+      "bytes": 136737,
+      "sha256": "8165BD872358A7FD3C545D0643C71110DEF0B06B739D31101CC0B45DBE0D8375"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/02-asset-overview.png",
+      "bytes": 146591,
+      "sha256": "6C252238B8BE6BEC3F19B26244E7ABB2337EA70F5FA50852C944AD667D674DE2"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/03-passing-assets.png",
+      "bytes": 133461,
+      "sha256": "7565F04DC9BC49D15D97C1D1E733ED9A1F7250AC40D06C6F09CF5605265D575D"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/04-assets-needing-work.png",
+      "bytes": 139961,
+      "sha256": "79EAD71F5BD1F03DAE0183EA9783F585EDEE717B7E3327DB03F0A68A501D803B"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/05-issue-details.png",
+      "bytes": 187167,
+      "sha256": "553B3C077E8C457A8A4B9FACEF47D7A9F1D54A473F174FE72D307F7F0B56CDD8"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/06-source-dimension.png",
+      "bytes": 155124,
+      "sha256": "628ABE9C44BC511691E9F27A2964F6C3F4D538882DAA13CFDD49B1D1595014F2"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/07-power-of-two.png",
+      "bytes": 147801,
+      "sha256": "238E54693E61227671BBF44A1B88C8DC46F923F3DA17003C95E1B7BEE4135A9C"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/08-mip-policy.png",
+      "bytes": 146853,
+      "sha256": "11C67F20DFCD0E7E1EF776DA988867B7398682E42D2D26548C272337A7A69F97"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/09-compression-color.png",
+      "bytes": 147384,
+      "sha256": "47C701F6C38C9F608696003B648A4D80B034FA428003242BDF9D3F82DBE00422"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/10-streaming-policy.png",
+      "bytes": 147771,
+      "sha256": "4EC8EF26EDE9BACD23596DC2E432B9D0559A1A7714A0B3AAA8F98ACD0E8AA01E"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/13-review-actions.png",
+      "bytes": 187589,
+      "sha256": "7F77071C8DB810883A9A95E4FFACF1CA9C1584BE44E33C9E7F10EF9CC525AAC9"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/14-running-batch-task.png",
+      "bytes": 148684,
+      "sha256": "46DE67E0472448023AA31B9F0590DB484372629B9F1E87547F5024B7421A39BE"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-texture-audit/15-cancelling-task.png",
+      "bytes": 149046,
+      "sha256": "686706441D8442C0CD74C0DC45E27DAC1C69B5164732966ED36FA92C3724FECD"
+    }
+  ],
+  "task_artifact_count": 0,
+  "task_artifacts": null,
+  "review_artifact_count": 0,
+  "review_artifacts": null,
+  "delivery_group_artifact_count": 1,
+  "delivery_group_artifacts": [
+    {
+      "path": "artifacts/host-validation/m15/delivery-groups-UE_5.8-v0.10.0-dev4-texture2d/current-delivery-groups.v1.json",
+      "bytes": 1209,
+      "sha256": "DFF505E3E31036798C2A2D2502D25F8B50778823B253242FF205EC52250717F6"
+    }
+  ],
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false
+}

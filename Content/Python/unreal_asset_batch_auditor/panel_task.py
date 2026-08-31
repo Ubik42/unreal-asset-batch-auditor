@@ -13,6 +13,9 @@ from .collectors import CollectionBatch, MetadataCollector, UnrealCppCollector
 from .contracts import AuditProfile
 from .handoff import export_handoff
 from .sessions import SessionStore
+from .texture_audit import build_texture_report_from_collection
+from .texture_collectors import TextureUnrealCppCollector
+from .texture_contracts import TextureAuditProfile
 
 TASK_STATE_VERSION = "unreal-audit-task-state@1.0.0"
 TERMINAL_STATES = frozenset({"completed", "cancelled", "failed"})
@@ -38,7 +41,14 @@ class PanelAuditTask:
         self.request = request
         self.collector = collector
         self.task_id = str(request["task_id"])
-        self.profile = AuditProfile.load(str(request["profile_path"]))
+        self.asset_type = str(request.get("asset_type", "static_mesh"))
+        if self.asset_type not in {"static_mesh", "texture2d"}:
+            raise ValueError("asset_type must be static_mesh or texture2d")
+        self.profile = (
+            TextureAuditProfile.load(str(request["profile_path"]))
+            if self.asset_type == "texture2d"
+            else AuditProfile.load(str(request["profile_path"]))
+        )
         self.paths = [str(path) for path in request["asset_paths"]]
         self.batch_size = int(request.get("batch_size", 64))
         if self.batch_size < 1:
@@ -176,7 +186,12 @@ class PanelAuditTask:
             key=lambda item: (item.asset_path, item.code, item.message)
         )
         cancelled_count = len(self.paths) - self.processed_count if cancelled else 0
-        report = build_report_from_collection(
+        build_report = (
+            build_texture_report_from_collection
+            if self.asset_type == "texture2d"
+            else build_report_from_collection
+        )
+        report = build_report(
             profile=self.profile,
             collector=self.collector,
             batch=self.aggregate,
@@ -217,7 +232,7 @@ _TICK_HANDLE: Any = None
 def start_panel_task(
     request_path: str,
     *,
-    collector_factory: Callable[[], MetadataCollector] = UnrealCppCollector,
+    collector_factory: Callable[[], MetadataCollector] | None = None,
     register_callback: Callable[[Callable[[float], None]], Any] | None = None,
     unregister_callback: Callable[[Any], None] | None = None,
 ) -> dict[str, Any]:
@@ -229,6 +244,12 @@ def start_panel_task(
     request = json.loads(Path(request_path).read_text(encoding="utf-8"))
     cancel_path = Path(str(request["cancel_path"]))
     cancel_path.unlink(missing_ok=True)
+    if collector_factory is None:
+        collector_factory = (
+            TextureUnrealCppCollector
+            if request.get("asset_type") == "texture2d"
+            else UnrealCppCollector
+        )
     task = PanelAuditTask(request, collector_factory())
     _ACTIVE_TASK = task
 

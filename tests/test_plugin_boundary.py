@@ -29,6 +29,7 @@ def test_cpp_boundary_is_batch_read_only_and_has_no_mutation_surface() -> None:
         / "UnrealAssetBatchAuditorLibrary.cpp"
     ).read_text(encoding="utf-8")
     assert "CollectStaticMeshMetadata" in header
+    assert "CollectTexture2DMetadata" in header
     assert "TArray<FString>" in header
     forbidden = ("SavePackage", "Modify()", "Build(", "MarkPackageDirty", "SetNanite")
     assert not any(token in implementation for token in forbidden)

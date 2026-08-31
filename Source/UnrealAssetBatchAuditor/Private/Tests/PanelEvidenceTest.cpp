@@ -108,10 +108,11 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         ExpectedIssues > 0 ? ExpectedIssues : 23);
 
     Panel->SetFolderSelectionForEvidence({EvidenceMode == TEXT("hotspot")
-        ? TEXT("/Game/UABADemo") : TEXT("/Engine/BasicShapes")});
+        ? TEXT("/Game/UABADemo")
+        : (EvidenceMode == TEXT("texture") ? TEXT("/Game/UABADemo/Textures") : TEXT("/Engine/BasicShapes"))});
     TestTrue(
-        TEXT("Recursive folder scope discovers real Engine Static Mesh assets"),
-        Panel->GetEvidenceSelectedAssetCount() >= 4);
+        TEXT("Recursive folder scope discovers real assets for the active audit track"),
+        Panel->GetEvidenceSelectedAssetCount() >= (EvidenceMode == TEXT("texture") ? 3 : 4));
     const FString EvidenceRiskCategory = EvidenceMode == TEXT("v3-material")
         ? TEXT("materials")
         : (EvidenceMode == TEXT("review") ? TEXT("structure") : TEXT("geometry"));
@@ -195,6 +196,19 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
             }
         }
     }
+    else if (EvidenceMode == TEXT("texture"))
+    {
+        Panel->SetEvidenceView(false, TEXT("源尺寸"));
+        Capture(TEXT("06-source-dimension.png"));
+        Panel->SetEvidenceView(false, TEXT("2 次幂"));
+        Capture(TEXT("07-power-of-two.png"));
+        Panel->SetEvidenceView(false, TEXT("Mip"));
+        Capture(TEXT("08-mip-policy.png"));
+        Panel->SetEvidenceView(false, TEXT("压缩"));
+        Capture(TEXT("09-compression-color.png"));
+        Panel->SetEvidenceView(false, TEXT("流送"));
+        Capture(TEXT("10-streaming-policy.png"));
+    }
     else
     {
         Panel->SetEvidenceView(false, TEXT("三角形"));
@@ -257,7 +271,7 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         const FString Summary = Panel->GetSelectedEvidenceSummaryForEvidence();
         TestTrue(TEXT("Review summary carries deterministic Evidence ID"), Summary.Contains(TEXT("Evidence ID：")));
         FString LocateError;
-        TestTrue(TEXT("Selected report issue locates a real Static Mesh in Content Browser"),
+        TestTrue(TEXT("Selected report issue locates a real asset in Content Browser"),
             Panel->LocateSelectedAssetForEvidence(LocateError));
         if (!LocateError.IsEmpty()) AddError(LocateError);
         Capture(EvidenceMode == TEXT("review")
@@ -267,7 +281,7 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
     }
     else
     {
-        AddWarning(TEXT("Evidence report has no issue whose Static Mesh resolves in this host project"));
+        AddWarning(TEXT("Evidence report has no issue whose asset resolves in this host project"));
     }
 
     Panel->SetEvidenceView(true, TEXT(""));

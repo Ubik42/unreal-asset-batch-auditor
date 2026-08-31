@@ -12,7 +12,7 @@ param(
     [int]$TimeoutSeconds = 120,
     [string]$EvidenceMilestone = "m9",
     [string]$EvidenceLabelSuffix = "",
-    [ValidateSet("v2", "v3-material", "review", "hotspot")]
+    [ValidateSet("v2", "v3-material", "review", "hotspot", "texture")]
     [string]$EvidenceMode = "v2",
     [switch]$PanelOnly
 )
@@ -48,11 +48,11 @@ $plugins = Join-Path $runtime "Plugins"
 New-Item -ItemType Directory -Path $plugins -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $repoRoot "tests\host\UnrealAssetBatchAuditorHost.uproject") -Destination $runtime
 Copy-Item -LiteralPath $build -Destination (Join-Path $plugins "UnrealAssetBatchAuditor") -Recurse
-if ($EvidenceMode -eq "hotspot") {
+if ($EvidenceMode -in @("hotspot", "texture")) {
     $demoContent = Join-Path $repoRoot "Demo\Content\UABADemo"
     $runtimeContent = Join-Path $runtime "Content"
     if (-not (Test-Path -LiteralPath $demoContent)) {
-        throw "Hotspot evidence requires generated Demo content: $demoContent"
+        throw "Panel evidence requires generated Demo content: $demoContent"
     }
     New-Item -ItemType Directory -Path $runtimeContent -Force | Out-Null
     Copy-Item -LiteralPath $demoContent -Destination (Join-Path $runtimeContent "UABADemo") -Recurse

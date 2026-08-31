@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://art-pipeline.local/contracts/unreal-texture-profile.v1.schema.json",
+  "title": "Unreal Texture2D 审计 Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "profile_id", "profile_version", "description", "rules"],
+  "properties": {
+    "schema_version": {"const": "unreal-texture-profile@1.0.0"},
+    "profile_id": {"type": "string", "minLength": 1},
+    "profile_version": {"type": "string", "minLength": 1},
+    "description": {"type": "string"},
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_dimension", "power_of_two", "mip_count", "texture_group", "compression_color_space", "virtual_texture", "streaming"],
+      "properties": {
+        "source_dimension": {"$ref": "#/$defs/dimensionRule"},
+        "power_of_two": {"$ref": "#/$defs/booleanRule"},
+        "mip_count": {"$ref": "#/$defs/minimumRule"},
+        "texture_group": {"$ref": "#/$defs/allowedValuesRule"},
+        "compression_color_space": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "allowed_combinations", "severity"],
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "allowed_combinations": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "object", "additionalProperties": false, "required": ["compression", "srgb"], "properties": {"compression": {"type": "string", "minLength": 1}, "srgb": {"type": "boolean"}}}},
+            "severity": {"$ref": "#/$defs/severity"}
+          }
+        },
+        "virtual_texture": {"$ref": "#/$defs/stateRule"},
+        "streaming": {"$ref": "#/$defs/stateRule"}
+      }
+    }
+  },
+  "$defs": {
+    "severity": {"enum": ["info", "warning", "error"]},
+    "dimensionRule": {"type": "object", "additionalProperties": false, "required": ["enabled", "max_size", "severity"], "properties": {"enabled": {"type": "boolean"}, "max_size": {"type": "integer", "minimum": 1}, "severity": {"$ref": "#/$defs/severity"}}},
+    "booleanRule": {"type": "object", "additionalProperties": false, "required": ["enabled", "required", "severity"], "properties": {"enabled": {"type": "boolean"}, "required": {"type": "boolean"}, "severity": {"$ref": "#/$defs/severity"}}},
+    "minimumRule": {"type": "object", "additionalProperties": false, "required": ["enabled", "min_count", "severity"], "properties": {"enabled": {"type": "boolean"}, "min_count": {"type": "integer", "minimum": 1}, "severity": {"$ref": "#/$defs/severity"}}},
+    "allowedValuesRule": {"type": "object", "additionalProperties": false, "required": ["enabled", "allowed_values", "severity"], "properties": {"enabled": {"type": "boolean"}, "allowed_values": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "severity": {"$ref": "#/$defs/severity"}}},
+    "stateRule": {"type": "object", "additionalProperties": false, "required": ["enabled", "expected", "severity"], "properties": {"enabled": {"type": "boolean"}, "expected": {"enum": ["enabled", "disabled", "any"]}, "severity": {"$ref": "#/$defs/severity"}}}
+  }
+}

@@ -224,3 +224,17 @@ Editor 的入口已完成 UE 编译；当前宿主门禁不声明人工可见打
 
 本轮只证明当前 Report 范围内的目录聚合、规则问题密度与下钻。它不是运行时性能、Cook、Shader、
 GPU 或全项目规模分析；自动化截图不冒充人工鼠标验收。
+
+## 2026-08-30 v0.10-dev4 Texture2D 交付轨道
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| Python 合同与规则 | 通过；88 项测试与 Ruff，Texture Profile/Report、fixture、批次和面板任务路由均覆盖 | `tests/test_texture_audit.py`、`contracts/texture-*.v1.schema.json` |
+| BuildPlugin | 通过；UE 5.8 Win64 完成 UHT、C++ 编译、链接与打包 | 本机忽略目录 `artifacts/host-build/UE_5.8-v0.10.0-dev4` |
+| 真实 Texture2D 采集 | 通过；独立宿主真实导入 3 张确定性 PNG，采到 1024/1500×900/4096 平台尺寸与 11/1/13 级 Mip | `artifacts/host-validation/m15/texture-collector-UE_5.8-v0.10.0-dev4.json` |
+| Profile 判定 | 通过；移动端演示 Profile 得到 1 个通过对象、2 个待处理对象、7 条 Issue、0 采集失败 | `artifacts/demo/demo-texture-mobile-strict-v1-report.json` |
+| 双轨 Slate | 通过；纹理专用规则、范围、列、筛选和复核入口生成 13 张当前截图 | `docs/images/workflow/v0.10-texture-audit/` |
+| 独立面板宿主 | 通过；`PanelEvidence` 返回 Success，测试只管理自己创建的 PID | `artifacts/host-validation/m15/panel-lifecycle-UE_5.8-v0.10.0-dev4-texture2d.json` |
+
+生成素材的宿主脚本负责创建 Demo `.uasset`；生产审计接口只读。平台尺寸与 Mip 在非 NullRHI 的
+Editor 宿主采集。本轮不证明 Cook 后尺寸、运行时 residency、显存、GPU、跨平台或跨 UE 版本结果。

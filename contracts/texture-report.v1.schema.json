@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://art-pipeline.local/contracts/unreal-texture-audit.v1.schema.json",
+  "title": "Unreal Texture2D 审计 Report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "report_id", "created_at", "profile_id", "profile_version", "profile_schema_version", "asset_type", "collection_mode", "real_unreal_validation", "host_engine_version", "asset_count", "issue_count", "collection_failure_count", "requested_asset_count", "processed_asset_count", "cancelled_asset_count", "completed_batch_count", "batch_size", "assets", "issues", "evidence", "collection_failures"],
+  "properties": {
+    "schema_version": {"const": "unreal-texture-audit@1.0.0"},
+    "report_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "profile_id": {"type": "string", "minLength": 1},
+    "profile_version": {"type": "string", "minLength": 1},
+    "profile_schema_version": {"const": "unreal-texture-profile@1.0.0"},
+    "asset_type": {"const": "texture2d"},
+    "collection_mode": {"enum": ["offline_fixture", "unreal_editor"]},
+    "real_unreal_validation": {"type": "boolean"},
+    "host_engine_version": {"type": ["string", "null"]},
+    "asset_count": {"type": "integer", "minimum": 0},
+    "issue_count": {"type": "integer", "minimum": 0},
+    "collection_failure_count": {"type": "integer", "minimum": 0},
+    "requested_asset_count": {"type": "integer", "minimum": 0},
+    "processed_asset_count": {"type": "integer", "minimum": 0},
+    "cancelled_asset_count": {"type": "integer", "minimum": 0},
+    "completed_batch_count": {"type": "integer", "minimum": 0},
+    "batch_size": {"type": ["integer", "null"], "minimum": 1},
+    "assets": {"type": "array", "items": {"$ref": "#/$defs/texture"}},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+    "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}},
+    "collection_failures": {"type": "array", "items": {"$ref": "#/$defs/failure"}}
+  },
+  "$defs": {
+    "texture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_path", "asset_name", "source_width", "source_height", "platform_width", "platform_height", "mip_count", "mip_gen_settings", "texture_group", "compression_settings", "srgb", "virtual_texture_streaming", "never_stream"],
+      "properties": {
+        "asset_path": {"type": "string", "minLength": 1}, "asset_name": {"type": "string", "minLength": 1},
+        "source_width": {"type": "integer", "minimum": 1}, "source_height": {"type": "integer", "minimum": 1},
+        "platform_width": {"type": "integer", "minimum": 1}, "platform_height": {"type": "integer", "minimum": 1},
+        "mip_count": {"type": "integer", "minimum": 1}, "mip_gen_settings": {"type": "string", "minLength": 1},
+        "texture_group": {"type": "string", "minLength": 1}, "compression_settings": {"type": "string", "minLength": 1},
+        "srgb": {"type": "boolean"}, "virtual_texture_streaming": {"type": "boolean"}, "never_stream": {"type": "boolean"}
+      }
+    },
+    "issue": {"type": "object", "additionalProperties": false, "required": ["schema_version", "issue_id", "asset_path", "rule_id", "severity", "message", "evidence_id"], "properties": {"schema_version": {"const": "unreal-asset-audit@1.0.0"}, "issue_id": {"type": "string", "minLength": 1}, "asset_path": {"type": "string", "minLength": 1}, "rule_id": {"type": "string", "minLength": 1}, "severity": {"enum": ["info", "warning", "error"]}, "message": {"type": "string"}, "evidence_id": {"type": "string", "minLength": 1}}},
+    "evidence": {"type": "object", "additionalProperties": false, "required": ["schema_version", "evidence_id", "asset_path", "metric", "observed", "expected", "profile_pointer", "collector"], "properties": {"schema_version": {"const": "unreal-asset-audit@1.0.0"}, "evidence_id": {"type": "string", "minLength": 1}, "asset_path": {"type": "string", "minLength": 1}, "metric": {"type": "string", "minLength": 1}, "observed": {"type": ["integer", "boolean", "string"]}, "expected": {"type": ["integer", "boolean", "string"]}, "profile_pointer": {"type": "string", "minLength": 1}, "collector": {"type": "string", "minLength": 1}}},
+    "failure": {"type": "object", "additionalProperties": false, "required": ["schema_version", "asset_path", "code", "message", "collector"], "properties": {"schema_version": {"const": "unreal-asset-audit@1.0.0"}, "asset_path": {"type": "string", "minLength": 1}, "code": {"type": "string", "minLength": 1}, "message": {"type": "string"}, "collector": {"type": "string", "minLength": 1}}}
+  }
+}

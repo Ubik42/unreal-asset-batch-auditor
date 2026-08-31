@@ -1,0 +1,27 @@
+{
+  "schema_version": "unreal-texture-profile@1.0.0",
+  "profile_id": "texture-mobile-strict-v1",
+  "profile_version": "1.0.0",
+  "description": "移动端纹理交付演示规则；限制源尺寸并要求可流送。",
+  "rules": {
+    "source_dimension": {"enabled": true, "max_size": 2048, "severity": "error"},
+    "power_of_two": {"enabled": true, "required": true, "severity": "error"},
+    "mip_count": {"enabled": true, "min_count": 2, "severity": "error"},
+    "texture_group": {
+      "enabled": true,
+      "allowed_values": ["TEXTUREGROUP_World", "TEXTUREGROUP_WorldNormalMap", "TEXTUREGROUP_WorldSpecular", "TEXTUREGROUP_UI"],
+      "severity": "warning"
+    },
+    "compression_color_space": {
+      "enabled": true,
+      "allowed_combinations": [
+        {"compression": "TC_Default", "srgb": true},
+        {"compression": "TC_Normalmap", "srgb": false},
+        {"compression": "TC_Masks", "srgb": false}
+      ],
+      "severity": "error"
+    },
+    "virtual_texture": {"enabled": true, "expected": "disabled", "severity": "warning"},
+    "streaming": {"enabled": true, "expected": "enabled", "severity": "error"}
+  }
+}

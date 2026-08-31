@@ -15,6 +15,7 @@
 #include "IPythonScriptPlugin.h"
 #include "JsonObjectConverter.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/Texture2D.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Modules/ModuleManager.h"
@@ -50,13 +51,17 @@ bool RuleBelongsToRiskCategory(const FString& RuleId, const FString& Category)
 {
     if (Category.IsEmpty()) return true;
     if (Category == TEXT("geometry"))
-        return RuleId.Contains(TEXT("triangle_budget")) || RuleId.Contains(TEXT("vertex_budget"));
+        return RuleId.Contains(TEXT("triangle_budget")) || RuleId.Contains(TEXT("vertex_budget"))
+            || RuleId.Contains(TEXT("source_dimension")) || RuleId.Contains(TEXT("power_of_two"));
     if (Category == TEXT("materials"))
         return RuleId.Contains(TEXT("material_slots")) || RuleId.Contains(TEXT("material"))
-            || RuleId.Contains(TEXT("texture_"));
+            || RuleId.Contains(TEXT("texture_dependencies")) || RuleId.Contains(TEXT("texture_dimension"))
+            || RuleId.Contains(TEXT("texture_group")) || RuleId.Contains(TEXT("compression_color_space"));
     if (Category == TEXT("readiness"))
         return RuleId.Contains(TEXT("lod_count")) || RuleId.Contains(TEXT("nanite_state"))
-            || RuleId.Contains(TEXT("simple_collision")) || RuleId.Contains(TEXT("lightmap"));
+            || RuleId.Contains(TEXT("simple_collision")) || RuleId.Contains(TEXT("lightmap"))
+            || RuleId.Contains(TEXT("mip_count")) || RuleId.Contains(TEXT("virtual_texture"))
+            || RuleId.Contains(TEXT("texture2d.streaming"));
     if (Category == TEXT("structure"))
         return RuleId.Contains(TEXT("object_name")) || RuleId.Contains(TEXT("package_path"));
     if (Category == TEXT("collection"))
@@ -89,6 +94,13 @@ FText RuleLabel(const FString& RuleId)
     if (RuleId.Contains(TEXT("unique_materials"))) return FText::FromString(TEXT("唯一材质"));
     if (RuleId.Contains(TEXT("texture_dependencies"))) return FText::FromString(TEXT("纹理依赖"));
     if (RuleId.Contains(TEXT("texture_dimension"))) return FText::FromString(TEXT("纹理尺寸"));
+    if (RuleId.Contains(TEXT("source_dimension"))) return FText::FromString(TEXT("源尺寸"));
+    if (RuleId.Contains(TEXT("power_of_two"))) return FText::FromString(TEXT("2 次幂尺寸"));
+    if (RuleId.Contains(TEXT("mip_count"))) return FText::FromString(TEXT("Mip 链"));
+    if (RuleId.Contains(TEXT("texture_group"))) return FText::FromString(TEXT("Texture Group"));
+    if (RuleId.Contains(TEXT("compression_color_space"))) return FText::FromString(TEXT("压缩 / 色彩空间"));
+    if (RuleId.Contains(TEXT("virtual_texture"))) return FText::FromString(TEXT("Virtual Texture"));
+    if (RuleId.Contains(TEXT("texture2d.streaming"))) return FText::FromString(TEXT("纹理流送"));
     if (RuleId.Contains(TEXT("lod_count"))) return FText::FromString(TEXT("LOD 数量"));
     if (RuleId.Contains(TEXT("nanite_state"))) return FText::FromString(TEXT("Nanite 状态"));
     if (RuleId.Contains(TEXT("simple_collision"))) return FText::FromString(TEXT("简单碰撞"));
@@ -116,6 +128,20 @@ FString LocalizedIssueMessage(const FString& RuleId, const FString& Observed, co
         return FString::Printf(TEXT("纹理依赖为 %s 个，超过 Profile 上限 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("texture_dimension")))
         return FString::Printf(TEXT("最大纹理边长为 %s，超过 Profile 上限 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("source_dimension")))
+        return FString::Printf(TEXT("源纹理尺寸为 %s，超过 Profile 上限 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("power_of_two")))
+        return FString::Printf(TEXT("源尺寸 2 次幂状态为 %s，Profile 期望为 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("mip_count")))
+        return FString::Printf(TEXT("Mip 数量为 %s，低于 Profile 下限 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("texture_group")))
+        return FString::Printf(TEXT("Texture Group 为 %s，不在 Profile 允许范围 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("compression_color_space")))
+        return FString::Printf(TEXT("压缩与色彩空间组合为 %s，Profile 允许 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("virtual_texture")))
+        return FString::Printf(TEXT("Virtual Texture 状态为 %s，Profile 期望为 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("texture2d.streaming")))
+        return FString::Printf(TEXT("纹理可流送状态为 %s，Profile 期望为 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("lod_count")))
         return FString::Printf(TEXT("LOD 数量为 %s，低于 Profile 下限 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("nanite_state")))
@@ -329,6 +355,46 @@ private:
     SUnrealAssetAuditPanel::FAssetPtr Item;
 };
 
+class SAuditTextureRow final : public SMultiColumnTableRow<SUnrealAssetAuditPanel::FAssetPtr>
+{
+public:
+    SLATE_BEGIN_ARGS(SAuditTextureRow) {}
+        SLATE_ARGUMENT(SUnrealAssetAuditPanel::FAssetPtr, Item)
+    SLATE_END_ARGS()
+
+    void Construct(const FArguments& InArgs, const TSharedRef<STableViewBase>& OwnerTable)
+    {
+        Item = InArgs._Item;
+        SMultiColumnTableRow::Construct(
+            FSuperRowType::FArguments().Padding(FMargin(4.0f, 3.0f)), OwnerTable);
+    }
+
+    virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& ColumnName) override
+    {
+        if (ColumnName == TEXT("Status"))
+            return SNew(STextBlock).Text(AssetStatusLabel(Item->Status))
+                .ColorAndOpacity(AssetStatusColor(Item->Status))
+                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")));
+        if (ColumnName == TEXT("Asset"))
+            return SNew(STextBlock).Text(FText::FromString(Item->AssetName))
+                .ToolTipText(FText::FromString(Item->AssetPath));
+        if (ColumnName == TEXT("Source")) return SNew(STextBlock).Text(FText::FromString(Item->TriangleCount));
+        if (ColumnName == TEXT("Platform")) return SNew(STextBlock).Text(FText::FromString(Item->VertexCount));
+        if (ColumnName == TEXT("Mips")) return SNew(STextBlock).Text(FText::FromString(Item->LodCount));
+        if (ColumnName == TEXT("Group")) return SNew(STextBlock).Text(FText::FromString(Item->MaterialDependencyState));
+        if (ColumnName == TEXT("Compression")) return SNew(STextBlock).Text(FText::FromString(Item->TextureDependencyState));
+        if (ColumnName == TEXT("Srgb")) return SNew(STextBlock).Text(FText::FromString(Item->NaniteState));
+        if (ColumnName == TEXT("VirtualTexture")) return SNew(STextBlock).Text(FText::FromString(Item->CollisionState));
+        if (ColumnName == TEXT("Streaming")) return SNew(STextBlock).Text(FText::FromString(Item->LightmapUvState));
+        return SNew(STextBlock)
+            .Text(Item->IssueCount > 0 ? FText::AsNumber(Item->IssueCount) : FText::FromString(TEXT("—")))
+            .ColorAndOpacity(Item->IssueCount > 0 ? FSlateColor(AmberAccent) : FSlateColor::UseSubduedForeground());
+    }
+
+private:
+    SUnrealAssetAuditPanel::FAssetPtr Item;
+};
+
 class SAuditComparisonRow final
     : public SMultiColumnTableRow<SUnrealAssetAuditPanel::FComparisonPtr>
 {
@@ -436,25 +502,14 @@ private:
 
 void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
 {
-    const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("UnrealAssetBatchAuditor"));
-    const FString ProfilesRoot = Plugin.IsValid()
-        ? FPaths::Combine(Plugin->GetBaseDir(), TEXT("Resources/Profiles"))
-        : FString();
-    ProfileOptions = {
-        MakeShared<FAuditProfileOption>(FAuditProfileOption{
-            TEXT("桌面平衡（推荐演示）"),
-            TEXT("三角形 ≤ 2,000 · 唯一材质 ≤ 2 · 纹理 ≤ 8 · 最大 2K · 无缺失材质 · 碰撞/Lightmap/命名"),
-            FPaths::Combine(ProfilesRoot, TEXT("desktop-balanced.v3.json"))}),
-        MakeShared<FAuditProfileOption>(FAuditProfileOption{
-            TEXT("移动端严格"),
-            TEXT("三角形 ≤ 500 · 唯一材质 ≤ 1 · 纹理 ≤ 4 · 最大 1K · LOD ≥ 2 · 严格交付规则"),
-            FPaths::Combine(ProfilesRoot, TEXT("mobile-strict.v3.json"))}),
-        MakeShared<FAuditProfileOption>(FAuditProfileOption{
-            TEXT("宽松复核"),
-            TEXT("三角形 ≤ 10,000 · 唯一材质 ≤ 4 · 纹理 ≤ 16 · 最大 4K · 宽松复核"),
-            FPaths::Combine(ProfilesRoot, TEXT("review-lenient.v3.json"))})
+    AssetTypeOptions = {
+        MakeShared<FAuditAssetTypeOption>(FAuditAssetTypeOption{
+            TEXT("static_mesh"), TEXT("模型交付轨道"), TEXT("Static Mesh · 几何、材质、碰撞、LOD 与构建数据")}),
+        MakeShared<FAuditAssetTypeOption>(FAuditAssetTypeOption{
+            TEXT("texture2d"), TEXT("纹理交付轨道"), TEXT("Texture2D · 尺寸、Mip、分组、压缩、色彩空间与流送")})
     };
-    SelectedProfile = ProfileOptions[0];
+    SelectedAssetType = AssetTypeOptions[0];
+    RebuildProfileOptions();
     ReportPath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Reports/latest-report.json"));
     SessionRoot = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Sessions"));
     ComparisonPath = FPaths::Combine(SessionRoot, TEXT("latest-comparison.v1.json"));
@@ -468,7 +523,7 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
         FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Views/current-delivery-groups.v1.json"));
     DeliveryGroupRequestPath = FPaths::Combine(
         FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Views/delivery-groups-request.v1.json"));
-    StatusMessage = TEXT("选择 Static Mesh，然后开始只读审计");
+    StatusMessage = TEXT("选择交付轨道，再读取对应资产或文件夹");
 
     ChildSlot
     [
@@ -523,6 +578,28 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         + SVerticalBox::Slot().AutoHeight()
                         [
                             SNew(STextBlock).Text(FText::FromString(TEXT("验收校准"))).Font(FAppStyle::GetFontStyle(TEXT("HeadingSmall")))
+                        ]
+                        + SVerticalBox::Slot().AutoHeight().Padding(0, 16, 0, 4)
+                        [
+                            SNew(STextBlock).Text(FText::FromString(TEXT("验收轨道"))).ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                        ]
+                        + SVerticalBox::Slot().AutoHeight()
+                        [
+                            SAssignNew(AssetTypeComboBox, SComboBox<FAssetTypePtr>)
+                            .OptionsSource(&AssetTypeOptions)
+                            .InitiallySelectedItem(SelectedAssetType)
+                            .OnGenerateWidget(this, &SUnrealAssetAuditPanel::GenerateAssetTypeOption)
+                            .OnSelectionChanged(this, &SUnrealAssetAuditPanel::HandleAssetTypeChanged)
+                            [
+                                SNew(STextBlock).Text(this, &SUnrealAssetAuditPanel::GetSelectedAssetTypeLabel)
+                            ]
+                        ]
+                        + SVerticalBox::Slot().AutoHeight().Padding(0, 5, 0, 0)
+                        [
+                            SNew(STextBlock)
+                            .Text(this, &SUnrealAssetAuditPanel::GetSelectedAssetTypeSummary)
+                            .AutoWrapText(true)
+                            .ColorAndOpacity(CyanAccent)
                         ]
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 16, 0, 4)
                         [
@@ -686,9 +763,9 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                                 .ColorAndOpacity(AmberAccent)
                             ]
                             + SHorizontalBox::Slot().FillWidth(1)
-                            [BuildRiskCell(FText::FromString(TEXT("几何预算")), TEXT("geometry"), RedAccent)]
+                            [BuildRiskCell(FText::FromString(TEXT("规格尺度")), TEXT("geometry"), RedAccent)]
                             + SHorizontalBox::Slot().FillWidth(1).Padding(4, 0)
-                            [BuildRiskCell(FText::FromString(TEXT("材质负载")), TEXT("materials"), AmberAccent)]
+                            [BuildRiskCell(FText::FromString(TEXT("材质语义")), TEXT("materials"), AmberAccent)]
                             + SHorizontalBox::Slot().FillWidth(1)
                             [BuildRiskCell(FText::FromString(TEXT("构建就绪")), TEXT("readiness"), CyanAccent)]
                             + SHorizontalBox::Slot().FillWidth(1).Padding(4, 0)
@@ -999,6 +1076,31 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         ]
                         + SOverlay::Slot()
                         [
+                            SAssignNew(TextureAssetList, SListView<FAssetPtr>)
+                            .Visibility(this, &SUnrealAssetAuditPanel::GetTextureAssetViewVisibility)
+                            .ListItemsSource(&FilteredAssets)
+                            .SelectionMode(ESelectionMode::Single)
+                            .OnGenerateRow(this, &SUnrealAssetAuditPanel::GenerateAssetRow)
+                            .OnSelectionChanged(this, &SUnrealAssetAuditPanel::HandleAssetSelectionChanged)
+                            .OnMouseButtonDoubleClick(this, &SUnrealAssetAuditPanel::HandleAssetDoubleClick)
+                            .HeaderRow
+                            (
+                                SNew(SHeaderRow)
+                                + SHeaderRow::Column(TEXT("Status")).DefaultLabel(FText::FromString(TEXT("状态"))).FixedWidth(72)
+                                + SHeaderRow::Column(TEXT("Asset")).DefaultLabel(FText::FromString(TEXT("纹理资产"))).FillWidth(0.28f)
+                                + SHeaderRow::Column(TEXT("Source")).DefaultLabel(FText::FromString(TEXT("源尺寸"))).FixedWidth(100)
+                                + SHeaderRow::Column(TEXT("Platform")).DefaultLabel(FText::FromString(TEXT("平台尺寸"))).FixedWidth(100)
+                                + SHeaderRow::Column(TEXT("Mips")).DefaultLabel(FText::FromString(TEXT("Mip"))).FixedWidth(54)
+                                + SHeaderRow::Column(TEXT("Group")).DefaultLabel(FText::FromString(TEXT("Texture Group"))).FillWidth(0.18f)
+                                + SHeaderRow::Column(TEXT("Compression")).DefaultLabel(FText::FromString(TEXT("压缩"))).FixedWidth(105)
+                                + SHeaderRow::Column(TEXT("Srgb")).DefaultLabel(FText::FromString(TEXT("色彩"))).FixedWidth(64)
+                                + SHeaderRow::Column(TEXT("VirtualTexture")).DefaultLabel(FText::FromString(TEXT("VT"))).FixedWidth(54)
+                                + SHeaderRow::Column(TEXT("Streaming")).DefaultLabel(FText::FromString(TEXT("流送"))).FixedWidth(62)
+                                + SHeaderRow::Column(TEXT("Issues")).DefaultLabel(FText::FromString(TEXT("问题"))).FixedWidth(58)
+                            )
+                        ]
+                        + SOverlay::Slot()
+                        [
                             SAssignNew(IssueList, SListView<FIssuePtr>)
                             .Visibility(this, &SUnrealAssetAuditPanel::GetIssueViewVisibility)
                             .ListItemsSource(&FilteredIssues)
@@ -1195,7 +1297,7 @@ void SUnrealAssetAuditPanel::RebuildSelectionFromInternalFolders(
     const TArray<FString>& InternalFolders, TSet<FString>& InOutAssetPaths)
 {
     SelectedFolderPaths.Reset();
-    TSet<FString> FolderMeshPaths;
+    TSet<FString> FolderAssetPaths;
     FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
     for (const FString& InternalFolder : InternalFolders)
     {
@@ -1204,14 +1306,17 @@ void SUnrealAssetAuditPanel::RebuildSelectionFromInternalFolders(
         AssetRegistryModule.Get().GetAssetsByPath(FName(*InternalFolder), FolderAssets, true, true);
         for (const FAssetData& Asset : FolderAssets)
         {
-            if (Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName())
+            const bool bMatchesTrack = CurrentAssetType == TEXT("texture2d")
+                ? Asset.AssetClassPath == UTexture2D::StaticClass()->GetClassPathName()
+                : Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName();
+            if (bMatchesTrack)
             {
-                FolderMeshPaths.Add(Asset.GetSoftObjectPath().ToString());
+                FolderAssetPaths.Add(Asset.GetSoftObjectPath().ToString());
             }
         }
     }
-    DiscoveredFolderAssetCount = FolderMeshPaths.Num();
-    InOutAssetPaths.Append(FolderMeshPaths);
+    DiscoveredFolderAssetCount = FolderAssetPaths.Num();
+    InOutAssetPaths.Append(FolderAssetPaths);
     SelectedFolderPaths.Sort();
 }
 
@@ -1220,13 +1325,24 @@ FReply SUnrealAssetAuditPanel::RefreshSelection()
     SelectedAssetPaths.Reset();
     SelectedFolderPaths.Reset();
     DiscoveredFolderAssetCount = 0;
+    IgnoredSelectionCount = 0;
     FContentBrowserModule& ContentBrowser = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
     TArray<FAssetData> SelectedAssets;
     ContentBrowser.Get().GetSelectedAssets(SelectedAssets);
     TSet<FString> UniqueAssetPaths;
     for (const FAssetData& Asset : SelectedAssets)
     {
-        UniqueAssetPaths.Add(Asset.GetSoftObjectPath().ToString());
+        const bool bMatchesTrack = CurrentAssetType == TEXT("texture2d")
+            ? Asset.AssetClassPath == UTexture2D::StaticClass()->GetClassPathName()
+            : Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName();
+        if (bMatchesTrack)
+        {
+            UniqueAssetPaths.Add(Asset.GetSoftObjectPath().ToString());
+        }
+        else
+        {
+            ++IgnoredSelectionCount;
+        }
     }
 
     TArray<FString> VirtualFolders;
@@ -1247,11 +1363,12 @@ FReply SUnrealAssetAuditPanel::RefreshSelection()
     SelectedAssetPaths = UniqueAssetPaths.Array();
     SelectedAssetPaths.Sort();
     SelectedFolderPaths.Sort();
+    const FString TrackLabel = CurrentAssetType == TEXT("texture2d") ? TEXT("Texture2D") : TEXT("Static Mesh");
     StatusMessage = SelectedAssetPaths.IsEmpty()
-        ? TEXT("尚未选择资产或文件夹")
+        ? FString::Printf(TEXT("当前选择没有 %s；未扩大到其他资产类型"), *TrackLabel)
         : FString::Printf(
-            TEXT("交付批次已就绪 · %d 个对象 · %d 个文件夹"),
-            SelectedAssetPaths.Num(), SelectedFolderPaths.Num());
+            TEXT("%s 交付批次已就绪 · %d 个对象 · 忽略 %d 个其他类型"),
+            *TrackLabel, SelectedAssetPaths.Num(), IgnoredSelectionCount);
     return FReply::Handled();
 }
 
@@ -1303,6 +1420,7 @@ FReply SUnrealAssetAuditPanel::RunAudit()
     IFileManager::Get().Delete(*CancelRequestPath, false, true, true);
 
     TSharedRef<FJsonObject> Request = MakeShared<FJsonObject>();
+    Request->SetStringField(TEXT("asset_type"), CurrentAssetType);
     Request->SetStringField(TEXT("profile_path"), ProfilePath);
     Request->SetStringField(TEXT("output_path"), ReportPath);
     Request->SetStringField(TEXT("session_root"), SessionRoot);
@@ -1480,6 +1598,27 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
     CurrentReportId = Root->GetStringField(TEXT("report_id"));
     CurrentProfileVersion = Root->GetStringField(TEXT("profile_version"));
     CurrentReportCreatedAt = Root->GetStringField(TEXT("created_at"));
+    CurrentAssetType = TEXT("static_mesh");
+    Root->TryGetStringField(TEXT("asset_type"), CurrentAssetType);
+    for (const FAssetTypePtr& AssetTypeOption : AssetTypeOptions)
+    {
+        if (AssetTypeOption.IsValid() && AssetTypeOption->Id == CurrentAssetType)
+        {
+            SelectedAssetType = AssetTypeOption;
+            if (AssetTypeComboBox.IsValid()) AssetTypeComboBox->SetSelectedItem(SelectedAssetType);
+            break;
+        }
+    }
+    RebuildProfileOptions();
+    const FString ProfileHint = CurrentProfileId.ToLower();
+    const int32 ProfileIndex = ProfileHint.Contains(TEXT("mobile"))
+        ? 1
+        : (ProfileHint.Contains(TEXT("review")) || ProfileHint.Contains(TEXT("lenient")) ? 2 : 0);
+    if (ProfileOptions.IsValidIndex(ProfileIndex))
+    {
+        SelectedProfile = ProfileOptions[ProfileIndex];
+        if (ProfileComboBox.IsValid()) ProfileComboBox->SetSelectedItem(SelectedProfile);
+    }
     AllIssues.Reset();
     AllAssets.Reset();
     SelectedReviewIssue.Reset();
@@ -1526,8 +1665,10 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         Item->RuleId = TEXT("collection.failure");
         Item->Metric = TEXT("collector");
         Item->Observed = Failure->GetStringField(TEXT("code"));
-        Item->Expected = TEXT("Static Mesh");
-        Item->Message = TEXT("资产无法作为 Static Mesh 读取；本项已隔离，其余资产继续审计。");
+        Item->Expected = CurrentAssetType == TEXT("texture2d") ? TEXT("Texture2D") : TEXT("Static Mesh");
+        Item->Message = CurrentAssetType == TEXT("texture2d")
+            ? TEXT("资产无法作为 Texture2D 读取；本项已隔离，其余纹理继续审计。")
+            : TEXT("资产无法作为 Static Mesh 读取；本项已隔离，其余模型继续审计。");
         AllIssues.Add(Item);
 
         FAssetPtr FailedAsset = MakeShared<FAuditPanelAsset>();
@@ -1556,6 +1697,26 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         Item->AssetName = Asset->GetStringField(TEXT("asset_name"));
         Item->IssueCount = IssueCountByAsset.FindRef(Item->AssetPath);
         Item->Status = Item->IssueCount > 0 ? TEXT("issue") : TEXT("pass");
+        if (CurrentAssetType == TEXT("texture2d"))
+        {
+            Item->TriangleCount = FString::Printf(
+                TEXT("%dx%d"), Asset->GetIntegerField(TEXT("source_width")),
+                Asset->GetIntegerField(TEXT("source_height")));
+            Item->VertexCount = FString::Printf(
+                TEXT("%dx%d"), Asset->GetIntegerField(TEXT("platform_width")),
+                Asset->GetIntegerField(TEXT("platform_height")));
+            Item->LodCount = FText::AsNumber(Asset->GetIntegerField(TEXT("mip_count"))).ToString();
+            Item->MaterialDependencyState = Asset->GetStringField(TEXT("texture_group"));
+            Item->TextureDependencyState = Asset->GetStringField(TEXT("compression_settings"));
+            Item->NaniteState = Asset->GetBoolField(TEXT("srgb")) ? TEXT("sRGB") : TEXT("Linear");
+            Item->CollisionState = Asset->GetBoolField(TEXT("virtual_texture_streaming"))
+                ? TEXT("启用") : TEXT("关闭");
+            Item->LightmapUvState = Asset->GetBoolField(TEXT("never_stream"))
+                ? TEXT("常驻") : TEXT("可流送");
+            Item->LightmapResolution = Asset->GetStringField(TEXT("mip_gen_settings"));
+            AllAssets.Add(Item);
+            continue;
+        }
         Item->MaterialSlotCount = FText::AsNumber(Asset->GetIntegerField(TEXT("material_slot_count"))).ToString();
         double UniqueMaterials = 0.0;
         double MissingMaterials = 0.0;
@@ -2230,6 +2391,7 @@ void SUnrealAssetAuditPanel::RebuildFilteredAssets()
         }
     }
     if (AssetList.IsValid()) AssetList->RequestListRefresh();
+    if (TextureAssetList.IsValid()) TextureAssetList->RequestListRefresh();
 }
 
 void SUnrealAssetAuditPanel::RebuildFilteredDeliveryGroups()
@@ -2278,7 +2440,9 @@ TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateIssueRow(
 TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateAssetRow(
     FAssetPtr Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
-    return SNew(SAuditAssetRow, OwnerTable).Item(Item);
+    return CurrentAssetType == TEXT("texture2d")
+        ? StaticCastSharedRef<ITableRow>(SNew(SAuditTextureRow, OwnerTable).Item(Item))
+        : StaticCastSharedRef<ITableRow>(SNew(SAuditAssetRow, OwnerTable).Item(Item));
 }
 
 TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateComparisonRow(
@@ -2356,7 +2520,7 @@ bool SUnrealAssetAuditPanel::TryResolveReviewAsset(FAssetData& OutAssetData, FSt
     }
     if (SelectedReviewIssue.IsValid() && SelectedReviewIssue->RuleId == TEXT("collection.failure"))
     {
-        OutError = TEXT("该行是采集失败记录，没有可复核的 Static Mesh 对象");
+        OutError = TEXT("该行是采集失败记录，没有可复核的宿主资产对象");
         return false;
     }
     const FSoftObjectPath ObjectPath(AssetPath);
@@ -2373,9 +2537,14 @@ bool SUnrealAssetAuditPanel::TryResolveReviewAsset(FAssetData& OutAssetData, FSt
         OutError = TEXT("当前工程找不到该资产；它可能已被移动、删除或来自另一工程");
         return false;
     }
-    if (OutAssetData.AssetClassPath != UStaticMesh::StaticClass()->GetClassPathName())
+    const FTopLevelAssetPath ExpectedClass = CurrentAssetType == TEXT("texture2d")
+        ? UTexture2D::StaticClass()->GetClassPathName()
+        : UStaticMesh::StaticClass()->GetClassPathName();
+    if (OutAssetData.AssetClassPath != ExpectedClass)
     {
-        OutError = TEXT("该对象不是 Static Mesh，无法进入本插件的复核流程");
+        OutError = CurrentAssetType == TEXT("texture2d")
+            ? TEXT("该对象不是 Texture2D，无法进入当前纹理复核轨道")
+            : TEXT("该对象不是 Static Mesh，无法进入当前模型复核轨道");
         return false;
     }
     OutError.Reset();
@@ -2412,7 +2581,10 @@ FText SUnrealAssetAuditPanel::GetReviewContextText() const
     {
         return FText::FromString(FString::Printf(TEXT("复核：%s"), *SelectedReviewAsset->AssetName));
     }
-    return FText::FromString(TEXT("选择结果行后，可定位资源、打开 Static Mesh 编辑器或复制审计证据"));
+    return FText::FromString(
+        CurrentAssetType == TEXT("texture2d")
+            ? TEXT("选择结果行后，可定位纹理、打开纹理编辑器或复制审计证据")
+            : TEXT("选择结果行后，可定位资源、打开 Static Mesh 编辑器或复制审计证据"));
 }
 
 FText SUnrealAssetAuditPanel::GetReviewActionTooltip() const
@@ -2421,7 +2593,9 @@ FText SUnrealAssetAuditPanel::GetReviewActionTooltip() const
     FString Error;
     return FText::FromString(
         TryResolveReviewAsset(AssetData, Error)
-            ? TEXT("在 Content Browser 定位，或打开 Static Mesh 编辑器复核")
+            ? (CurrentAssetType == TEXT("texture2d")
+                ? TEXT("在 Content Browser 定位，或打开纹理编辑器复核")
+                : TEXT("在 Content Browser 定位，或打开 Static Mesh 编辑器复核"))
             : Error);
 }
 
@@ -2471,10 +2645,13 @@ FReply SUnrealAssetAuditPanel::OpenReviewAsset()
         : nullptr;
     if (!Asset || !AssetEditorSubsystem || !AssetEditorSubsystem->OpenEditorForAsset(Asset))
     {
-        StatusMessage = TEXT("Static Mesh 编辑器未能打开；可先使用“定位资产”复核路径");
+        StatusMessage = TEXT("资产编辑器未能打开；可先使用“定位资产”复核路径");
         return FReply::Handled();
     }
-    StatusMessage = FString::Printf(TEXT("已打开 Static Mesh 复核：%s"), *AssetData.AssetName.ToString());
+    StatusMessage = FString::Printf(
+        TEXT("已打开%s复核：%s"),
+        CurrentAssetType == TEXT("texture2d") ? TEXT("纹理") : TEXT("模型"),
+        *AssetData.AssetName.ToString());
     return FReply::Handled();
 }
 
@@ -2724,13 +2901,16 @@ FReply SUnrealAssetAuditPanel::OpenReportFile()
 
 FText SUnrealAssetAuditPanel::GetSelectionText() const
 {
+    const FString TypeLabel = CurrentAssetType == TEXT("texture2d") ? TEXT("Texture2D") : TEXT("Static Mesh");
     if (SelectedAssetPaths.IsEmpty())
     {
-        return FText::FromString(TEXT("未读取到交付批次\n可选择多个资产，或在资源网格中选择文件夹"));
+        return FText::FromString(FString::Printf(
+            TEXT("未读取到 %s 交付批次\n选择资产或文件夹后，本轨道只纳入对应类型"), *TypeLabel));
     }
-    return FText::Format(
-        FText::FromString(TEXT("待验收：{0} 个对象\n{1} 个文件夹递归发现 {2} 个 Static Mesh")),
-        SelectedAssetPaths.Num(), SelectedFolderPaths.Num(), DiscoveredFolderAssetCount);
+    return FText::FromString(FString::Printf(
+        TEXT("待验收：%d 个 %s\n%d 个文件夹递归发现 %d 个 · 忽略其他类型 %d 个"),
+        SelectedAssetPaths.Num(), *TypeLabel, SelectedFolderPaths.Num(),
+        DiscoveredFolderAssetCount, IgnoredSelectionCount));
 }
 
 FText SUnrealAssetAuditPanel::GetStatusText() const { return FText::FromString(StatusMessage); }
@@ -2757,6 +2937,70 @@ bool SUnrealAssetAuditPanel::CanRunComparison() const
 {
     return SelectedSession.IsValid() && FPaths::FileExists(SelectedSession->ReportPath)
         && FPaths::FileExists(ReportPath);
+}
+
+void SUnrealAssetAuditPanel::RebuildProfileOptions()
+{
+    const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("UnrealAssetBatchAuditor"));
+    const FString ProfilesRoot = Plugin.IsValid()
+        ? FPaths::Combine(Plugin->GetBaseDir(), TEXT("Resources/Profiles"))
+        : FString();
+    ProfileOptions.Reset();
+    if (CurrentAssetType == TEXT("texture2d"))
+    {
+        ProfileOptions = {
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("纹理桌面平衡（推荐演示）"),
+                TEXT("源尺寸 ≤ 4K · 2 次幂 · Mip ≥ 2 · Group/压缩/色彩空间 · 可流送"),
+                FPaths::Combine(ProfilesRoot, TEXT("texture-desktop-balanced.v1.json"))}),
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("纹理移动端严格"),
+                TEXT("源尺寸 ≤ 2K · 强制 2 次幂与 Mip · 禁用 VT · 必须可流送"),
+                FPaths::Combine(ProfilesRoot, TEXT("texture-mobile-strict.v1.json"))}),
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("纹理宽松复核"),
+                TEXT("源尺寸 ≤ 8K · 基础 Mip 与压缩/色彩空间提示"),
+                FPaths::Combine(ProfilesRoot, TEXT("texture-review-lenient.v1.json"))})
+        };
+    }
+    else
+    {
+        ProfileOptions = {
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("桌面平衡（推荐演示）"),
+                TEXT("三角形 ≤ 2,000 · 唯一材质 ≤ 2 · 纹理 ≤ 8 · 最大 2K · 碰撞/Lightmap/命名"),
+                FPaths::Combine(ProfilesRoot, TEXT("desktop-balanced.v3.json"))}),
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("移动端严格"),
+                TEXT("三角形 ≤ 500 · 唯一材质 ≤ 1 · 最大 1K · LOD ≥ 2 · 严格交付规则"),
+                FPaths::Combine(ProfilesRoot, TEXT("mobile-strict.v3.json"))}),
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("宽松复核"),
+                TEXT("三角形 ≤ 10,000 · 唯一材质 ≤ 4 · 最大 4K · 宽松复核"),
+                FPaths::Combine(ProfilesRoot, TEXT("review-lenient.v3.json"))})
+        };
+    }
+    SelectedProfile = ProfileOptions.IsEmpty() ? nullptr : ProfileOptions[0];
+    if (ProfileComboBox.IsValid())
+    {
+        ProfileComboBox->RefreshOptions();
+        ProfileComboBox->SetSelectedItem(SelectedProfile);
+    }
+}
+
+void SUnrealAssetAuditPanel::HandleAssetTypeChanged(
+    FAssetTypePtr Item, ESelectInfo::Type SelectInfo)
+{
+    if (!Item.IsValid() || bAuditRunning || CurrentAssetType == Item->Id) return;
+    SelectedAssetType = Item;
+    CurrentAssetType = Item->Id;
+    SelectedAssetPaths.Reset();
+    SelectedFolderPaths.Reset();
+    DiscoveredFolderAssetCount = 0;
+    IgnoredSelectionCount = 0;
+    RebuildProfileOptions();
+    StatusMessage = FString::Printf(
+        TEXT("已切换到%s；请重新读取 Content Browser 选择"), *Item->Label);
 }
 
 void SUnrealAssetAuditPanel::HandleProfileChanged(FProfilePtr Item, ESelectInfo::Type SelectInfo)
@@ -2786,6 +3030,15 @@ TSharedRef<SWidget> SUnrealAssetAuditPanel::GenerateProfileOption(FProfilePtr It
         [SNew(STextBlock).Text(FText::FromString(Item->Summary)).ColorAndOpacity(FSlateColor::UseSubduedForeground())];
 }
 
+TSharedRef<SWidget> SUnrealAssetAuditPanel::GenerateAssetTypeOption(FAssetTypePtr Item) const
+{
+    return SNew(SVerticalBox)
+        + SVerticalBox::Slot().AutoHeight()
+        [SNew(STextBlock).Text(FText::FromString(Item->Label)).Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))]
+        + SVerticalBox::Slot().AutoHeight()
+        [SNew(STextBlock).Text(FText::FromString(Item->Summary)).ColorAndOpacity(FSlateColor::UseSubduedForeground())];
+}
+
 TSharedRef<SWidget> SUnrealAssetAuditPanel::GenerateSessionOption(FSessionPtr Item) const
 {
     return SNew(SVerticalBox)
@@ -2808,6 +3061,20 @@ FText SUnrealAssetAuditPanel::GetSelectedProfileLabel() const
 FText SUnrealAssetAuditPanel::GetSelectedProfileSummary() const
 {
     return SelectedProfile.IsValid() ? FText::FromString(SelectedProfile->Summary) : FText::GetEmpty();
+}
+
+FText SUnrealAssetAuditPanel::GetSelectedAssetTypeLabel() const
+{
+    return SelectedAssetType.IsValid()
+        ? FText::FromString(SelectedAssetType->Label)
+        : FText::FromString(TEXT("请选择验收轨道"));
+}
+
+FText SUnrealAssetAuditPanel::GetSelectedAssetTypeSummary() const
+{
+    return SelectedAssetType.IsValid()
+        ? FText::FromString(SelectedAssetType->Summary)
+        : FText::GetEmpty();
 }
 
 FText SUnrealAssetAuditPanel::GetSelectedSessionLabel() const
@@ -2927,7 +3194,14 @@ FText SUnrealAssetAuditPanel::GetReviewOrphanText() const
 
 EVisibility SUnrealAssetAuditPanel::GetAssetViewVisibility() const
 {
-    return ResultViewMode == 0 ? EVisibility::Visible : EVisibility::Collapsed;
+    return ResultViewMode == 0 && CurrentAssetType != TEXT("texture2d")
+        ? EVisibility::Visible : EVisibility::Collapsed;
+}
+
+EVisibility SUnrealAssetAuditPanel::GetTextureAssetViewVisibility() const
+{
+    return ResultViewMode == 0 && CurrentAssetType == TEXT("texture2d")
+        ? EVisibility::Visible : EVisibility::Collapsed;
 }
 
 EVisibility SUnrealAssetAuditPanel::GetIssueViewVisibility() const

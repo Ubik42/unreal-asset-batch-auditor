@@ -1,9 +1,9 @@
 {
   "FileVersion": 3,
-  "Version": 14,
-  "VersionName": "0.10.0-dev3",
+  "Version": 15,
+  "VersionName": "0.10.0-dev4",
   "FriendlyName": "Unreal 资产批量审计",
-  "Description": "Profile 驱动的只读 Static Mesh 交付验收台，覆盖批次热区、材质纹理依赖、审阅决策、回归交接与无人值守门禁。",
+  "Description": "Profile 驱动的只读 Static Mesh / Texture2D 交付验收台，覆盖批次热区、规则证据、人工审阅、回归与团队交接。",
   "Category": "Editor",
   "CreatedBy": "Ubik42",
   "CreatedByURL": "https://github.com/Ubik42",

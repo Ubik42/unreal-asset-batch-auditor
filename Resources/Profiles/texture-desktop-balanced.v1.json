@@ -1,0 +1,28 @@
+{
+  "schema_version": "unreal-texture-profile@1.0.0",
+  "profile_id": "texture-desktop-balanced-v1",
+  "profile_version": "1.0.0",
+  "description": "桌面环境纹理交付演示规则；数值仅为演示 Profile，不代表行业统一标准。",
+  "rules": {
+    "source_dimension": {"enabled": true, "max_size": 4096, "severity": "error"},
+    "power_of_two": {"enabled": true, "required": true, "severity": "warning"},
+    "mip_count": {"enabled": true, "min_count": 2, "severity": "warning"},
+    "texture_group": {
+      "enabled": true,
+      "allowed_values": ["TEXTUREGROUP_World", "TEXTUREGROUP_WorldNormalMap", "TEXTUREGROUP_WorldSpecular", "TEXTUREGROUP_UI"],
+      "severity": "warning"
+    },
+    "compression_color_space": {
+      "enabled": true,
+      "allowed_combinations": [
+        {"compression": "TC_Default", "srgb": true},
+        {"compression": "TC_Normalmap", "srgb": false},
+        {"compression": "TC_Masks", "srgb": false},
+        {"compression": "TC_Grayscale", "srgb": false}
+      ],
+      "severity": "error"
+    },
+    "virtual_texture": {"enabled": false, "expected": "any", "severity": "info"},
+    "streaming": {"enabled": true, "expected": "enabled", "severity": "warning"}
+  }
+}

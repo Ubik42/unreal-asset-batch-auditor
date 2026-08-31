@@ -1,0 +1,8 @@
+{
+  "schema_version": "unreal-texture-fixture@1.0.0",
+  "assets": [
+    {"asset_path": "/Game/Textures/T_Good_BaseColor.T_Good_BaseColor", "asset_name": "T_Good_BaseColor", "source_width": 2048, "source_height": 2048, "platform_width": 2048, "platform_height": 2048, "mip_count": 12, "mip_gen_settings": "TMGS_FromTextureGroup", "texture_group": "TEXTUREGROUP_World", "compression_settings": "TC_Default", "srgb": true, "virtual_texture_streaming": false, "never_stream": false},
+    {"asset_path": "/Game/Textures/T_Oversize_BaseColor.T_Oversize_BaseColor", "asset_name": "T_Oversize_BaseColor", "source_width": 8192, "source_height": 8192, "platform_width": 4096, "platform_height": 4096, "mip_count": 14, "mip_gen_settings": "TMGS_FromTextureGroup", "texture_group": "TEXTUREGROUP_World", "compression_settings": "TC_Default", "srgb": true, "virtual_texture_streaming": false, "never_stream": false},
+    {"asset_path": "/Game/Textures/T_NPOT_Mask.T_NPOT_Mask", "asset_name": "T_NPOT_Mask", "source_width": 1500, "source_height": 900, "platform_width": 1500, "platform_height": 900, "mip_count": 1, "mip_gen_settings": "TMGS_NoMipmaps", "texture_group": "TEXTUREGROUP_Pixels2D", "compression_settings": "TC_Masks", "srgb": true, "virtual_texture_streaming": true, "never_stream": true}
+  ]
+}
