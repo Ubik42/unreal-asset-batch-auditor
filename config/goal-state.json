@@ -1,110 +1,80 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 15,
-  "status": "complete",
-  "currentMilestone": "M7",
+  "stateRevision": 17,
+  "status": "active",
+  "currentMilestone": "M9",
   "milestones": [
-    {
-      "id": "M0",
-      "title": "Scope and repository baseline",
-      "status": "completed",
-      "dependsOn": []
-    },
-    {
-      "id": "M1",
-      "title": "Read-only Static Mesh audit MVP",
-      "status": "completed",
-      "dependsOn": ["M0"]
-    },
-    {
-      "id": "M2",
-      "title": "Real Unreal host validation",
-      "status": "completed",
-      "dependsOn": ["M1"]
-    },
-    {
-      "id": "M3",
-      "title": "Measured batch performance and production hardening",
-      "status": "completed",
-      "dependsOn": ["M2"]
-    },
-    {
-      "id": "M4",
-      "title": "Audit ledger and production-facing result exploration",
-      "status": "completed",
-      "dependsOn": ["M3"]
-    },
-    {
-      "id": "M5",
-      "title": "Collision, Lightmap UV, naming, and project-structure policies",
-      "status": "completed",
-      "dependsOn": ["M4"]
-    },
-    {
-      "id": "M6",
-      "title": "Large-batch interaction, saved sessions, and team handoff",
-      "status": "completed",
-      "dependsOn": ["M5"]
-    },
-    {
-      "id": "M7",
-      "title": "Release packaging, visual evidence, and portfolio-grade delivery",
-      "status": "completed",
-      "dependsOn": ["M6"]
-    }
+    { "id": "M0", "title": "Scope and repository baseline", "status": "completed", "dependsOn": [] },
+    { "id": "M1", "title": "Read-only Static Mesh audit MVP", "status": "completed", "dependsOn": ["M0"] },
+    { "id": "M2", "title": "Real Unreal host validation", "status": "completed", "dependsOn": ["M1"] },
+    { "id": "M3", "title": "Measured batch performance and production hardening", "status": "completed", "dependsOn": ["M2"] },
+    { "id": "M4", "title": "Audit ledger and result exploration", "status": "completed", "dependsOn": ["M3"] },
+    { "id": "M5", "title": "Delivery-readiness policies", "status": "completed", "dependsOn": ["M4"] },
+    { "id": "M6", "title": "Sessions, regression and team handoff", "status": "completed", "dependsOn": ["M5"] },
+    { "id": "M7", "title": "v0.8 installable portfolio release", "status": "completed", "dependsOn": ["M6"] },
+    { "id": "M8", "title": "Delivery-batch scope and risk-spectrum workbench", "status": "completed", "dependsOn": ["M7"] },
+    { "id": "M9", "title": "Material and texture dependency policies", "status": "in_progress", "dependsOn": ["M8"] },
+    { "id": "M10", "title": "Project presets and unattended audit entry point", "status": "pending", "dependsOn": ["M9"] },
+    { "id": "M11", "title": "v0.9 portfolio release", "status": "pending", "dependsOn": ["M10"] }
   ],
-  "nextSlice": null,
-  "lastCheckpoint": "artifacts/goal/checkpoint-0015.json",
+  "nextSlice": {
+    "id": "M9-S1",
+    "milestoneId": "M9",
+    "title": "材质与纹理依赖事实合同",
+    "scope": [
+      "定义向后兼容的材质与纹理依赖事实字段及 Profile 可选政策",
+      "采集每个 Static Mesh 的有效材质路径、唯一材质数、纹理依赖数和最大纹理尺寸",
+      "首批规则覆盖缺失材质、唯一材质预算、纹理依赖预算和最大尺寸",
+      "资产总览与风险谱展示新事实，并提供可录屏的明确证据"
+    ],
+    "nonGoals": [
+      "不自动修改资产",
+      "不加入 AI 对话、PCG 或生成能力",
+      "不分析 Shader 编译时长或运行时 GPU 精确成本",
+      "不做跨 Unreal 版本兼容声明",
+      "不重复执行完整发布安装矩阵"
+    ],
+    "allowedPaths": [
+      "Source/UnrealAssetBatchAuditor",
+      "UnrealAssetBatchAuditor.uplugin",
+      "pyproject.toml",
+      "config/goal-state.json",
+      "artifacts/goal",
+      "docs",
+      "tests",
+      "config",
+      "README.md",
+      "AGENTS.md"
+    ],
+    "evidenceCeiling": "本切片最多证明 UE 5.8.1 中所选 Static Mesh 的材质与已加载纹理依赖事实及 Profile 判定；不等同于运行时 GPU 成本、Shader 性能或完整 Cook 依赖分析。",
+    "realHostRequired": true,
+    "acceptanceCriteria": [
+      "旧 v1/v2 Profile 与 Report 继续解析，新字段缺失时行为明确",
+      "所有新阈值都来自 Profile，可单独禁用",
+      "Issue 和 Evidence 保留材质/纹理实测、阈值与 JSON Pointer",
+      "至少用一种真实 UE 材质/纹理依赖完成宿主采集验证",
+      "README 与演示文档只声明实际通过的依赖边界"
+    ],
+    "validationCommands": [
+      ".\\.venv\\Scripts\\python.exe -m pytest -q",
+      ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
+    ]
+  },
+  "lastCheckpoint": "artifacts/goal/checkpoint-0017.json",
   "currentBlocker": null,
   "manualTracks": [
     {
-      "id": "m4-real-unreal-host",
+      "id": "v0.8-release-baseline",
       "status": "completed",
       "blocking": false,
-      "reason": "M4 passed UE 5.8.1 BuildPlugin, independent command-line collection, and independent -RenderOffscreen Slate automation without touching user sessions."
+      "reason": "v0.8.0 已完成 UE 5.8.1 BuildPlugin、独立安装/升级烟雾、真实报告、截图和 GitHub Release；完整历史见 checkpoint-0015。"
     },
     {
-      "id": "m4-visual-evidence",
+      "id": "m8s1-real-host",
       "status": "completed",
       "blocking": false,
-      "reason": "Eight current-version 1280x688 Slate screenshots cover empty, mixed, pass, issue, filtered evidence, and failure states; hashes are recorded in the M4 host evidence manifest."
-    },
-    {
-      "id": "m5-real-unreal-host",
-      "status": "completed",
-      "blocking": false,
-      "reason": "UE 5.8.1 dev3 collected collision and Lightmap facts for four Engine Static Meshes; all source asset SHA-256 values remained unchanged."
-    },
-    {
-      "id": "m5-visual-evidence",
-      "status": "completed",
-      "blocking": false,
-      "reason": "Eight v0.5 production Slate screenshots cover the expanded ledger plus collision and Lightmap evidence; hashes are recorded in the M5 manifest."
-    },
-    {
-      "id": "m5s2-policy-host-and-visual",
-      "status": "completed",
-      "blocking": false,
-      "reason": "v0.6 added real project-owned naming and directory faults, three fresh UE reports, a clean UE 5.8.1 BuildPlugin, ten production Slate screenshots, and a structured isolated PID lifecycle record."
-    },
-    {
-      "id": "m6s1-history-and-regression",
-      "status": "completed",
-      "blocking": false,
-      "reason": "v0.7 preserves immutable same-Profile sessions, compares new/persistent/resolved/failure changes, packages two real UE reports, passes UE 5.8.1 BuildPlugin, and renders twelve current Slate screenshots in an isolated lifecycle."
-    },
-    {
-      "id": "m6s2-batch-and-handoff",
-      "status": "completed",
-      "blocking": false,
-      "reason": "v0.8 exposes a real tick-driven panel task, between-batch cancellation with valid partial reports, deterministic Chinese HTML/CSV handoff, UE 5.8.1 BuildPlugin, complete/cancelled host evidence, and fifteen current visuals."
-    },
-    {
-      "id": "m7-release-and-clean-install",
-      "status": "completed",
-      "blocking": false,
-      "reason": "v0.8.0 ships as a deterministic 32-file Win64 archive with MIT license, checksums, Chinese installer and docs; fresh install and upgrade each passed the production tab, Python orchestration, real C++ Cube audit and Report output in independent UE 5.8.1 processes; GitHub Release assets are uploaded with matching digest."
+      "reason": "v0.9-dev1 完成 BuildPlugin；独立 UE 5.8.1 宿主从 /Engine/BasicShapes 递归发现网格、验证几何风险筛选并生成 14 张原生 Slate 截图。"
     }
   ]
 }

@@ -6,8 +6,10 @@ before implementation.
 
 Only one milestone and slice may be in progress. Each slice declares scope, non-goals, evidence
 ceiling, real-host requirement, acceptance criteria, and fixed validation entry points. Commands in
-JSON are review metadata and must never be dynamically executed.
+JSON are review metadata and must never be dynamically executed. Review unchanged areas once, then
+move forward; a goal loop is not permission to repeat a repository-wide audit every turn.
 
-After acceptance passes, write the next numbered checkpoint and atomically advance the state
-revision, milestone, and next slice. Do not promote an offline fixture to real-host evidence. Real
-Unreal compilation and visible Editor testing remain a manual track until actually performed.
+Use proportional gates: Python/docs changes get targeted tests and Ruff; C++ or Slate changes add one
+BuildPlugin and one owned Unreal smoke lifecycle; full install/release validation runs only for a
+release milestone. After acceptance passes, write the next numbered checkpoint and atomically advance
+the state revision, milestone, and next slice. Do not promote an offline fixture to real-host evidence.

@@ -1,0 +1,28 @@
+{
+	"task_id": "task-cancelled",
+	"profile_path": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-185929/Plugins/UnrealAssetBatchAuditor/Resources/Profiles/desktop-balanced.v2.json",
+	"output_path": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-185929/Saved/UnrealAssetBatchAuditor/TaskLifecycleEvidence/cancelled/latest-report.json",
+	"session_root": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-185929/Saved/UnrealAssetBatchAuditor/TaskLifecycleEvidence/cancelled/Sessions",
+	"handoff_root": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-185929/Saved/UnrealAssetBatchAuditor/TaskLifecycleEvidence/cancelled/Handoffs",
+	"state_path": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-185929/Saved/UnrealAssetBatchAuditor/TaskLifecycleEvidence/cancelled/task-state.json",
+	"cancel_path": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-185929/Saved/UnrealAssetBatchAuditor/TaskLifecycleEvidence/cancelled/cancel.json",
+	"batch_size": 2,
+	"asset_paths": [
+		"/Engine/BasicShapes/Cone.Cone",
+		"/Engine/BasicShapes/Cube.Cube",
+		"/Engine/BasicShapes/Cylinder.Cylinder",
+		"/Engine/BasicShapes/Sphere.Sphere",
+		"/Engine/BasicShapes/Cone.Cone",
+		"/Engine/BasicShapes/Cube.Cube",
+		"/Engine/BasicShapes/Cylinder.Cylinder",
+		"/Engine/BasicShapes/Sphere.Sphere",
+		"/Engine/BasicShapes/Cone.Cone",
+		"/Engine/BasicShapes/Cube.Cube",
+		"/Engine/BasicShapes/Cylinder.Cylinder",
+		"/Engine/BasicShapes/Sphere.Sphere",
+		"/Engine/BasicShapes/Cone.Cone",
+		"/Engine/BasicShapes/Cube.Cube",
+		"/Engine/BasicShapes/Cylinder.Cylinder",
+		"/Engine/BasicShapes/Sphere.Sphere"
+	]
+}

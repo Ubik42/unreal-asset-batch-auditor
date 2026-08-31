@@ -1,0 +1,250 @@
+{
+  "schema_version": "unreal-asset-audit@2.0.0",
+  "report_id": "report-171d9d479ef81e1d",
+  "created_at": "2026-08-31T01:00:01.500670+00:00",
+  "profile_id": "demo-desktop-balanced-v2",
+  "profile_version": "2.0.0",
+  "profile_schema_version": "unreal-static-mesh-profile@2.0.0",
+  "collection_mode": "unreal_editor",
+  "real_unreal_validation": true,
+  "host_engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "asset_count": 4,
+  "issue_count": 8,
+  "collection_failure_count": 0,
+  "requested_asset_count": 4,
+  "processed_asset_count": 4,
+  "cancelled_asset_count": 0,
+  "completed_batch_count": 2,
+  "batch_size": 2,
+  "assets": [
+    {
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "asset_name": "Cone",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 284,
+          "vertices": 198
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 4,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "asset_name": "Cube",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 48,
+          "vertices": 54
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "asset_name": "Cylinder",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 512,
+          "vertices": 334
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "asset_name": "Sphere",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 960,
+          "vertices": 559
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32
+    }
+  ],
+  "issues": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-e09a323f99ba78b8",
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "rule_id": "static_mesh.object_name",
+      "severity": "warning",
+      "message": "Asset name 'Cone' does not satisfy prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/.",
+      "evidence_id": "ev-8a3cedfc0759b5a7"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-553848468e1e8fea",
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "rule_id": "static_mesh.package_path",
+      "severity": "warning",
+      "message": "Package directory '/Engine/BasicShapes' is outside allowed roots or contains forbidden segments [].",
+      "evidence_id": "ev-71e3b0e4c9373270"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-c95ed4f9bdf36f0d",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "rule_id": "static_mesh.object_name",
+      "severity": "warning",
+      "message": "Asset name 'Cube' does not satisfy prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/.",
+      "evidence_id": "ev-191177966074e5e0"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-0d6e3e24614f4a23",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "rule_id": "static_mesh.package_path",
+      "severity": "warning",
+      "message": "Package directory '/Engine/BasicShapes' is outside allowed roots or contains forbidden segments [].",
+      "evidence_id": "ev-27669e56adb95765"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-d9dbf34a9028d322",
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "rule_id": "static_mesh.object_name",
+      "severity": "warning",
+      "message": "Asset name 'Cylinder' does not satisfy prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/.",
+      "evidence_id": "ev-fa39450987a67ab7"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-3df051a01c24268c",
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "rule_id": "static_mesh.package_path",
+      "severity": "warning",
+      "message": "Package directory '/Engine/BasicShapes' is outside allowed roots or contains forbidden segments [].",
+      "evidence_id": "ev-39bc38747393b88b"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-163b9984fc7b654f",
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "rule_id": "static_mesh.object_name",
+      "severity": "warning",
+      "message": "Asset name 'Sphere' does not satisfy prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/.",
+      "evidence_id": "ev-f03e8c3aa7165128"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-794343301aa657a5",
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "rule_id": "static_mesh.package_path",
+      "severity": "warning",
+      "message": "Package directory '/Engine/BasicShapes' is outside allowed roots or contains forbidden segments [].",
+      "evidence_id": "ev-68a0130055e6869f"
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-8a3cedfc0759b5a7",
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "metric": "asset_name",
+      "observed": "Cone",
+      "expected": "prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/",
+      "profile_pointer": "/rules/object_name",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-71e3b0e4c9373270",
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "metric": "package_directory",
+      "observed": "/Engine/BasicShapes",
+      "expected": "root in ['/Game/UABADemo']; forbidden segments absent ['Developers', 'Temp']",
+      "profile_pointer": "/rules/package_path",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-191177966074e5e0",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "metric": "asset_name",
+      "observed": "Cube",
+      "expected": "prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/",
+      "profile_pointer": "/rules/object_name",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-27669e56adb95765",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "metric": "package_directory",
+      "observed": "/Engine/BasicShapes",
+      "expected": "root in ['/Game/UABADemo']; forbidden segments absent ['Developers', 'Temp']",
+      "profile_pointer": "/rules/package_path",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-fa39450987a67ab7",
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "metric": "asset_name",
+      "observed": "Cylinder",
+      "expected": "prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/",
+      "profile_pointer": "/rules/object_name",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-39bc38747393b88b",
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "metric": "package_directory",
+      "observed": "/Engine/BasicShapes",
+      "expected": "root in ['/Game/UABADemo']; forbidden segments absent ['Developers', 'Temp']",
+      "profile_pointer": "/rules/package_path",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-f03e8c3aa7165128",
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "metric": "asset_name",
+      "observed": "Sphere",
+      "expected": "prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/",
+      "profile_pointer": "/rules/object_name",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-68a0130055e6869f",
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "metric": "package_directory",
+      "observed": "/Engine/BasicShapes",
+      "expected": "root in ['/Game/UABADemo']; forbidden segments absent ['Developers', 'Temp']",
+      "profile_pointer": "/rules/package_path",
+      "collector": "unreal_editor"
+    }
+  ],
+  "collection_failures": []
+}

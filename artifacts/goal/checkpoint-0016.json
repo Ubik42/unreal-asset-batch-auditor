@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0016",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 16,
+  "completedSlice": null,
+  "summary": "v0.8 产品化目标已经完成并保留为历史基线；目标循环重新进入长期开发状态，当前只推进 M8-S1：显式交付批次范围发现与可筛选风险谱。",
+  "evidence": [
+    "checkpoint-0015 保留 v0.8.0 发布、安装、宿主与 GitHub Release 的完整完成证据",
+    "当前仓库开始 v0.9 开发，不把旧版本宿主记录冒充为新界面验证",
+    "长期循环改为风险分级门禁，避免每个小切片重复完整发布审计"
+  ],
+  "nextSlice": "M8-S1",
+  "knownLimits": [
+    "M8-S1 的 C++ 与 Slate 变更尚未完成 BuildPlugin 和真实宿主验证",
+    "当前发布下载仍为 v0.8.0，v0.9 只在完成相应验证后发布",
+    "插件继续保持只读，不包含自动修复、AI 或 PCG"
+  ]
+}

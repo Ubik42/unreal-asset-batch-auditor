@@ -1,7 +1,10 @@
 #include "SUnrealAssetAuditPanel.h"
 
 #include "AssetRegistry/AssetData.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "ContentBrowserModule.h"
+#include "ContentBrowserDataSubsystem.h"
+#include "IContentBrowserDataModule.h"
 #include "IContentBrowserSingleton.h"
 #include "DesktopPlatformModule.h"
 #include "Framework/Application/SlateApplication.h"
@@ -9,6 +12,7 @@
 #include "Interfaces/IPluginManager.h"
 #include "IPythonScriptPlugin.h"
 #include "JsonObjectConverter.h"
+#include "Engine/StaticMesh.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Modules/ModuleManager.h"
@@ -36,6 +40,24 @@ const FLinearColor CyanAccent(0.10f, 0.72f, 0.82f, 1.0f);
 const FLinearColor GreenAccent(0.20f, 0.75f, 0.45f, 1.0f);
 const FLinearColor AmberAccent(0.95f, 0.62f, 0.12f, 1.0f);
 const FLinearColor RedAccent(0.95f, 0.25f, 0.22f, 1.0f);
+const FLinearColor GraphiteAccent(0.48f, 0.54f, 0.58f, 1.0f);
+
+bool RuleBelongsToRiskCategory(const FString& RuleId, const FString& Category)
+{
+    if (Category.IsEmpty()) return true;
+    if (Category == TEXT("geometry"))
+        return RuleId.Contains(TEXT("triangle_budget")) || RuleId.Contains(TEXT("vertex_budget"));
+    if (Category == TEXT("materials"))
+        return RuleId.Contains(TEXT("material_slots"));
+    if (Category == TEXT("readiness"))
+        return RuleId.Contains(TEXT("lod_count")) || RuleId.Contains(TEXT("nanite_state"))
+            || RuleId.Contains(TEXT("simple_collision")) || RuleId.Contains(TEXT("lightmap"));
+    if (Category == TEXT("structure"))
+        return RuleId.Contains(TEXT("object_name")) || RuleId.Contains(TEXT("package_path"));
+    if (Category == TEXT("collection"))
+        return RuleId == TEXT("collection.failure");
+    return true;
+}
 
 FString JsonValueToDisplay(const TSharedPtr<FJsonValue>& Value)
 {
@@ -352,13 +374,13 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         + SVerticalBox::Slot().AutoHeight()
                         [
                             SNew(STextBlock)
-                            .Text(FText::FromString(TEXT("资产批量审计")))
+                            .Text(FText::FromString(TEXT("资产交付验收台")))
                             .Font(FAppStyle::GetFontStyle(TEXT("HeadingMedium")))
                         ]
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 3, 0, 0)
                         [
                             SNew(STextBlock)
-                            .Text(FText::FromString(TEXT("PROFILE 驱动 · STATIC MESH · 只读证据链")))
+                            .Text(FText::FromString(TEXT("交付批次 · 规则校准 · 只读证据")))
                             .Font(FAppStyle::GetFontStyle(TEXT("SmallFont")))
                             .ColorAndOpacity(CyanAccent)
                         ]
@@ -383,7 +405,7 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         SNew(SVerticalBox)
                         + SVerticalBox::Slot().AutoHeight()
                         [
-                            SNew(STextBlock).Text(FText::FromString(TEXT("审计设置"))).Font(FAppStyle::GetFontStyle(TEXT("HeadingSmall")))
+                            SNew(STextBlock).Text(FText::FromString(TEXT("验收校准"))).Font(FAppStyle::GetFontStyle(TEXT("HeadingSmall")))
                         ]
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 16, 0, 4)
                         [
@@ -414,7 +436,7 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         ]
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 18, 0, 4)
                         [
-                            SNew(STextBlock).Text(FText::FromString(TEXT("审计范围"))).ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                            SNew(STextBlock).Text(FText::FromString(TEXT("交付批次范围"))).ColorAndOpacity(FSlateColor::UseSubduedForeground())
                         ]
                         + SVerticalBox::Slot().AutoHeight()
                         [
@@ -427,7 +449,7 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         ]
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 6, 0, 0)
                         [
-                            SNew(SButton).Text(FText::FromString(TEXT("读取当前选择"))).OnClicked(this, &SUnrealAssetAuditPanel::RefreshSelection)
+                            SNew(SButton).Text(FText::FromString(TEXT("读取资产 / 文件夹选择"))).OnClicked(this, &SUnrealAssetAuditPanel::RefreshSelection)
                         ]
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 18, 0, 4)
                         [
@@ -530,6 +552,33 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         + SHorizontalBox::Slot().FillWidth(1).Padding(6, 0)[BuildSummaryCell(FText::FromString(TEXT("通过资产")), TAttribute<FText>::CreateSP(this, &SUnrealAssetAuditPanel::GetPassCountText), GreenAccent)]
                         + SHorizontalBox::Slot().FillWidth(1).Padding(6, 0)[BuildSummaryCell(FText::FromString(TEXT("问题")), TAttribute<FText>::CreateSP(this, &SUnrealAssetAuditPanel::GetIssueCountText), AmberAccent)]
                         + SHorizontalBox::Slot().FillWidth(1)[BuildSummaryCell(FText::FromString(TEXT("采集失败")), TAttribute<FText>::CreateSP(this, &SUnrealAssetAuditPanel::GetFailureCountText), RedAccent)]
+                    ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
+                    [
+                        SNew(SBorder)
+                        .BorderImage(FAppStyle::GetBrush(TEXT("Brushes.Header")))
+                        .BorderBackgroundColor(FLinearColor(0.065f, 0.075f, 0.078f, 1.0f))
+                        .Padding(FMargin(10, 7))
+                        [
+                            SNew(SHorizontalBox)
+                            + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(2, 0, 12, 0)
+                            [
+                                SNew(STextBlock)
+                                .Text(FText::FromString(TEXT("交付风险谱")))
+                                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+                                .ColorAndOpacity(AmberAccent)
+                            ]
+                            + SHorizontalBox::Slot().FillWidth(1)
+                            [BuildRiskCell(FText::FromString(TEXT("几何预算")), TEXT("geometry"), RedAccent)]
+                            + SHorizontalBox::Slot().FillWidth(1).Padding(4, 0)
+                            [BuildRiskCell(FText::FromString(TEXT("材质负载")), TEXT("materials"), AmberAccent)]
+                            + SHorizontalBox::Slot().FillWidth(1)
+                            [BuildRiskCell(FText::FromString(TEXT("构建就绪")), TEXT("readiness"), CyanAccent)]
+                            + SHorizontalBox::Slot().FillWidth(1).Padding(4, 0)
+                            [BuildRiskCell(FText::FromString(TEXT("命名路径")), TEXT("structure"), GreenAccent)]
+                            + SHorizontalBox::Slot().FillWidth(1)
+                            [BuildRiskCell(FText::FromString(TEXT("采集异常")), TEXT("collection"), GraphiteAccent)]
+                        ]
                     ]
                     + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
                     [
@@ -749,20 +798,106 @@ TSharedRef<SWidget> SUnrealAssetAuditPanel::BuildSummaryCell(
         ];
 }
 
+TSharedRef<SWidget> SUnrealAssetAuditPanel::BuildRiskCell(
+    const FText& Label, const FString& Category, const FLinearColor& Accent)
+{
+    return SNew(SButton)
+        .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+        .ToolTipText(FText::FromString(TEXT("点击筛选该类问题；再次点击取消筛选")))
+        .OnClicked_Lambda([this, Category] { return ToggleRiskCategory(Category); })
+        [
+            SNew(SHorizontalBox)
+            + SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)
+            [
+                SNew(STextBlock)
+                .Text(Label)
+                .Font(FAppStyle::GetFontStyle(TEXT("SmallFont")))
+                .ColorAndOpacity_Lambda([this, Category, Accent]
+                {
+                    return ActiveRiskCategory.IsEmpty() || ActiveRiskCategory == Category
+                        ? FSlateColor(Accent)
+                        : FSlateColor::UseSubduedForeground();
+                })
+            ]
+            + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(5, 0, 0, 0)
+            [
+                SNew(STextBlock)
+                .Text_Lambda([this, Category] { return GetRiskCategoryCountText(Category); })
+                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")))
+                .ColorAndOpacity(Accent)
+            ]
+        ];
+}
+
+FReply SUnrealAssetAuditPanel::ToggleRiskCategory(FString Category)
+{
+    ActiveRiskCategory = ActiveRiskCategory == Category ? FString() : MoveTemp(Category);
+    ResultViewMode = 1;
+    RebuildFilteredIssues();
+    return FReply::Handled();
+}
+
+void SUnrealAssetAuditPanel::RebuildSelectionFromInternalFolders(
+    const TArray<FString>& InternalFolders, TSet<FString>& InOutAssetPaths)
+{
+    SelectedFolderPaths.Reset();
+    TSet<FString> FolderMeshPaths;
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+    for (const FString& InternalFolder : InternalFolders)
+    {
+        SelectedFolderPaths.Add(InternalFolder);
+        TArray<FAssetData> FolderAssets;
+        AssetRegistryModule.Get().GetAssetsByPath(FName(*InternalFolder), FolderAssets, true, true);
+        for (const FAssetData& Asset : FolderAssets)
+        {
+            if (Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName())
+            {
+                FolderMeshPaths.Add(Asset.GetSoftObjectPath().ToString());
+            }
+        }
+    }
+    DiscoveredFolderAssetCount = FolderMeshPaths.Num();
+    InOutAssetPaths.Append(FolderMeshPaths);
+    SelectedFolderPaths.Sort();
+}
+
 FReply SUnrealAssetAuditPanel::RefreshSelection()
 {
     SelectedAssetPaths.Reset();
+    SelectedFolderPaths.Reset();
+    DiscoveredFolderAssetCount = 0;
     FContentBrowserModule& ContentBrowser = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
     TArray<FAssetData> SelectedAssets;
     ContentBrowser.Get().GetSelectedAssets(SelectedAssets);
+    TSet<FString> UniqueAssetPaths;
     for (const FAssetData& Asset : SelectedAssets)
     {
-        SelectedAssetPaths.Add(Asset.GetSoftObjectPath().ToString());
+        UniqueAssetPaths.Add(Asset.GetSoftObjectPath().ToString());
     }
+
+    TArray<FString> VirtualFolders;
+    ContentBrowser.Get().GetSelectedFolders(VirtualFolders);
+    UContentBrowserDataSubsystem* BrowserData = IContentBrowserDataModule::Get().GetSubsystem();
+    TArray<FString> InternalFolders;
+    for (const FString& VirtualFolder : VirtualFolders)
+    {
+        FName InternalFolder;
+        if (!BrowserData
+            || BrowserData->TryConvertVirtualPath(FName(*VirtualFolder), InternalFolder) != EContentBrowserPathType::Internal)
+        {
+            continue;
+        }
+        InternalFolders.Add(InternalFolder.ToString());
+    }
+    RebuildSelectionFromInternalFolders(InternalFolders, UniqueAssetPaths);
+    SelectedAssetPaths = UniqueAssetPaths.Array();
     SelectedAssetPaths.Sort();
+    SelectedFolderPaths.Sort();
     StatusMessage = SelectedAssetPaths.IsEmpty()
-        ? TEXT("尚未选择资产")
-        : FString::Printf(TEXT("已读取 %d 个 Content Browser 资产"), SelectedAssetPaths.Num());
+        ? TEXT("尚未选择资产或文件夹")
+        : FString::Printf(
+            TEXT("交付批次已就绪 · %d 个对象 · %d 个文件夹"),
+            SelectedAssetPaths.Num(), SelectedFolderPaths.Num());
     return FReply::Handled();
 }
 
@@ -1291,6 +1426,21 @@ void SUnrealAssetAuditPanel::SetComparisonEvidenceView(const FString& FilterText
     }
 }
 
+void SUnrealAssetAuditPanel::SetFolderSelectionForEvidence(const TArray<FString>& InternalFolders)
+{
+    TSet<FString> Paths;
+    RebuildSelectionFromInternalFolders(InternalFolders, Paths);
+    SelectedAssetPaths = Paths.Array();
+    SelectedAssetPaths.Sort();
+}
+
+void SUnrealAssetAuditPanel::SetRiskCategoryForEvidence(const FString& Category)
+{
+    ActiveRiskCategory = Category;
+    ResultViewMode = 1;
+    RebuildFilteredIssues();
+}
+
 void SUnrealAssetAuditPanel::SetTaskEvidenceState(
     const FString& State, int32 Processed, int32 Requested, int32 CompletedBatches,
     int32 TotalBatches)
@@ -1326,12 +1476,13 @@ void SUnrealAssetAuditPanel::RebuildFilteredIssues()
     {
         const FString LocalRule = RuleLabel(Item->RuleId).ToString();
         const FString LocalSeverity = SeverityLabel(Item->Severity).ToString();
-        if (SearchText.IsEmpty()
+        const bool bMatchesSearch = SearchText.IsEmpty()
             || Item->AssetPath.Contains(SearchText, ESearchCase::IgnoreCase)
             || Item->RuleId.Contains(SearchText, ESearchCase::IgnoreCase)
             || LocalRule.Contains(SearchText, ESearchCase::IgnoreCase)
             || LocalSeverity.Contains(SearchText, ESearchCase::IgnoreCase)
-            || Item->Message.Contains(SearchText, ESearchCase::IgnoreCase))
+            || Item->Message.Contains(SearchText, ESearchCase::IgnoreCase);
+        if (bMatchesSearch && RuleBelongsToRiskCategory(Item->RuleId, ActiveRiskCategory))
         {
             FilteredIssues.Add(Item);
         }
@@ -1542,9 +1693,13 @@ FReply SUnrealAssetAuditPanel::OpenReportFile()
 
 FText SUnrealAssetAuditPanel::GetSelectionText() const
 {
-    return SelectedAssetPaths.IsEmpty()
-        ? FText::FromString(TEXT("未读取到选择\n请在 Content Browser 选择资产"))
-        : FText::Format(FText::FromString(TEXT("当前选择：{0} 个资产\n仅采集 Static Mesh；其他类型会记录为失败证据")), SelectedAssetPaths.Num());
+    if (SelectedAssetPaths.IsEmpty())
+    {
+        return FText::FromString(TEXT("未读取到交付批次\n可选择多个资产，或在资源网格中选择文件夹"));
+    }
+    return FText::Format(
+        FText::FromString(TEXT("待验收：{0} 个对象\n{1} 个文件夹递归发现 {2} 个 Static Mesh")),
+        SelectedAssetPaths.Num(), SelectedFolderPaths.Num(), DiscoveredFolderAssetCount);
 }
 
 FText SUnrealAssetAuditPanel::GetStatusText() const { return FText::FromString(StatusMessage); }
@@ -1552,6 +1707,15 @@ FText SUnrealAssetAuditPanel::GetAssetCountText() const { return FText::AsNumber
 FText SUnrealAssetAuditPanel::GetPassCountText() const { return FText::AsNumber(PassingAssetCount); }
 FText SUnrealAssetAuditPanel::GetIssueCountText() const { return FText::AsNumber(IssueCount); }
 FText SUnrealAssetAuditPanel::GetFailureCountText() const { return FText::AsNumber(FailureCount); }
+FText SUnrealAssetAuditPanel::GetRiskCategoryCountText(FString Category) const
+{
+    int32 Count = 0;
+    for (const FIssuePtr& Item : AllIssues)
+    {
+        Count += RuleBelongsToRiskCategory(Item->RuleId, Category) ? 1 : 0;
+    }
+    return FText::AsNumber(Count);
+}
 bool SUnrealAssetAuditPanel::CanRunAudit() const
 {
     return !bAuditRunning && !SelectedAssetPaths.IsEmpty() && SelectedProfile.IsValid()

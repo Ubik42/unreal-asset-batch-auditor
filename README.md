@@ -1,14 +1,15 @@
 # Unreal Asset Batch Auditor
 
-面向 Unreal 项目 Static Mesh 的只读批量审计工作台。项目 Profile 定义预算和预期，Editor-only C++ 模块批量采集元数据，Python 负责规则编排与 JSON 报告。扫描接口不保存资产、不重建网格，也不修改 Nanite。
+面向 Unreal 项目 Static Mesh 的只读交付验收台。项目 Profile 定义预算和预期，Editor-only C++ 模块批量采集元数据，Python 负责规则编排与 JSON 报告。扫描接口不保存资产、不重建网格，也不修改 Nanite。
 
-> **作品集可运行版本：v0.8.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> **当前源码：v0.9.0-dev1** · 已通过 UE 5.8.1 BuildPlugin 与独立宿主验证<br>
+> **公开可安装版本：v0.8.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.8.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
-![Unreal 场景、Content Browser 资产与资产批量审计工作台](docs/images/workflow/v0.8/00-editor-content-browser-overview.png)
+![资产交付验收台：文件夹批次与交付风险谱](docs/images/workflow/v0.9/02-asset-overview.png)
 
-<p align="center"><sub>真实 UE Editor 运行画面：在 Content Browser 中选择 Static Mesh 后，由原生 Slate 工作台读取当前选择并准备执行只读批量审计。</sub></p>
+<p align="center"><sub>真实 UE 5.8.1 原生 Slate：左侧校准规则和交付批次，顶部风险谱按真实 Report 汇总问题，主表保留完整资产证据。</sub></p>
 
 ## 这个项目体现什么
 
@@ -29,17 +30,19 @@
 
 ### 2. 选择资源并执行批量审计
 
-在 Content Browser 中选择资产，读取当前选择后执行只读审计。资产总览不会隐藏通过项：同一批次内可以直接对比通过、需处理和采集失败对象，以及几何预算、碰撞、Lightmap 和问题数。
+在 Content Browser 中显式选择多个资产，或选择一个/多个文件夹。插件会递归发现文件夹内的 Static Mesh，
+与单独选择的对象合并、去重并稳定排序；不会默认扫描整个项目。资产总览不会隐藏通过项，同一批次内
+可以直接对比通过、需处理和采集失败对象。
 
-![正在执行可观察批处理](docs/images/workflow/v0.8/13-running-batch-task.png)
+![文件夹递归形成交付批次](docs/images/workflow/v0.9/02-asset-overview.png)
 
 ### 3. 查看可追溯报告
 
 切换“问题明细”即可看到严重度、规则、实测值、Profile 阈值和中文证据说明。面板把本次运行写入版本化 JSON Report，保留宿主版本、资产元数据、Issue、Evidence 与批次统计。
 
-![可追溯问题明细](docs/images/workflow/v0.8/05-issue-details.png)
+![交付风险谱与可追溯问题明细](docs/images/workflow/v0.9/05-issue-details.png)
 
-以上 v0.8 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件，数据来自真实
+以上 v0.9-dev1 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件，数据来自真实
 Engine Static Mesh 与 24 个项目 Demo `.uasset`；不是网页复刻或设计稿。生命周期记录保存测试 PID、
 耗时、退出状态、截图、报告与交接包哈希。自动化证明面板渲染、任务状态、批次间取消和报告解析，
 不冒充鼠标点击人工测试。演示 Profile 使用模拟项目阈值，不代表行业统一标准。
@@ -108,6 +111,8 @@ CSV 和带 SHA-256 的交接清单；制片、主美或外包同事无需安装 
 - Report 同时保存所有成功资产的采集元数据，因此通过项也可与 Editor 复核；
 - Unreal Editor-only 插件和只读 C++ 批量采集接口；
 - UE 原生中文 Slate 面板：读取 Content Browser 选择、从预置规则下拉框切换 Profile、运行审计与共享搜索；
+- 显式资产与文件夹可以组成同一交付批次；文件夹递归只发现 Static Mesh，结果去重并稳定排序；
+- “交付风险谱”按几何预算、材质负载、构建就绪、命名路径和采集异常汇总真实问题，点击即可筛选明细；
 - “资产总览”展示每个已采集资产的通过/需处理/失败状态、几何预算、LOD、Nanite、碰撞、Lightmap UV、Lightmap 分辨率和问题数，不再隐藏通过资产；
 - “问题明细”保留严重度、规则、实测值、Profile 阈值与本地化证据说明，并可直接打开最新 JSON 或报告目录；
 - 面板运行会在项目 `Saved/UnrealAssetBatchAuditor/Sessions` 中保存不可变历史报告和版本化轻量索引，不再只留下会被覆盖的 `latest-report.json`；
@@ -149,7 +154,7 @@ python -m venv .venv
 - [完整安装与操作教程](docs/demo/DEMO_SETUP_AND_USE.md)
 - [24 个演示资产矩阵](docs/demo/DEMO_ASSET_MATRIX.md)
 - [6–8 分钟录屏分镜与讲稿](docs/demo/VIDEO_RECORDING_SCRIPT.md)
-- [15 张当前界面与交接报告截图清单](docs/demo/SCREENSHOT_PLAN.md)
+- [当前界面与交接报告截图清单](docs/demo/SCREENSHOT_PLAN.md)
 
 Demo Profile 是为了形成清晰对比而模拟的项目数据，不代表行业标准。主要 Editor 交互入口是
 `工具 > 资产批量审计`；脚本入口仍保留给自动化、回归测试和进阶演示。
@@ -201,7 +206,7 @@ report = run(
 )
 ```
 
-## 验证边界与下一阶段
+## 验证边界与开发路线
 
 - 当前没有自动修改 Nanite、SavePackage、MarkPackageDirty 或网格 Build API；
 - 已在 UE 5.8.1（changelist 56057345）完成 Win64 Development Editor BuildPlugin、命令行真实宿主运行和可见 Static Mesh Editor 复核；
@@ -209,13 +214,11 @@ report = run(
 - 扫描前后 Engine BasicShapes 的 9 个 `.uasset` SHA-256 全部不变；证据位于 `artifacts/host-validation/`；
 - 已建立 64 个 Engine Static Mesh、2 次预热、7 次重复的真实宿主热缓存基线；结果只用于回归，不外推到生产项目或数千资产；
 - 有界分批、进度、批次间取消和部分失败汇总已在真实 UE 5.8.1 宿主验证；完整场景调用尺寸为 `[2,2,1]`，取消场景只执行首批 `[2]`；
-- M5-S1 已完成碰撞与 Lightmap Profile/Report v2、UE 5.8.1 BuildPlugin、真实宿主采集、只读哈希验证和 8 张当前版本 Slate 截图；
-- M5-S2 已完成可选命名/目录政策、三类真实 Demo 故障、UE 5.8.1 v0.6 BuildPlugin、独立 PID 生命周期验证和 10 张当前版本 Slate 截图；
-- M6-S1 已完成历史会话与回归对比：同 Profile 基线选择、不可变归档及新增/持续/已解决/失败分类；
-- M6-S2 已完成可观察批处理、批次间取消、合法部分报告与中文 HTML/CSV 团队包；
-- M7 已生成 32 文件白名单发布包，排除 Intermediate、PDB、pycache 和 Engine 派生 Demo 资产；相同输入双次打包哈希一致；
-- 最终 ZIP 已在两个独立 UE 5.8.1 进程中完成“全新安装”和“升级后启动”烟雾测试，均通过真实面板入口审计 `/Engine/BasicShapes/Cube`；卸载会移除启用项并保留可恢复备份；
-- 当前 63 项自动化测试、v0.8.0 `release1` BuildPlugin、15 张当前截图均通过；不声明 Marketplace 就绪或其他 UE 版本兼容性。
+- v0.8 发布基线完成历史会话、回归对比、批次间取消、团队包、确定性发布以及全新安装/升级验证；完整证据见 `artifacts/goal/checkpoint-0015.json`；
+- v0.9-dev1 已通过 63 项 Python 测试、Ruff、UE 5.8.1 BuildPlugin 和一次独立宿主生命周期；宿主从真实 `/Engine/BasicShapes` 递归发现 Static Mesh，并验证风险谱筛选；
+- v0.9-dev1 当前有 14 张原生 Slate 证据图，记录位于 `artifacts/host-validation/m8/`；这不代表人工点击测试或跨版本兼容；
+- 下一阶段按价值扩展材质/纹理依赖政策、项目预设与无人值守审计入口，不加入泛 AI 对话或 PCG；
+- 不声明 Marketplace 就绪、其他 UE 版本兼容或生产规模绝对无卡顿。
 
 ## 许可证与演示素材
 

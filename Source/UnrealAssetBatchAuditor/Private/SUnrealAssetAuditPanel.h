@@ -81,12 +81,16 @@ public:
     bool LoadComparisonForEvidence(const FString& Path, FString& OutError);
     void SetEvidenceView(bool bAssetOverview, const FString& FilterText);
     void SetComparisonEvidenceView(const FString& FilterText);
+    void SetFolderSelectionForEvidence(const TArray<FString>& InternalFolders);
+    void SetRiskCategoryForEvidence(const FString& Category);
     void SetTaskEvidenceState(
         const FString& State, int32 Processed, int32 Requested, int32 CompletedBatches,
         int32 TotalBatches);
     int32 GetEvidenceAssetCount() const { return AllAssets.Num(); }
     int32 GetEvidenceIssueCount() const { return AllIssues.Num(); }
     int32 GetEvidenceComparisonCount() const { return AllComparisons.Num(); }
+    int32 GetEvidenceSelectedAssetCount() const { return SelectedAssetPaths.Num(); }
+    int32 GetEvidenceFilteredIssueCount() const { return FilteredIssues.Num(); }
 #endif
 
 private:
@@ -120,6 +124,9 @@ private:
     FReply ShowIssueDetails();
     FReply ShowComparison();
     TSharedRef<SWidget> BuildSummaryCell(const FText& Label, TAttribute<FText> Value, const FLinearColor& Accent) const;
+    TSharedRef<SWidget> BuildRiskCell(const FText& Label, const FString& Category, const FLinearColor& Accent);
+    FReply ToggleRiskCategory(FString Category);
+    void RebuildSelectionFromInternalFolders(const TArray<FString>& InternalFolders, TSet<FString>& InOutAssetPaths);
 
     FText GetSelectionText() const;
     FText GetStatusText() const;
@@ -127,6 +134,7 @@ private:
     FText GetPassCountText() const;
     FText GetIssueCountText() const;
     FText GetFailureCountText() const;
+    FText GetRiskCategoryCountText(FString Category) const;
     FText GetSelectedProfileLabel() const;
     FText GetSelectedProfileSummary() const;
     FText GetResultViewHint() const;
@@ -149,6 +157,7 @@ private:
     bool CanRunComparison() const;
 
     TArray<FString> SelectedAssetPaths;
+    TArray<FString> SelectedFolderPaths;
     TArray<FIssuePtr> AllIssues;
     TArray<FIssuePtr> FilteredIssues;
     TSharedPtr<SListView<FIssuePtr>> IssueList;
@@ -180,6 +189,8 @@ private:
     FString ComparisonBaselineLabel;
     FString StatusMessage;
     FString SearchText;
+    FString ActiveRiskCategory;
+    int32 DiscoveredFolderAssetCount = 0;
     int32 BatchSize = 64;
     int32 AssetCount = 0;
     int32 PassingAssetCount = 0;

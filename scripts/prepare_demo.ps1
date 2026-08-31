@@ -1,6 +1,6 @@
 param(
     [string]$EngineRoot = "C:\Program Files\Epic Games\UE_5.8",
-    [string]$BuildLabel = "UE_5.8.1-v0.8.0-dev3",
+    [string]$BuildLabel = "UE_5.8.1-v0.9.0-dev1",
     [switch]$SkipBuild
 )
 

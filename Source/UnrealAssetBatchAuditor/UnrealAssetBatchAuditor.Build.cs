@@ -10,6 +10,7 @@ public class UnrealAssetBatchAuditor : ModuleRules
         {
             "AssetRegistry",
             "ContentBrowser",
+            "ContentBrowserData",
             "DesktopPlatform",
             "InputCore",
             "Json",

@@ -1,0 +1,18 @@
+{
+  "schema_version": "unreal-audit-session-index@1.0.0",
+  "sessions": [
+    {
+      "session_id": "session-33949854f03ebe10",
+      "created_at": "2026-08-31T01:00:01.500670+00:00",
+      "report_id": "report-171d9d479ef81e1d",
+      "profile_id": "demo-desktop-balanced-v2",
+      "profile_version": "2.0.0",
+      "report_path": "Reports/20260831010001500670-report-171d9d479ef81e1d-33949854.json",
+      "report_sha256": "33949854f03ebe107c6954b3162c761d81945bde72fd33017347ffaa942ac219",
+      "asset_count": 4,
+      "issue_count": 8,
+      "collection_failure_count": 0,
+      "cancelled_asset_count": 0
+    }
+  ]
+}

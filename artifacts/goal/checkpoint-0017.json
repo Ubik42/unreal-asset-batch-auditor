@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0017",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 17,
+  "completedSlice": "M8-S1",
+  "summary": "v0.9-dev1 将工具从通用审计面板推进为资产交付验收台：显式资产与文件夹形成交付批次，文件夹递归只发现 Static Mesh；真实问题被汇总为可点击的交付风险谱。长期 /goal 同时改为风险分级门禁，不再为每个小切片重复发布级验证。",
+  "evidence": [
+    "资产与显式文件夹范围通过 Content Browser、Content Browser Data 与 Asset Registry 合并，文件夹递归只接受 UStaticMesh，结果去重并稳定排序",
+    "Slate 面板显示待验收对象数、文件夹数和递归发现数，并使用验收校准、交付批次、交付风险谱和证据台账语言",
+    "风险谱把当前 Report 分类为几何预算、材质负载、构建就绪、命名路径和采集异常，点击分类会筛选问题明细，再次点击取消",
+    "63 项 Python 测试与 Ruff 通过",
+    "UE 5.8.1 BuildPlugin UE_5.8.1-v0.9.0-dev1 完成 UHT、C++ 编译、链接和 Win64 打包",
+    "一个独立隐藏 UnrealEditor-Cmd 进程在 32.862 秒内退出且无残留，PanelEvidence 与 PanelTaskLifecycle 均通过",
+    "宿主从真实 /Engine/BasicShapes 递归发现至少 4 个 Static Mesh，并验证几何分类后的问题数小于完整问题集",
+    "14 张 v0.9-dev1 原生 Slate 图片及其 SHA-256 已记录在 artifacts/host-validation/m8",
+    "README、截图清单、开发路线与 Codex /goal 已区分 v0.8 公开发布基线和 v0.9 当前源码"
+  ],
+  "nextSlice": "M9-S1",
+  "knownLimits": [
+    "文件夹范围烟雾验证使用 Engine BasicShapes 小样本，不声明大型项目扫描无卡顿",
+    "自动化证明宿主发现、筛选和 Slate 渲染，不冒充鼠标点击或人工可用性测试",
+    "公开可安装版本仍是 v0.8.0；v0.9-dev1 尚未执行正式发布安装矩阵",
+    "当前只验证 UE 5.8.1 Win64，不外推其他版本"
+  ]
+}

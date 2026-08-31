@@ -101,6 +101,17 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         Panel->GetEvidenceIssueCount(),
         ExpectedIssues > 0 ? ExpectedIssues : 23);
 
+    Panel->SetFolderSelectionForEvidence({TEXT("/Engine/BasicShapes")});
+    TestTrue(
+        TEXT("Recursive folder scope discovers real Engine Static Mesh assets"),
+        Panel->GetEvidenceSelectedAssetCount() >= 4);
+    Panel->SetRiskCategoryForEvidence(TEXT("geometry"));
+    TestTrue(
+        TEXT("Risk spectrum filters the report to geometry issues"),
+        Panel->GetEvidenceFilteredIssueCount() > 0
+            && Panel->GetEvidenceFilteredIssueCount() < Panel->GetEvidenceIssueCount());
+    Panel->SetRiskCategoryForEvidence(TEXT(""));
+
     Panel->SetEvidenceView(true, TEXT(""));
     Capture(TEXT("02-asset-overview.png"));
     Panel->SetEvidenceView(true, TEXT("通过"));

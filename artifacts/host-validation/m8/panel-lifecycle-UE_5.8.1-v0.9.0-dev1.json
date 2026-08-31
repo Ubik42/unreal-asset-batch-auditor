@@ -1,0 +1,207 @@
+{
+  "schema_version": "unreal-panel-lifecycle@1.0.0",
+  "created_at": "2026-08-31T01:00:02.0678217+00:00",
+  "engine": "UE 5.8.1",
+  "plugin_build": "UE_5.8.1-v0.9.0-dev1",
+  "execution": "independent hidden UnrealEditor-Cmd -RenderOffscreen",
+  "test_pid": 20784,
+  "created_unreal_pids": [
+    20784
+  ],
+  "existing_unreal_pids_before": [],
+  "existing_unreal_pids_after": [],
+  "existing_processes_survived": true,
+  "started_at": "2026-08-31T00:59:29.2055248+00:00",
+  "finished_at": "2026-08-31T01:00:02.0678217+00:00",
+  "duration_seconds": 32.862,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "automation_tests": [
+    "UnrealAssetBatchAuditor.PanelEvidence",
+    "UnrealAssetBatchAuditor.PanelTaskLifecycle"
+  ],
+  "automation_passed": true,
+  "panel_evidence_passed": true,
+  "panel_task_lifecycle_passed": true,
+  "report_path": "artifacts/demo/demo-desktop-balanced-v2-report.json",
+  "report_sha256": "6700BF18FBF4F9058807D3BAB71AE8A9C7A396D0D142424D322DC07074906170",
+  "comparison_path": "artifacts/demo/session-history/latest-comparison.v1.json",
+  "comparison_sha256": "4C8B5029591D6E47A7983D9398B2823B44E00835ED5DBF2D543BA32DBBE4514F",
+  "log_path": "artifacts/host-runtime/panel-20260830-185929/Saved/Logs/UnrealAssetBatchAuditorHost.log",
+  "committed_log_excerpt": "artifacts/host-validation/m8/panel-lifecycle-UE_5.8.1-v0.9.0-dev1-log.txt",
+  "committed_log_excerpt_sha256": "666DFABDF96EDBFD512F08C04619C291C747257B753950E134755C16B717C78C",
+  "screenshot_count": 14,
+  "screenshots": [
+    {
+      "path": "docs/images/workflow/v0.9/01-empty-state.png",
+      "bytes": 114063,
+      "sha256": "E6C1812D076F29394F99F09B56659366B1B42E96808264B43E8B44EAFA77BE4F"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/02-asset-overview.png",
+      "bytes": 184960,
+      "sha256": "25B366B216F71C812B556D6EA80CEA5AC572C44CE4BEB4520A4CD69763966B38"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/03-passing-assets.png",
+      "bytes": 132692,
+      "sha256": "9F9C7161FB91ABDD78A6954B4208BA29536F6F5CA1853FD31DBD0E1C5FF43483"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/04-assets-needing-work.png",
+      "bytes": 189909,
+      "sha256": "EC0E620A62FE155BA393D4B04298E707BD295C8FEA71E99F9AEAB1243AF3EEB7"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/05-issue-details.png",
+      "bytes": 210186,
+      "sha256": "5D311F5C308CCCCEE7418877AB166837B730E694EAD5A64167157636F9EA86AE"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/06-collision-evidence.png",
+      "bytes": 173915,
+      "sha256": "6D739055E59130D9F08F08A9F0C6FD152534C6144B2EF066F077F7CF78FBCCF9"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/07-lightmap-uv-evidence.png",
+      "bytes": 153605,
+      "sha256": "F735D1F777080A2BB4FF6A4483EBEA5D5C90993D322D7C01B29768E56C7F48B8"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/08-lightmap-resolution-evidence.png",
+      "bytes": 134424,
+      "sha256": "CEF28340AAF9991A7C5E5A6E72030CB44B3E8F140D0EF1DCDF6415AD8F710A8C"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/09-object-name-evidence.png",
+      "bytes": 115846,
+      "sha256": "A60461D7985C84367CAAF9924B251CDA6E231A174E9884D7BFE20540D3A3BD8B"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/10-package-path-evidence.png",
+      "bytes": 117014,
+      "sha256": "AF4FE7001C1CD662E18DFD71E0FCF9FC79F4E08DA8946882628AA67345BD3A71"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/11-regression-overview.png",
+      "bytes": 226291,
+      "sha256": "1977E8B7E003172AD8DCECC5A565F918CB59A60F9645B71A12324340B058963C"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/12-resolved-changes.png",
+      "bytes": 173984,
+      "sha256": "6E26DBD2785F2FA3C1C268AA52325A78B00F9D24172A016B0AC95E22767710C5"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/13-running-batch-task.png",
+      "bytes": 189473,
+      "sha256": "41B1C6233E48C736B0361EDCBFA212C387387438043C254B507696588C9948A4"
+    },
+    {
+      "path": "docs/images/workflow/v0.9/14-cancelling-task.png",
+      "bytes": 189604,
+      "sha256": "C770E7C9C404858EBA8078569F5F7722DFC2CD341310E76C9CCC7F0FA7E1145E"
+    }
+  ],
+  "task_artifact_count": 19,
+  "task_artifacts": [
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/cancelled/cancel.json",
+      "bytes": 51,
+      "sha256": "B25A1C9B233E27D8FA1E60CDA3F451FE11366ED9DC3C05A308456947DFFF4162"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/cancelled/Handoffs/report-3940dc7b60e6890f/交接清单.json",
+      "bytes": 1081,
+      "sha256": "9DA93B6E9CA2D736C8CAB4445562E90E14C7C90735F96BADB44CA02D14F014AA"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/cancelled/Handoffs/report-3940dc7b60e6890f/审计交接报告.html",
+      "bytes": 4950,
+      "sha256": "1C4FAEF5F9AE5BCFBC5A5BAAC76BCBA8D7695E1237B2B8A1AACF3F2DD4ED9501"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/cancelled/Handoffs/report-3940dc7b60e6890f/审计问题明细.csv",
+      "bytes": 2042,
+      "sha256": "40BD1FF034D51127925F9D2C5A45315720F64227050DBD2D06968734126F5E7A"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/cancelled/latest-report.json",
+      "bytes": 5035,
+      "sha256": "EB256C5A790F0CA705941513F5ED51C0734924159352887D083E730C7C16B224"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/cancelled/request.json",
+      "bytes": 1783,
+      "sha256": "7939B5D3A10A760DE6EF9EB17148A44907A4017618AA5C560A2D0016E64B4413"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/cancelled/Sessions/latest-comparison.v1.json",
+      "bytes": 739,
+      "sha256": "8DF9815246CE5B959505F9729E4D9507406505086AD685D8FDBC363A6492CD11"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/cancelled/Sessions/Reports/20260831010001536711-report-3940dc7b60e6890f-eb256c5a.json",
+      "bytes": 5035,
+      "sha256": "EB256C5A790F0CA705941513F5ED51C0734924159352887D083E730C7C16B224"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/cancelled/Sessions/session-index.v1.json",
+      "bytes": 643,
+      "sha256": "86F5AE3DE5A61F6174A6D0CC6F727C88447A49AF8F34DE20191D4BCB5D079E31"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/cancelled/task-state.json",
+      "bytes": 946,
+      "sha256": "5588055D1EEACECF5FC43F464452014707C0CA9184FCC420C70FD2B44265E225"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/completed/Handoffs/report-171d9d479ef81e1d/交接清单.json",
+      "bytes": 1079,
+      "sha256": "7F82259B474D6171AFA178DD61E46C97228201685E86C41F07592A25ACF3F291"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/completed/Handoffs/report-171d9d479ef81e1d/审计交接报告.html",
+      "bytes": 6585,
+      "sha256": "1ABB453BCA1F857E5C3E3692B09CA19C4195BE895F07F028440C57925C0EE499"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/completed/Handoffs/report-171d9d479ef81e1d/审计问题明细.csv",
+      "bytes": 4002,
+      "sha256": "BD591C772152C52F4DF97E1BD00B3D0231D8F84005EDED0604EB5EFEE15535C6"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/completed/latest-report.json",
+      "bytes": 9407,
+      "sha256": "33949854F03EBE107C6954B3162C761D81945BDE72FD33017347FFAA942AC219"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/completed/request.json",
+      "bytes": 1315,
+      "sha256": "5A0E41CC86B67B7A2903CC85667AB369E4004951A288A7CAA4F72306CB112D9D"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/completed/Sessions/latest-comparison.v1.json",
+      "bytes": 731,
+      "sha256": "EC7DB04545287C65C4B46B6CFF90EAA7FC4E948333F35066A7AA6A07A0D6AB50"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/completed/Sessions/Reports/20260831010001500670-report-171d9d479ef81e1d-33949854.json",
+      "bytes": 9407,
+      "sha256": "33949854F03EBE107C6954B3162C761D81945BDE72FD33017347FFAA942AC219"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/completed/Sessions/session-index.v1.json",
+      "bytes": 642,
+      "sha256": "9FF1A6134961EF8D4AFFFFF3442104BC56E13144A6D18F9A22D8C8E9A1A99E63"
+    },
+    {
+      "path": "artifacts/host-validation/m8/task-lifecycle-UE_5.8.1-v0.9.0-dev1/completed/task-state.json",
+      "bytes": 925,
+      "sha256": "1CBF76DC4B1C66748D64E86FC70D42F7B71F4529FBC33AF45D36139BC40F2597"
+    }
+  ],
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false
+}

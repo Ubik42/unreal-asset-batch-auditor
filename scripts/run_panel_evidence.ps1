@@ -1,6 +1,6 @@
 param(
     [string]$EngineRoot = "C:\Program Files\Epic Games\UE_5.8",
-    [string]$BuildLabel = "UE_5.8.1-v0.8.0-dev3",
+    [string]$BuildLabel = "UE_5.8.1-v0.9.0-dev1",
     [string]$ReportPath = "",
     [string]$ComparisonPath = "",
     [string]$SessionRootPath = "",
@@ -94,7 +94,8 @@ $log = if (Test-Path -LiteralPath $logPath) { Get-Content -LiteralPath $logPath 
 $panelEvidencePassed = $log -match 'Test Completed\. Result=\{Success\} Name=\{PanelEvidence\}'
 $taskLifecyclePassed = $log -match 'Test Completed\. Result=\{Success\} Name=\{PanelTaskLifecycle\}'
 $automationPassed = $panelEvidencePassed -and $taskLifecyclePassed
-$logEvidencePath = Join-Path $repoRoot "artifacts\host-validation\m6\panel-lifecycle-v0.8.0-dev3-log.txt"
+$evidenceLabel = $BuildLabel -replace '[^A-Za-z0-9._-]', '-'
+$logEvidencePath = Join-Path $repoRoot "artifacts\host-validation\m8\panel-lifecycle-$evidenceLabel-log.txt"
 New-Item -ItemType Directory -Path (Split-Path -Parent $logEvidencePath) -Force | Out-Null
 $logPatterns = @(
     'engineversion=', 'Command Line:', 'Found 1 automation', 'Test Started',
@@ -103,7 +104,7 @@ $logPatterns = @(
 @(Select-String -LiteralPath $logPath -Pattern $logPatterns | ForEach-Object { $_.Line }) |
     Set-Content -LiteralPath $logEvidencePath -Encoding utf8
 $taskSource = Join-Path $runtime "Saved\UnrealAssetBatchAuditor\TaskLifecycleEvidence"
-$taskEvidenceRoot = Join-Path $repoRoot "artifacts\host-validation\m6\task-lifecycle-v0.8.0-dev3"
+$taskEvidenceRoot = Join-Path $repoRoot "artifacts\host-validation\m8\task-lifecycle-$evidenceLabel"
 $resolvedTaskEvidenceRoot = [IO.Path]::GetFullPath($taskEvidenceRoot)
 if (-not $resolvedTaskEvidenceRoot.StartsWith([IO.Path]::GetFullPath($repoRoot), [StringComparison]::OrdinalIgnoreCase)) {
     throw "Task evidence target escaped repository: $resolvedTaskEvidenceRoot"
@@ -169,7 +170,7 @@ $result = [ordered]@{
     claims_user_interaction = $false
     claims_visible_editor_review = $false
 }
-$evidencePath = Join-Path $repoRoot "artifacts\host-validation\m6\panel-lifecycle-v0.8.0-dev3.json"
+$evidencePath = Join-Path $repoRoot "artifacts\host-validation\m8\panel-lifecycle-$evidenceLabel.json"
 $result | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $evidencePath -Encoding utf8
 
 if ($timedOut -or $process.ExitCode -ne 0 -or -not $automationPassed -or
