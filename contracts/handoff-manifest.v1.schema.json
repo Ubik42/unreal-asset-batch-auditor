@@ -16,7 +16,8 @@
     "validation_label",
     "validation_boundary",
     "summary",
-    "files"
+    "files",
+    "delivery_groups"
   ],
   "properties": {
     "schema_version": {"const": "unreal-audit-handoff@1.0.0"},
@@ -51,7 +52,7 @@
     },
     "files": {
       "type": "array",
-      "minItems": 2,
+      "minItems": 3,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -60,6 +61,30 @@
           "path": {"type": "string", "minLength": 1},
           "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
         }
+      }
+    },
+    "delivery_groups": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "grouping_rule",
+        "ranking_rule",
+        "group_count",
+        "groups_csv_file",
+        "groups_csv_sha256",
+        "performance_inference",
+        "boundary"
+      ],
+      "properties": {
+        "schema_version": {"const": "unreal-audit-delivery-groups@1.0.0"},
+        "grouping_rule": {"const": "package_parent_first_3_segments"},
+        "ranking_rule": {"type": "string", "minLength": 1},
+        "group_count": {"type": "integer", "minimum": 0},
+        "groups_csv_file": {"const": "交付目录热区.csv"},
+        "groups_csv_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "performance_inference": {"const": false},
+        "boundary": {"type": "string", "minLength": 1}
       }
     },
     "review": {

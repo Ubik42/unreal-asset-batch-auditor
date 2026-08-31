@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0024",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 24,
+  "completedSlice": "M14-S2",
+  "summary": "目录热区已进入离线团队交接包：制作人可以从稳定排序的目录索引进入组内问题、失败、审阅决定与单条 Evidence。",
+  "evidence": [
+    "交接导出复用 delivery-group-view v1，只读取已有 Report 与可选 Review Ledger，不查询 Asset Registry",
+    "新增 UTF-8 BOM 交付目录热区 CSV，组级计数、问题密度、审阅数和排序与 Slate 热区模型一致",
+    "中文 HTML 使用目录热区索引与连续证据段，可从组级排名跳到对应资产和 Evidence",
+    "清洁组、采集失败组、无台账未复核和不可绑定 Evidence 均有明确中文状态",
+    "交接清单记录 3 个交付文件 SHA-256、聚合合同版本、分组与排序规则，以及不推断性能的边界",
+    "83 项 Python 测试与 Ruff 通过；真实 UE 5.8.1 Demo Report 生成 6 个目录组、47 条问题和 2 个采集失败的离线交接样例"
+  ],
+  "nextSlice": "M15-S1",
+  "knownLimits": [
+    "本切片没有改动 C++、Slate 或采集字段，未重复 BuildPlugin 与宿主生命周期测试",
+    "离线 HTML/CSV 不提供多人并发、账号权限、工单状态或在线同步",
+    "目录组来自报告记录的 object path，不代表 Content Browser 当前实时状态",
+    "问题密度不是 FPS、GPU、Shader、Cook 或资产质量评分",
+    "所有功能保持只读，不修改、保存、重命名或移动资产"
+  ]
+}

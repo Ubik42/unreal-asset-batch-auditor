@@ -30,12 +30,20 @@ def _report(*, real: bool, cancelled: int = 0) -> dict:
         "cancelled_asset_count": cancelled,
         "completed_batch_count": 1,
         "batch_size": 2,
-        "assets": [],
+        "assets": [
+            {
+                "asset_path": "/Game/Demo/01_Light/A.A",
+                "asset_name": "A",
+                "lods": [{"index": 0, "triangles": 100, "vertices": 80}],
+                "material_slot_count": 3,
+                "nanite_enabled": False,
+            }
+        ],
         "issues": [
             {
                 "schema_version": "unreal-asset-audit@1.0.0",
                 "issue_id": "issue-1",
-                "asset_path": "/Game/A.A",
+                "asset_path": "/Game/Demo/01_Light/A.A",
                 "rule_id": "static_mesh.material_slots",
                 "severity": "warning",
                 "message": "Material slots exceed limit.",
@@ -46,7 +54,7 @@ def _report(*, real: bool, cancelled: int = 0) -> dict:
             {
                 "schema_version": "unreal-asset-audit@1.0.0",
                 "evidence_id": "ev-1",
-                "asset_path": "/Game/A.A",
+                "asset_path": "/Game/Demo/01_Light/A.A",
                 "metric": "material_slot_count",
                 "observed": 3,
                 "expected": 2,
@@ -57,7 +65,7 @@ def _report(*, real: bool, cancelled: int = 0) -> dict:
         "collection_failures": [
             {
                 "schema_version": "unreal-asset-audit@1.0.0",
-                "asset_path": "/Game/Bad.Bad",
+                "asset_path": "/Game/Demo/99_Broken/Bad.Bad",
                 "code": "ASSET_NOT_FOUND",
                 "message": "Asset does not exist.",
                 "collector": "unreal_editor" if real else "offline_fixture",
@@ -91,9 +99,27 @@ def test_handoff_exports_standalone_chinese_html_csv_and_manifest(tmp_path: Path
     assert "超过 Profile 上限" in rows[0]["说明"]
     assert rows[0]["原始说明"] == "Material slots exceed limit."
     assert rows[0]["Profile 指针"] == "/rules/max_material_slots"
+    group_payload = result.groups_csv_path.read_bytes()
+    assert group_payload.startswith(b"\xef\xbb\xbf")
+    groups = list(csv.DictReader(io.StringIO(group_payload.decode("utf-8-sig"))))
+    assert [group["交付目录组"] for group in groups] == [
+        "/Game/Demo/99_Broken",
+        "/Game/Demo/01_Light",
+    ]
+    assert groups[0]["体检刻度"] == "采集阻断"
+    assert groups[1]["问题/对象"] == "1.00"
     manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
     assert manifest["schema_version"] == "unreal-audit-handoff@1.0.0"
     assert manifest["real_unreal_validation"] is True
+    assert manifest["delivery_groups"]["schema_version"] == "unreal-audit-delivery-groups@1.0.0"
+    assert manifest["delivery_groups"]["group_count"] == 2
+    assert manifest["delivery_groups"]["performance_inference"] is False
+    assert manifest["delivery_groups"]["groups_csv_sha256"] == hashlib.sha256(
+        group_payload
+    ).hexdigest()
+    assert "href='#delivery-group-1'" in page
+    assert "id='delivery-group-1'" in page
+    assert "不是质量评分或运行时性能指标" in page
     for item in manifest["files"]:
         payload = (result.root / item["path"]).read_bytes()
         assert item["sha256"] == hashlib.sha256(payload).hexdigest()
@@ -110,6 +136,7 @@ def test_handoff_is_byte_deterministic_and_labels_fixture_boundary(tmp_path: Pat
 
     assert first.html_path.read_bytes() == second.html_path.read_bytes()
     assert first.csv_path.read_bytes() == second.csv_path.read_bytes()
+    assert first.groups_csv_path.read_bytes() == second.groups_csv_path.read_bytes()
     assert first.manifest_path.read_bytes() == second.manifest_path.read_bytes()
     page = first.html_path.read_text(encoding="utf-8")
     assert "离线 Fixture 验证" in page
@@ -131,6 +158,8 @@ def test_handoff_includes_review_decisions_without_changing_report(tmp_path: Pat
         owner="场景组 / 阿岚",
         note="减少材质槽后重新提交",
     )
+    ledger_path = reviews / "report-handoff.review.v1.json"
+    ledger_before = ledger_path.read_bytes()
 
     result = export_handoff(report_path, tmp_path / "exports", reviews)
     rows = list(
@@ -146,6 +175,16 @@ def test_handoff_includes_review_decisions_without_changing_report(tmp_path: Pat
     assert manifest["review"]["ledger_file"] == "report-handoff.review.v1.json"
     assert len(manifest["review"]["ledger_sha256"]) == 64
     assert report_path.read_bytes() == before
+    assert ledger_path.read_bytes() == ledger_before
+    groups = list(
+        csv.DictReader(
+            io.StringIO(result.groups_csv_path.read_bytes().decode("utf-8-sig"))
+        )
+    )
+    light_group = next(group for group in groups if group["交付目录组"].endswith("01_Light"))
+    assert light_group["未复核"] == "0"
+    assert light_group["需修复"] == "1"
+    assert light_group["体检刻度"] == "需修复"
 
 
 def test_handoff_rejects_incomplete_report(tmp_path: Path) -> None:

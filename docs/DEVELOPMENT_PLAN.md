@@ -194,7 +194,7 @@ UE 5.8.1，不声明 Marketplace 或跨版本兼容。
 写入并重新加载两条真实 BasicShapes 审阅决定，确认源 Report 不变；15 张当前 Slate 图和带审阅字段的
 团队交接包位于 `artifacts/host-validation/m13/`。本轮不包含多人并发、账号权限或外部工单。
 
-## M14：交付批次热区与资产组概览（进行中）
+## M14：交付批次热区与资产组概览（已完成）
 
 ### M14-S1：目录热区与下钻（已完成）
 
@@ -209,8 +209,20 @@ UE 5.8.1，不声明 Marketplace 或跨版本兼容。
 Demo Static Mesh 与 2 个采集失败形成 6 个目录组；独立隐藏宿主验证热区、Heavy 组下钻与清除下钻，
 生成 17 张当前 Slate 图。证据位于 `artifacts/host-validation/m14/`。
 
+### M14-S2：热区进入团队交接（已完成）
+
+- 团队包直接复用 `delivery-group-view v1`，只读取现有 Report 与 Review Ledger；
+- 中文 HTML 增加目录热区索引、稳定排序说明、组级审阅进度和目录 Evidence 锚点；
+- 新增 Excel 可读的 `交付目录热区.csv`，与面板使用同一组级计数和排序；
+- `交接清单.json` 记录热区 CSV 哈希、聚合合同、分组/排序规则与不推断性能的边界；
+- 清洁组、采集失败组、无 Review Ledger 和未绑定问题均保持明确状态，不把人工决定混入规则严重度。
+
+离线测试与真实 UE Report 交接样例位于 `artifacts/host-validation/m14/team-handoff-hotspots/`。
+本切片没有修改 C++、Slate 或采集字段，因此不重复 BuildPlugin 和宿主生命周期测试；真实宿主来源沿用
+M14-S1 已保存的 UE 5.8.1 Report，新增证据只证明离线交接导出。
+
 ## 后续候选路线
 
 | 里程碑 | 方向 | 边界 |
 | --- | --- | --- |
-| M14-S2 | 热区进入团队交接 | HTML/CSV/清单带出目录组摘要，不重新扫描资产 |
+| M15-S1 | Texture2D 只读审计合同 | 先定义纹理事实、Profile 规则和独立报告边界，不修改纹理资产 |

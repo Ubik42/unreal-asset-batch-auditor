@@ -184,6 +184,18 @@ artifacts/demo/demo-desktop-balanced-v3-report.json
 4. 选择 `Cube / 资产命名`，记录“批准例外”，负责人填写“主美”；
 5. 点击“导出团队包”，在 HTML 或 CSV 中核对规则级别、人工决定、负责人和备注同时存在。
 
+导出目录包含四个文件：
+
+- `审计交接报告.html`：先看交付目录热区，再点击目录进入组内 Evidence；
+- `交付目录热区.csv`：可用 Excel 打开，适合按体检刻度、失败数、需修复数或问题密度排序；
+- `审计问题明细.csv`：保留资产、规则、实测、期望、Profile 指针、Evidence ID 和审阅决定；
+- `交接清单.json`：记录以上文件 SHA-256、目录聚合合同版本、排序规则和验证边界。
+
+推荐演示顺序是：先在 `交付目录热区.csv` 指出 `采集阻断` 与 `高密度` 目录，再打开 HTML 点击对应
+目录，展示如何落到具体资产和 Evidence。HTML 中“问题/对象”只表示该目录的规则问题密度，不是
+FPS、GPU、Shader、Cook 或资产质量评分。没有 Review Ledger 时，问题会明确显示为“未复核”；
+采集失败没有 Issue / Evidence 绑定，因此显示“不可审阅”。
+
 审阅决定保存在项目 `Saved/UnrealAssetBatchAuditor/Reviews`。删除某条决定时选择“未复核”并再次记录。
 Report、Static Mesh 和 Profile 均不会被写回。若顶部显示“孤儿记录”，说明台账中的旧决定无法与当前
 Report 的 Issue / Evidence 精确匹配；工具会保留但不套用这些记录。

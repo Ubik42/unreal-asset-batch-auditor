@@ -133,11 +133,18 @@ Shader 或 Cook 成本。双击目录组直接进入问题，下钻条可随时�
 
 ### 一键生成团队交接包
 
-“导出团队包”只读取正式 Report，不重新扫描资产。每次导出生成可离线打开的中文 HTML、UTF-8 BOM
-CSV 和带 SHA-256 的交接清单；制片、主美或外包同事无需安装 Unreal，也能看到项目规则、宿主版本、
-问题、实测/期望证据、采集失败与验证边界。
+“导出团队包”只读取正式 Report 与独立 Review Ledger，不重新扫描资产。每次导出生成可离线打开的
+中文 HTML、问题明细 CSV、交付目录热区 CSV 和带 SHA-256 的交接清单。制片、主美或外包同事无需
+安装 Unreal，可以先按目录热区定位采集阻断、需修复和高密度组，再跳到组内资产、Profile 阈值、
+Evidence 与人工决定。目录问题密度只表示规则问题数 / 处理对象数，不代表资产质量或运行时性能。
 
 ![独立中文团队交接报告](docs/images/workflow/v0.8/15-team-handoff-report.png)
+
+真实 UE 5.8.1 Demo Report 的当前交接样例：
+[中文 HTML](artifacts/host-validation/m14/team-handoff-hotspots/report-8a19ab6cca63e661/审计交接报告.html) ·
+[目录热区 CSV](artifacts/host-validation/m14/team-handoff-hotspots/report-8a19ab6cca63e661/交付目录热区.csv) ·
+[问题明细 CSV](artifacts/host-validation/m14/team-handoff-hotspots/report-8a19ab6cca63e661/审计问题明细.csv) ·
+[SHA-256 清单](artifacts/host-validation/m14/team-handoff-hotspots/report-8a19ab6cca63e661/交接清单.json)。
 
 ## 当前已实现
 
@@ -163,8 +170,9 @@ CSV 和带 SHA-256 的交接清单；制片、主美或外包同事无需安装 
 - 调用方可设置正整数批次大小；进度事件覆盖请求、处理、成功、失败和取消数量；
 - 取消仅在 C++ 批次之间生效，已完成批次的资产与失败证据会保留在 Report；
 - 原生面板使用版本化任务状态驱动 pending/running/cancelling/completed/cancelled/failed，并在 Editor Tick 之间推进批次；
-- 从正式 Report 确定性生成中文单文件 HTML、UTF-8 BOM CSV 和 SHA-256 交接清单，不重新扫描资产；
+- 从正式 Report 确定性生成中文单文件 HTML、两份 UTF-8 BOM CSV 和 SHA-256 交接清单，不重新扫描资产；
 - 团队交接 HTML、CSV 与清单可带出人工审阅决定、负责人、备注及台账 SHA-256，同时保留规则严重度；
+- 团队包按 `delivery-group-view v1` 输出目录热区排名、组级通过/问题/失败/复核统计，并从目录索引跳到单条 Evidence；
 - Python fixture collector 与 Unreal C++ collector 使用同一编排边界；
 - 离线错误资产集、回归测试和显式 `real_unreal_validation=false` 报告。
 - 版本化项目预设与 `UnrealEditor-Cmd` 无人值守入口，输出正式 Report、轻量运行摘要和稳定退出码。

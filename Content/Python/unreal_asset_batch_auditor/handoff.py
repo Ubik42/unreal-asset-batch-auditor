@@ -9,6 +9,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .delivery_groups import (
+    DELIVERY_GROUP_VIEW_VERSION,
+    DeliveryGroupError,
+    build_delivery_group_view,
+)
 from .review_ledger import load_review_snapshot
 
 HANDOFF_VERSION = "unreal-audit-handoff@1.0.0"
@@ -23,6 +28,7 @@ class HandoffResult:
     root: Path
     html_path: Path
     csv_path: Path
+    groups_csv_path: Path
     manifest_path: Path
 
 
@@ -46,6 +52,7 @@ def _load_report(path: str | Path) -> dict[str, Any]:
         "requested_asset_count",
         "processed_asset_count",
         "cancelled_asset_count",
+        "assets",
         "issues",
         "evidence",
         "collection_failures",
@@ -230,22 +237,133 @@ def _csv_bytes(rows: list[dict[str, str]]) -> bytes:
     return ("\ufeff" + stream.getvalue()).encode("utf-8")
 
 
-def _html_text(report: dict[str, Any], rows: list[dict[str, str]]) -> str:
+def _group_csv_bytes(group_view: dict[str, Any]) -> bytes:
+    columns = [
+        "热区排名",
+        "交付目录组",
+        "体检刻度",
+        "对象数",
+        "通过对象",
+        "需处理对象",
+        "规则问题",
+        "问题/对象",
+        "采集失败",
+        "未复核",
+        "需修复",
+        "批准例外",
+        "热区依据",
+    ]
+    stream = io.StringIO(newline="")
+    writer = csv.DictWriter(stream, fieldnames=columns, lineterminator="\r\n")
+    writer.writeheader()
+    for group in group_view["groups"]:
+        writer.writerow(
+            {
+                "热区排名": group["hotspot_rank"],
+                "交付目录组": group["group_path"],
+                "体检刻度": group["risk_band"],
+                "对象数": group["asset_count"],
+                "通过对象": group["passed_asset_count"],
+                "需处理对象": group["issue_asset_count"],
+                "规则问题": group["issue_count"],
+                "问题/对象": f"{group['issue_density']:.2f}",
+                "采集失败": group["collection_failure_count"],
+                "未复核": group["unreviewed_issue_count"],
+                "需修复": group["fix_required_count"],
+                "批准例外": group["approved_exception_count"],
+                "热区依据": group["hotspot_reason"],
+            }
+        )
+    return ("\ufeff" + stream.getvalue()).encode("utf-8")
+
+
+def _group_anchor(rank: int) -> str:
+    return f"delivery-group-{rank}"
+
+
+def _group_overview_html(group_view: dict[str, Any]) -> str:
+    rows = []
+    for group in group_view["groups"]:
+        risk_class = {
+            "采集阻断": "blocked",
+            "需修复": "fix",
+            "高密度": "dense",
+            "待复核": "review",
+            "清洁": "clean",
+        }.get(group["risk_band"], "review")
+        rows.append(
+            "<tr>"
+            f"<td class='rank'>#{group['hotspot_rank']:02d}</td>"
+            f"<td><a href='#{_group_anchor(group['hotspot_rank'])}'>{html.escape(group['group_path'])}</a>"
+            f"<div class='sub'>{html.escape(group['hotspot_reason'])}</div></td>"
+            f"<td><span class='risk {risk_class}'>{html.escape(group['risk_band'])}</span></td>"
+            f"<td>{group['asset_count']}</td>"
+            f"<td>{group['passed_asset_count']}</td>"
+            f"<td>{group['issue_count']}</td>"
+            f"<td>{group['issue_density']:.2f}</td>"
+            f"<td>{group['collection_failure_count']}</td>"
+            f"<td>{group['unreviewed_issue_count']} / {group['fix_required_count']} / {group['approved_exception_count']}</td>"
+            "</tr>"
+        )
+    return "\n".join(rows) or (
+        "<tr><td colspan='9' class='empty'>报告中没有可归组的资产或采集失败对象</td></tr>"
+    )
+
+
+def _group_evidence_html(
+    rows: list[dict[str, str]], group_view: dict[str, Any]
+) -> str:
+    sections = []
+    for group in group_view["groups"]:
+        asset_paths = set(group["asset_paths"])
+        group_rows = [row for row in rows if row["资产"] in asset_paths]
+        if group_rows:
+            detail_rows = "\n".join(
+                "<tr>"
+                f"<td><span class='level {html.escape(row['级别代码'])}'>{html.escape(row['级别'])}</span></td>"
+                f"<td>{html.escape(row['资产'])}</td>"
+                f"<td>{html.escape(row['检查项'])}</td>"
+                f"<td>{html.escape(row['实测'])}</td>"
+                f"<td>{html.escape(row['期望'])}</td>"
+                f"<td><code>{html.escape(row['证据 ID'])}</code></td>"
+                f"<td><strong>{html.escape(row['审阅决定'])}</strong><br><span class='sub'>{html.escape(row['负责人'])}</span><br><span class='sub'>{html.escape(row['审阅备注'])}</span></td>"
+                f"<td>{html.escape(row['说明'])}</td>"
+                "</tr>"
+                for row in group_rows
+            )
+        elif group["issue_count"] == 0 and group["collection_failure_count"] == 0:
+            detail_rows = (
+                "<tr><td colspan='8' class='empty'>本组未触发规则问题，成功采集对象均通过当前 Profile。</td></tr>"
+            )
+        else:
+            detail_rows = (
+                "<tr><td colspan='8' class='empty'>本组没有可绑定的规则 Evidence；请检查交接清单中的未绑定问题计数。</td></tr>"
+            )
+        review_state = (
+            f"未复核 {group['unreviewed_issue_count']} · 需修复 {group['fix_required_count']} · "
+            f"批准例外 {group['approved_exception_count']}"
+        )
+        sections.append(
+            f"<section class='group-section' id='{_group_anchor(group['hotspot_rank'])}'>"
+            "<div class='group-heading'>"
+            f"<div><span class='eyebrow'>热区 #{group['hotspot_rank']:02d}</span><h3>{html.escape(group['group_path'])}</h3>"
+            f"<div class='sub'>{html.escape(group['hotspot_reason'])} · {review_state}</div></div>"
+            "<a class='back' href='#delivery-hotspots'>返回热区</a></div>"
+            "<div class='table-wrap'><table class='detail-table'><thead><tr>"
+            "<th>级别</th><th>资产</th><th>检查项</th><th>实测</th><th>期望</th><th>Evidence</th><th>审阅决定</th><th>证据说明</th>"
+            f"</tr></thead><tbody>{detail_rows}</tbody></table></div></section>"
+        )
+    return "\n".join(sections)
+
+
+def _html_text(
+    report: dict[str, Any], rows: list[dict[str, str]], group_view: dict[str, Any]
+) -> str:
     validation_label, validation_note = _validation_label(report)
     host = report.get("host_engine_version") or "未记录（离线报告）"
     state = "已取消，保留部分结果" if report["cancelled_asset_count"] else "已完成"
-    row_html = "\n".join(
-        "<tr>"
-        f"<td><span class='level {html.escape(row['级别代码'])}'>{html.escape(row['级别'])}</span></td>"
-        f"<td>{html.escape(row['资产'])}</td>"
-        f"<td>{html.escape(row['检查项'])}</td>"
-        f"<td>{html.escape(row['实测'])}</td>"
-        f"<td>{html.escape(row['期望'])}</td>"
-        f"<td><strong>{html.escape(row['审阅决定'])}</strong><br><span class='sub'>{html.escape(row['负责人'])}</span><br><span class='sub'>{html.escape(row['审阅备注'])}</span></td>"
-        f"<td>{html.escape(row['说明'])}</td>"
-        "</tr>"
-        for row in rows
-    ) or "<tr><td colspan='7' class='empty'>没有规则问题或采集失败</td></tr>"
+    group_overview = _group_overview_html(group_view)
+    group_evidence = _group_evidence_html(rows, group_view)
     review_counts = {
         "未复核": sum(row["审阅决定"] == "未复核" for row in rows),
         "需修复": sum(row["审阅决定"] == "需修复" for row in rows),
@@ -259,18 +377,23 @@ def _html_text(report: dict[str, Any], rows: list[dict[str, str]]) -> str:
 <link rel="icon" href="data:,">
 <title>Unreal 资产审计交接报告</title>
 <style>
-:root{{--bg:#0b1014;--panel:#121a20;--line:#24313a;--text:#e7eef2;--muted:#8fa2ad;--cyan:#33c5d5;--green:#58d69a;--amber:#f5bd4f;--red:#ff6b6b}}
+:root{{--bg:#0a0f12;--panel:#11191e;--line:#26343d;--text:#e8eef1;--muted:#91a2ab;--cyan:#35c6d4;--green:#58d69a;--amber:#efb84c;--red:#ff6f6f;--steel:#182229}}
 *{{box-sizing:border-box}} body{{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 "Microsoft YaHei UI","Noto Sans CJK SC",sans-serif}}
 .shell{{max-width:1440px;margin:auto;padding:34px}} .hero{{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;margin-bottom:22px}}
-h1{{font-size:32px;margin:0 0 6px}} h2{{font-size:18px;margin:26px 0 12px}} .sub,.meta,.note{{color:var(--muted)}}
+h1{{font-size:32px;margin:0 0 6px}} h2{{font-size:20px;margin:32px 0 12px}} h3{{font-size:18px;margin:3px 0}} .sub,.meta,.note{{color:var(--muted)}}
 .badge{{border:1px solid var(--cyan);color:var(--cyan);padding:7px 12px}} .grid{{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}}
 .metric{{background:var(--panel);border-top:2px solid var(--cyan);padding:14px}} .metric strong{{display:block;font-size:25px;margin-top:4px}}
 .note{{background:#0e1b20;border-left:3px solid var(--cyan);padding:12px 14px;margin:18px 0}}
-.table-wrap{{overflow:auto;border:1px solid var(--line)}} table{{width:100%;table-layout:fixed;border-collapse:collapse;min-width:1100px}}
+.section-head{{display:flex;justify-content:space-between;gap:18px;align-items:end}} .section-head p{{max-width:760px;margin:0;color:var(--muted)}}
+.table-wrap{{overflow:auto;border:1px solid var(--line)}} table{{width:100%;table-layout:auto;border-collapse:collapse;min-width:1100px}}
 th{{position:sticky;top:0;background:#172229;text-align:left;color:#b7c6ce}} th,td{{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}}
-td{{overflow-wrap:anywhere}}
+td{{overflow-wrap:anywhere}} a{{color:var(--text);text-decoration-color:var(--cyan);text-underline-offset:4px}} code{{font-family:"Cascadia Mono",Consolas,monospace;color:#a8dce1;font-size:12px}}
 tr:hover td{{background:#101a20}} .level{{font-weight:700}} .level.error{{color:var(--red)}} .level.warning{{color:var(--amber)}} .level.info{{color:var(--cyan)}}
-.empty{{text-align:center;color:var(--green);padding:36px}} footer{{margin-top:24px;color:var(--muted);font-size:12px}}
+.rank{{font:700 13px "Cascadia Mono",Consolas,monospace;color:var(--cyan)}} .risk{{display:inline-block;min-width:68px;border-left:3px solid;padding:2px 8px;background:var(--steel)}}
+.risk.blocked{{border-color:var(--red);color:var(--red)}} .risk.fix{{border-color:#ff8b66;color:#ff9c7d}} .risk.dense{{border-color:var(--amber);color:var(--amber)}} .risk.review{{border-color:var(--cyan);color:var(--cyan)}} .risk.clean{{border-color:var(--green);color:var(--green)}}
+.group-section{{scroll-margin-top:16px;margin-top:30px;padding-top:10px;border-top:1px solid var(--line)}} .group-heading{{display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:12px}} .eyebrow{{font:700 12px "Cascadia Mono",Consolas,monospace;color:var(--cyan)}} .back{{white-space:nowrap;color:var(--cyan)}}
+.detail-table th:nth-child(2),.detail-table td:nth-child(2){{min-width:260px}} .detail-table th:last-child,.detail-table td:last-child{{min-width:260px}}
+.empty{{text-align:center;color:var(--green);padding:36px}} footer{{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}}
 @media(max-width:900px){{.shell{{padding:18px}}.hero{{display:block}}.badge{{display:inline-block;margin-top:12px}}.grid{{grid-template-columns:repeat(2,1fr)}}}}
 </style>
 </head>
@@ -287,9 +410,11 @@ tr:hover td{{background:#101a20}} .level{{font-weight:700}} .level.error{{color:
 </section>
 <div class="note"><strong>{html.escape(validation_label)}</strong><br>{html.escape(validation_note)}<br>宿主版本：{html.escape(str(host))}</div>
 <div class="note"><strong>人工审阅</strong><br>未复核 {review_counts['未复核']} · 需修复 {review_counts['需修复']} · 批准例外 {review_counts['批准例外']}。审阅决定来自独立台账，不改变规则事实。</div>
-<h2>问题与失败明细</h2>
-<div class="table-wrap"><table><thead><tr><th>级别</th><th>资产</th><th>检查项</th><th>实测</th><th>期望</th><th>审阅决定</th><th>证据说明</th></tr></thead><tbody>{row_html}</tbody></table></div>
-<footer>此文件由 Unreal Asset Batch Auditor 从版本化 JSON Report 确定性生成。CSV 文件保留 Profile 指针和证据 ID，便于制作人、TA 与美术负责人筛选交接。</footer>
+<section id="delivery-hotspots"><div class="section-head"><div><h2>交付目录热区</h2><p>先按采集失败、需修复、问题/对象、问题数和目录路径定位交付风险，再进入对应目录复核 Evidence。问题/对象是规则问题数除以处理对象数，不是质量评分或运行时性能指标。</p></div><div class="meta">{group_view['group_count']} 个目录组</div></div>
+<div class="table-wrap"><table><thead><tr><th>排名</th><th>交付目录组</th><th>体检刻度</th><th>对象</th><th>通过</th><th>问题</th><th>问题/对象</th><th>失败</th><th>未复核 / 需修复 / 例外</th></tr></thead><tbody>{group_overview}</tbody></table></div></section>
+<h2>目录证据台</h2>
+{group_evidence}
+<footer>此文件由 Unreal Asset Batch Auditor 从版本化 JSON Report 与独立 Review Ledger 确定性生成，不重新扫描或修改资产。审计问题明细 CSV 保留 Profile 指针和 Evidence ID；交付目录热区 CSV 供制作人、TA 与美术负责人筛选交接。</footer>
 </main></body></html>
 """
 
@@ -322,13 +447,20 @@ def export_handoff(
         else {}
     )
     rows = _rows(report, reviews)
-    html_payload = _html_text(report, rows).encode("utf-8")
+    try:
+        group_view = build_delivery_group_view(report_path, review_ledger_root)
+    except DeliveryGroupError as exc:
+        raise HandoffError(f"报告无法生成交付目录热区：{exc}") from exc
+    html_payload = _html_text(report, rows, group_view).encode("utf-8")
     csv_payload = _csv_bytes(rows)
+    groups_csv_payload = _group_csv_bytes(group_view)
     html_path = root / "审计交接报告.html"
     csv_path = root / "审计问题明细.csv"
+    groups_csv_path = root / "交付目录热区.csv"
     manifest_path = root / "交接清单.json"
     html_path.write_bytes(html_payload)
     csv_path.write_bytes(csv_payload)
+    groups_csv_path.write_bytes(groups_csv_payload)
     validation_label, validation_note = _validation_label(report)
     manifest = {
         "schema_version": HANDOFF_VERSION,
@@ -352,7 +484,18 @@ def export_handoff(
         "files": [
             {"path": html_path.name, "sha256": _sha256(html_payload)},
             {"path": csv_path.name, "sha256": _sha256(csv_payload)},
+            {"path": groups_csv_path.name, "sha256": _sha256(groups_csv_payload)},
         ],
+        "delivery_groups": {
+            "schema_version": DELIVERY_GROUP_VIEW_VERSION,
+            "grouping_rule": group_view["grouping_rule"],
+            "ranking_rule": group_view["ranking_rule"],
+            "group_count": group_view["group_count"],
+            "groups_csv_file": groups_csv_path.name,
+            "groups_csv_sha256": _sha256(groups_csv_payload),
+            "performance_inference": False,
+            "boundary": "问题/对象仅表示规则问题密度，不推断 FPS、GPU、Shader、Cook 或资产质量。",
+        },
     }
     if review_snapshot is not None:
         manifest["review"] = {
@@ -376,4 +519,4 @@ def export_handoff(
     manifest_path.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
-    return HandoffResult(root, html_path, csv_path, manifest_path)
+    return HandoffResult(root, html_path, csv_path, groups_csv_path, manifest_path)

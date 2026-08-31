@@ -1,0 +1,44 @@
+{
+  "schema_version": "unreal-audit-handoff@1.0.0",
+  "report_id": "report-8a19ab6cca63e661",
+  "report_created_at": "2026-08-31T03:13:18.306465+00:00",
+  "profile_id": "demo-desktop-balanced-v3",
+  "profile_version": "3.0.0",
+  "collection_mode": "unreal_editor",
+  "real_unreal_validation": true,
+  "host_engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "validation_label": "真实 Unreal 宿主采集",
+  "validation_boundary": "资产事实由报告记录的 Unreal Editor 宿主采集；导出过程只读取报告，不重新扫描或修改资产。",
+  "summary": {
+    "requested_asset_count": 26,
+    "processed_asset_count": 26,
+    "cancelled_asset_count": 0,
+    "asset_count": 24,
+    "issue_count": 47,
+    "collection_failure_count": 2
+  },
+  "files": [
+    {
+      "path": "审计交接报告.html",
+      "sha256": "292779c6b17b70e28a29e1c60bc3d95a0a65e471a92201de2c5468ac0f960fe8"
+    },
+    {
+      "path": "审计问题明细.csv",
+      "sha256": "5b5e27145da6250e9c20f501c5298f3c3337ac8543a2dba399a1f88f37b1ff7a"
+    },
+    {
+      "path": "交付目录热区.csv",
+      "sha256": "1300830445cbf55b676748b8d7596e3f8c6709c6e9ea1b151830bcc7d387b816"
+    }
+  ],
+  "delivery_groups": {
+    "schema_version": "unreal-audit-delivery-groups@1.0.0",
+    "grouping_rule": "package_parent_first_3_segments",
+    "ranking_rule": "采集失败 > 需修复 > 问题密度 > 问题数 > 目录路径",
+    "group_count": 6,
+    "groups_csv_file": "交付目录热区.csv",
+    "groups_csv_sha256": "1300830445cbf55b676748b8d7596e3f8c6709c6e9ea1b151830bcc7d387b816",
+    "performance_inference": false,
+    "boundary": "问题/对象仅表示规则问题密度，不推断 FPS、GPU、Shader、Cook 或资产质量。"
+  }
+}

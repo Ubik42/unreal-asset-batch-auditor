@@ -57,6 +57,7 @@ def test_panel_task_advances_one_batch_per_tick_and_exports_handoff(tmp_path: Pa
     handoff_root = Path(terminal["handoff_path"])
     assert (handoff_root / "审计交接报告.html").exists()
     assert (handoff_root / "审计问题明细.csv").exists()
+    assert (handoff_root / "交付目录热区.csv").exists()
     assert (handoff_root / "交接清单.json").exists()
 
 

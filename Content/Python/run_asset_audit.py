@@ -87,6 +87,7 @@ def export_handoff_from_request_file(request_path: str) -> dict:
         "root": str(result.root),
         "html_path": str(result.html_path),
         "csv_path": str(result.csv_path),
+        "groups_csv_path": str(result.groups_csv_path),
         "manifest_path": str(result.manifest_path),
     }
 

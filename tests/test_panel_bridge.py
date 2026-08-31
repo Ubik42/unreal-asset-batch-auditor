@@ -165,6 +165,7 @@ def test_panel_handoff_request_exports_without_rescan(tmp_path: Path, monkeypatc
         root = tmp_path / "handoffs" / "report-1"
         html_path = root / "审计交接报告.html"
         csv_path = root / "审计问题明细.csv"
+        groups_csv_path = root / "交付目录热区.csv"
         manifest_path = root / "交接清单.json"
 
     def fake_export(report_path: str, output_root: str):
@@ -178,3 +179,4 @@ def test_panel_handoff_request_exports_without_rescan(tmp_path: Path, monkeypatc
     assert captured == [(str(tmp_path / "report.json"), str(tmp_path / "handoffs"))]
     assert result["root"].endswith("report-1")
     assert result["html_path"].endswith("审计交接报告.html")
+    assert result["groups_csv_path"].endswith("交付目录热区.csv")

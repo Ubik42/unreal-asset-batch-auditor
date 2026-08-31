@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 23,
+  "stateRevision": 24,
   "status": "active",
-  "currentMilestone": "M14",
+  "currentMilestone": "M15",
   "milestones": [
     { "id": "M0", "title": "Scope and repository baseline", "status": "completed", "dependsOn": [] },
     { "id": "M1", "title": "Read-only Static Mesh audit MVP", "status": "completed", "dependsOn": ["M0"] },
@@ -19,25 +19,26 @@
     { "id": "M11", "title": "v0.9 portfolio release", "status": "completed", "dependsOn": ["M10"] },
     { "id": "M12", "title": "Asset location and review efficiency", "status": "completed", "dependsOn": ["M11"] },
     { "id": "M13", "title": "Review decisions and ownership handoff", "status": "completed", "dependsOn": ["M12"] },
-    { "id": "M14", "title": "Delivery hotspot and asset-group overview", "status": "in_progress", "dependsOn": ["M13"] }
+    { "id": "M14", "title": "Delivery hotspot and asset-group overview", "status": "completed", "dependsOn": ["M13"] },
+    { "id": "M15", "title": "Texture2D delivery audit", "status": "in_progress", "dependsOn": ["M14"] }
   ],
   "nextSlice": {
-    "id": "M14-S2",
-    "milestoneId": "M14",
-    "title": "交付热区进入团队交接包",
+    "id": "M15-S1",
+    "milestoneId": "M15",
+    "title": "Texture2D 只读审计 MVP",
     "scope": [
-      "复用 M14-S1 的目录聚合模型，从已有 Report 和 Review Ledger 生成团队交付摘要，不重新扫描资产",
-      "在中文 HTML 中增加目录热区总览、排序依据和组级审阅进度，并提供组内问题锚点",
-      "增加 Excel 可读的目录组 CSV，并在交接清单中记录文件 SHA-256 与聚合合同版本",
-      "保持规则严重度、人工决定和目录聚合三类语义独立，形成从热区到单条 Evidence 的离线复核路径"
+      "为 Texture2D 定义独立版本化 Profile、采集元数据、Issue、Evidence 与 Report 合同，不破坏现有 Static Mesh 合同",
+      "在 Editor-only C++ 中批量采集所选 Texture2D 的源尺寸、平台尺寸、Mip、Texture Group、Compression、sRGB、Virtual Texture 与 Streaming 状态",
+      "Python 负责 Profile 加载、规则判定和报告，首批覆盖尺寸上限、非 2 次幂、Mip 政策、Texture Group、Compression/sRGB 组合与 Virtual Texture 政策",
+      "原生 Slate 面板增加明确的资产类型与纹理规则选择，保持 Static Mesh 原有路径可用",
+      "使用自行合成的纹理场景覆盖合格、常见错误和边界案例，并完成一次独立 UE 5.8 宿主验证"
     ],
     "nonGoals": [
-      "不增加新的 Unreal 采集字段或扩大资产类型",
-      "不推断帧率、GPU、Shader、Cook 或运行时性能",
-      "不引入工单、数据库、云同步、AI 归因或自动修复",
-      "不修改 Report、Review Ledger、Profile 或任何资产",
-      "不把目录问题密度包装成质量评分或性能评分",
-      "不执行正式发布安装矩阵"
+      "不修改纹理压缩、尺寸、Mip、Texture Group 或任何资产属性",
+      "不估算显存、帧率、采样成本、Shader 成本或最终 Cook 体积",
+      "不审计 Material、Render Target、Virtual Texture Stack 或运行时生成纹理",
+      "不引入 AI 建议、自动修复、云服务或资产数据库",
+      "不执行正式发布安装矩阵或跨 UE 版本兼容声明"
     ],
     "allowedPaths": [
       "Content/Python",
@@ -55,21 +56,22 @@
       "README.md",
       "AGENTS.md"
     ],
-    "evidenceCeiling": "本切片最多证明真实 UE Report 的目录聚合可以确定性进入离线团队包；不等同于外部协作系统、性能分析、正式发布或人工签收。",
-    "realHostRequired": false,
+    "evidenceCeiling": "本切片最多证明 UE 5.8.1 中显式选择的 Texture2D 可以被只读采集并按版本化 Profile 判定；不等同于运行时性能、Cook 结果、跨平台内存或跨版本兼容验证。",
+    "realHostRequired": true,
     "acceptanceCriteria": [
-      "HTML 和目录组 CSV 只消费已有 Report/Review Ledger，源文件哈希保持不变",
-      "目录组计数、排序和审阅数与 delivery-group-view v1 完全一致",
-      "HTML 可从热区组跳到对应问题证据，空组、失败组和无审阅记录均有明确中文状态",
-      "交接清单包含新增文件哈希、聚合合同版本和不推断性能的边界说明",
-      "离线导出测试、中文教程和一份真实 Report 交接样例同步更新"
+      "Texture Profile 与 Report 合同通过 schema 和确定性 fixture 测试，所有阈值均来自 Profile",
+      "C++ 只读取 Texture2D 元数据，批量接口保留逐对象失败并稳定返回，不保存或修改资产",
+      "面板能明确切换 Static Mesh 与 Texture2D 工作流，错误类型选择不会静默扩大扫描范围",
+      "自行合成纹理至少覆盖合格、超尺寸、非 2 次幂、无 Mip、错误分组或色彩空间组合",
+      "UE 5.8 BuildPlugin 与独立隐藏宿主完成真实 Texture2D 批量审计，保存结构化记录和关键中文截图",
+      "README、教程、合同与已知限制同步更新，不把 fixture 或元数据规则宣称成性能分析"
     ],
     "validationCommands": [
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0023.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0024.json",
   "currentBlocker": null,
   "manualTracks": [
     {
