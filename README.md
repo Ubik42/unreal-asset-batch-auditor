@@ -6,7 +6,9 @@
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.8.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
-![资产批量审计完整工作台](docs/images/workflow/v0.8/02-asset-overview.png)
+![Unreal 场景、Content Browser 资产与资产批量审计工作台](docs/images/workflow/v0.8/00-editor-content-browser-overview.png)
+
+<p align="center"><sub>真实 UE Editor 运行画面：在 Content Browser 中选择 Static Mesh 后，由原生 Slate 工作台读取当前选择并准备执行只读批量审计。</sub></p>
 
 ## 这个项目体现什么
 
