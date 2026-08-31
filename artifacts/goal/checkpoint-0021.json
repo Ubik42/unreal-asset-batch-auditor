@@ -12,7 +12,7 @@
     "复制摘要包含资产路径、规则 ID、本地化规则名、实测、阈值、Evidence ID 和说明",
     "UE 5.8 Win64 BuildPlugin 成功，产物标签为 UE_5.8-v0.10.0-dev1",
     "独立隐藏 UE 宿主从真实 /Engine/BasicShapes 问题行同步 Content Browser，自动化通过",
-    "宿主 PID 正常退出，既有 UE PID 在测试前后均存在且未被管理",
+    "本轮创建的宿主 PID 正常退出；一个测试前已存在的 UE PID 在运行窗口内自行消失，脚本记录其未被测试管理，因此不声明该既有会话前后存活",
     "15 张当前原生 Slate 截图位于 docs/images/workflow/v0.10-review，主图为 13-review-actions.png",
     "完整宿主记录位于 artifacts/host-validation/m12/panel-lifecycle-UE_5.8-v0.10.0-dev1-review-actions.json"
   ],
