@@ -2,7 +2,7 @@
 
 面向 Unreal 项目 Static Mesh 的只读交付验收台。项目 Profile 定义预算和预期，Editor-only C++ 模块批量采集元数据，Python 负责规则编排与 JSON 报告。扫描接口不保存资产、不重建网格，也不修改 Nanite。
 
-> **当前源码 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> **当前源码：v0.10.0-dev1 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.9.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
@@ -41,6 +41,15 @@ LOD、Nanite、碰撞与 Lightmap 阈值。普通用户无需接触 JSON 路径�
 切换“问题明细”即可看到严重度、规则、实测值、Profile 阈值和中文证据说明。面板把本次运行写入版本化 JSON Report，保留宿主版本、资产元数据、Issue、Evidence 与批次统计。
 
 ![交付风险谱与可追溯问题明细](docs/images/workflow/v0.9-material/05-issue-details.png)
+
+### 4. 从问题回到资产复核
+
+在“资产总览”或“问题明细”选择一行，复核条会显示当前资产与检查项。`定位资产` 只同步
+Content Browser 选择，`打开复核` 只打开 Static Mesh Editor；问题行还可复制包含资产路径、规则、
+实测、阈值、Evidence ID 和中文说明的确定性摘要。报告路径已失效、对象不是 Static Mesh 或该行属于
+采集失败时，动作保持禁用并说明原因，不会误开其他资产。
+
+![问题行定位、打开与复制证据](docs/images/workflow/v0.10-review/13-review-actions.png)
 
 以上 v0.9-dev2 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件，数据来自真实
 Engine Static Mesh；不是网页复刻或设计稿。完整演示流程另使用 24 个本机生成的项目 Demo `.uasset`。生命周期记录保存测试 PID、
@@ -125,6 +134,7 @@ CSV 和带 SHA-256 的交接清单；制片、主美或外包同事无需安装 
 - “交付风险谱”按几何预算、材质负载、构建就绪、命名路径和采集异常汇总真实问题，点击即可筛选明细；
 - “资产总览”展示每个已采集资产的通过/需处理/失败状态、几何预算、材质/纹理依赖、LOD、Nanite、碰撞、Lightmap UV、Lightmap 分辨率和问题数，不再隐藏通过资产；
 - “问题明细”保留严重度、规则、实测值、Profile 阈值与本地化证据说明，并可直接打开最新 JSON 或报告目录；
+- 资产行和问题行可只读定位到 Content Browser、打开 Static Mesh Editor；规则问题可复制带 Evidence ID 的确定性复核摘要；
 - 面板运行会在项目 `Saved/UnrealAssetBatchAuditor/Sessions` 中保存不可变历史报告和版本化轻量索引，不再只留下会被覆盖的 `latest-report.json`；
 - 中文面板可选择同 Profile 历史会话作为回归基线，查看新增、持续、已解决和采集失败变化；比较结果使用版本化 JSON，可供后续 CI 或团队看板消费；
 - 调用方可设置正整数批次大小；进度事件覆盖请求、处理、成功、失败和取消数量；

@@ -179,3 +179,16 @@ Cook 依赖、运行时 residency、Shader 编译成本、GPU 性能或跨版本
 | 进程隔离 | 通过；本轮全新项目无残留 UE，既有与并发 UE 不受管理 | 同上 |
 
 发布 ZIP SHA-256：`1D555A6A525A0C22436E8B3CFF6F0A1F70D7ACD0B6F7447E9E3CB9ACC7865BCC`。
+
+## 2026-08-30 v0.10-dev1 资产定位与复核
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| BuildPlugin | 通过；UE 5.8 Win64 完成 UHT、C++ 编译、链接与打包 | 本机忽略目录 `artifacts/host-build/UE_5.8-v0.10.0-dev1` |
+| 报告行解析 | 通过；Issue 恢复 Evidence ID，并从 object path 解析真实 Static Mesh | `artifacts/host-validation/m12/panel-lifecycle-UE_5.8-v0.10.0-dev1-review-actions.json` |
+| Content Browser 定位 | 通过；独立隐藏宿主把真实 `/Engine/BasicShapes` 问题行同步到资源网格 | 同上 |
+| 原生 Slate 证据 | 通过；生成 15 张当前图，复核图包含选中问题、定位、打开和复制证据动作 | `docs/images/workflow/v0.10-review/13-review-actions.png` |
+| 进程隔离 | 通过；本轮独立 PID 正常退出，既有 UE PID 在前后均存在且未被管理 | 同上 |
+
+自动化只证明真实对象解析、Content Browser 同步和 Slate 状态，不冒充可见鼠标点击。打开 Static Mesh
+Editor 的入口已完成 UE 编译；当前宿主门禁不声明人工可见打开验证、资产修改或跨版本兼容。

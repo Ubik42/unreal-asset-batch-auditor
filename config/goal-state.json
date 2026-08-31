@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 20,
+  "stateRevision": 21,
   "status": "active",
-  "currentMilestone": "M12",
+  "currentMilestone": "M13",
   "milestones": [
     { "id": "M0", "title": "Scope and repository baseline", "status": "completed", "dependsOn": [] },
     { "id": "M1", "title": "Read-only Static Mesh audit MVP", "status": "completed", "dependsOn": ["M0"] },
@@ -17,26 +17,26 @@
     { "id": "M9", "title": "Material and texture dependency policies", "status": "completed", "dependsOn": ["M8"] },
     { "id": "M10", "title": "Project presets and unattended audit entry point", "status": "completed", "dependsOn": ["M9"] },
     { "id": "M11", "title": "v0.9 portfolio release", "status": "completed", "dependsOn": ["M10"] },
-    { "id": "M12", "title": "Asset location and review efficiency", "status": "in_progress", "dependsOn": ["M11"] }
+    { "id": "M12", "title": "Asset location and review efficiency", "status": "completed", "dependsOn": ["M11"] },
+    { "id": "M13", "title": "Review decisions and ownership handoff", "status": "in_progress", "dependsOn": ["M12"] }
   ],
   "nextSlice": {
-    "id": "M12-S1",
-    "milestoneId": "M12",
-    "title": "问题到资产的定位与复核动作",
+    "id": "M13-S1",
+    "milestoneId": "M13",
+    "title": "不改 Report 的审阅决策台账",
     "scope": [
-      "让资产总览和问题明细中的有效 Static Mesh 可以显式定位到 Content Browser",
-      "提供明确的打开资产复核动作，并对采集失败或不存在路径显示不可用原因",
-      "提供复制单条 Evidence 摘要的确定性操作，便于提交给美术或制片",
-      "保持当前交付验收台视觉语言，并补充真实 Slate 操作证据和教程"
+      "定义版本化 Review Ledger sidecar，以 report_id、issue_id 和 evidence_id 绑定审阅决策，不修改原始 Report",
+      "在问题明细提供未复核、需修复、批准例外三种明确状态，并允许填写负责人和简短备注",
+      "在风险汇总、搜索与团队交接包中展示审阅状态，区分规则事实与人工决定",
+      "处理报告切换、问题消失和未知旧记录，避免把过期决定错误套到新问题"
     ],
     "nonGoals": [
-      "不自动修改资产",
-      "不加入 AI 对话、PCG 或生成能力",
-      "不修改、重命名、移动或保存资产",
-      "不做批量自动修复或生成式建议",
-      "不重做整体 UI 架构",
-      "不做跨 Unreal 版本兼容声明",
-      "不重复执行完整发布安装矩阵"
+      "不接外部工单、账号、权限或云数据库",
+      "不把批准例外写回 Profile 或 Report",
+      "不自动判定负责人、例外理由或修复完成",
+      "不自动修改、保存、重命名或移动资产",
+      "不加入 AI 对话或生成式建议",
+      "不执行正式发布安装矩阵"
     ],
     "allowedPaths": [
       "Content/Python",
@@ -54,21 +54,21 @@
       "README.md",
       "AGENTS.md"
     ],
-    "evidenceCeiling": "本切片最多证明 UE 5.8.1 中报告行到真实资产的只读定位、打开与证据复制；不等同于资产修复、保存或跨版本交互兼容。",
+    "evidenceCeiling": "本切片最多证明 UE 5.8.1 中本地审阅 sidecar 的持久化、映射和导出；不等同于多人并发、权限系统、外部工单集成或资产修复。",
     "realHostRequired": true,
     "acceptanceCriteria": [
-      "资产行与问题行都能从真实 Report 稳定解析目标 object path",
-      "定位动作只同步 Content Browser 选择，打开动作只调用 Editor 资产查看入口",
-      "无效路径和采集失败不会触发错误资产或崩溃，并给出中文状态",
-      "复制文本包含资产、规则、实测、阈值和 Evidence ID，不重新判定规则",
-      "至少在真实 UE 宿主验证一种定位/打开边界，并更新中文教程"
+      "Review Ledger 有版本化 Schema、稳定排序、原子写入和损坏文件隔离",
+      "人工状态、负责人和备注只存在 sidecar，原始 Report 哈希保持不变",
+      "面板能按审阅状态筛选并明确区分规则严重度与人工决定",
+      "切换 Report 时不会按资产名或规则名误复用旧决定，孤儿记录仍可追溯",
+      "团队交接包包含审阅状态且至少完成一次独立 UE 宿主持久化验证"
     ],
     "validationCommands": [
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0020.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0021.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -100,6 +100,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "v0.9.0 完成 55 文件确定性发布、全新安装/真实采集/无人值守/升级/卸载验证，并发布 GitHub Beta Release。"
+    },
+    {
+      "id": "m12s1-review-actions-host",
+      "status": "completed",
+      "blocking": false,
+      "reason": "v0.10-dev1 完成报告行到真实 Static Mesh 的 Content Browser 定位、Editor 打开入口和 Evidence 摘要复制；UE 5.8 BuildPlugin 与独立隐藏宿主定位验证通过。"
     }
   ]
 }

@@ -8,6 +8,7 @@ public class UnrealAssetBatchAuditor : ModuleRules
         PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine" });
         PrivateDependencyModuleNames.AddRange(new[]
         {
+            "ApplicationCore",
             "AssetRegistry",
             "ContentBrowser",
             "ContentBrowserData",

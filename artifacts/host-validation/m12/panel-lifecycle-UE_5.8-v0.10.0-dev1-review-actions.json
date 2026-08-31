@@ -1,0 +1,119 @@
+{
+  "schema_version": "unreal-panel-lifecycle@1.0.0",
+  "created_at": "2026-08-31T02:23:20.6757497+00:00",
+  "engine": "UE 5.8.1",
+  "plugin_build": "UE_5.8-v0.10.0-dev1",
+  "execution": "independent hidden UnrealEditor-Cmd -RenderOffscreen",
+  "test_pid": 41952,
+  "created_unreal_pids": [
+    41952
+  ],
+  "existing_unreal_pids_before": [
+    31052
+  ],
+  "existing_unreal_pids_after": [],
+  "existing_processes_survived": false,
+  "missing_preexisting_pids": [
+    31052
+  ],
+  "preexisting_processes_managed_by_test": false,
+  "started_at": "2026-08-31T02:22:50.6514005+00:00",
+  "finished_at": "2026-08-31T02:23:20.6757497+00:00",
+  "duration_seconds": 30.024,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "automation_tests": "UnrealAssetBatchAuditor.PanelEvidence",
+  "automation_passed": true,
+  "panel_evidence_passed": true,
+  "panel_task_lifecycle_passed": true,
+  "report_path": "artifacts/host-validation/m10/unattended-report.json",
+  "report_sha256": "E2717DBD9F12EAAFD26621C7390D6ED570BE5F3C303124CE95CB09227A43D8E5",
+  "comparison_path": "artifacts/demo/session-history/latest-comparison.v1.json",
+  "comparison_sha256": "4C8B5029591D6E47A7983D9398B2823B44E00835ED5DBF2D543BA32DBBE4514F",
+  "log_path": "artifacts/host-runtime/panel-20260830-202250/Saved/Logs/UnrealAssetBatchAuditorHost.log",
+  "committed_log_excerpt": "artifacts/host-validation/m12/panel-lifecycle-UE_5.8-v0.10.0-dev1-review-actions-log.txt",
+  "committed_log_excerpt_sha256": "BB71F6C9CDA76961064B87D45C2BF3AAE333CCC7D960D501EDB8C324EA76A88B",
+  "screenshot_count": 15,
+  "screenshots": [
+    {
+      "path": "docs/images/workflow/v0.10-review/01-empty-state.png",
+      "bytes": 121985,
+      "sha256": "CC536A4942AC8F724F21699CAAE436E855502616B2F74712B986F8670F199E99"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/02-asset-overview.png",
+      "bytes": 143320,
+      "sha256": "1CA77D943219523E5E37E5E3B4710E019CC36584E2D920FD9EC06349847038BB"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/03-passing-assets.png",
+      "bytes": 119870,
+      "sha256": "1C0012ECF99FAA1C077EEF4A9D119FC27E93819544D97052DD62F5F38CCE347A"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/04-assets-needing-work.png",
+      "bytes": 141507,
+      "sha256": "3F93B1397DDB466DB58460C1999DD2C636CEE88D6CAAE0568508D0CC19CABE4A"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/05-issue-details.png",
+      "bytes": 179558,
+      "sha256": "07D346116C9EEE96903F9643AA2C45872680E32179D8484630306D758E49B7FE"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/06-collision-evidence.png",
+      "bytes": 116746,
+      "sha256": "969893FD9653964E7D8025F2597B53FB5A93A4E5E441D927AFD8675F6C9C3605"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/07-lightmap-uv-evidence.png",
+      "bytes": 116452,
+      "sha256": "C5A8D333055717FF4412B45368D89B2C84A53B415CA10A02174BDCF38CE83902"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/08-lightmap-resolution-evidence.png",
+      "bytes": 117196,
+      "sha256": "CD232BE9B5D36AA8FFA73C81CAE3FD01D58269FDABB3C08F2558FC39D58BB205"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/09-object-name-evidence.png",
+      "bytes": 145039,
+      "sha256": "A9269F0AF8C055B49A4F0E9EA0B10AF6629DC0CAF68EC2CB2EACC37FBB3FC292"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/10-package-path-evidence.png",
+      "bytes": 149880,
+      "sha256": "7E46336C4213816C24BFBE6F132B9A3D5181151DFF49C8D8FDE77472D6A904E8"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/11-regression-overview.png",
+      "bytes": 215063,
+      "sha256": "A0FEA7551E6772BEB4A69B55BE7F2799203AC93BC36105D7AB46367C4809AD59"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/12-resolved-changes.png",
+      "bytes": 180559,
+      "sha256": "AE582D278715C75B0B4B1CAFFC4C7C472E55100400177B3234CFDF92B0447767"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/13-review-actions.png",
+      "bytes": 177718,
+      "sha256": "D9E2731798CAF931CEBDB8A6E268F50A818061A077B976CA170BF0787DB1A8B8"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/14-running-batch-task.png",
+      "bytes": 145107,
+      "sha256": "90DF8D6D335D77A1B5803EADF34F56778A790B7C7F2BAB24BFC366D28B8106E0"
+    },
+    {
+      "path": "docs/images/workflow/v0.10-review/15-cancelling-task.png",
+      "bytes": 145150,
+      "sha256": "444DFE41982C560D6B2730E97E772C5802420DB6D8AE869820C9E4CA50D76F44"
+    }
+  ],
+  "task_artifact_count": 0,
+  "task_artifacts": null,
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false
+}

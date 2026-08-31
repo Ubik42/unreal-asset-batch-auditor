@@ -170,6 +170,18 @@ Demo 资产、三套 UE Report、UE 5.8.1 `UE_5.8.1-v0.6.0-dev1` BuildPlugin、�
 `artifacts/host-validation/m7/v0.9.0-ue5.8.1-win64-validation.json`。只覆盖 Windows 11、Win64、
 UE 5.8.1，不声明 Marketplace 或跨版本兼容。
 
+## M12：资产定位与复核效率（已完成）
+
+- 资产总览与问题明细共用一个紧凑复核上下文，不引入聊天式 AI 界面；
+- 有效 Static Mesh 可同步到 Content Browser，或显式打开 Static Mesh Editor；
+- 规则问题可复制资产、规则、实测、阈值、Evidence ID 和说明，不在 UI 中重新判定规则；
+- 采集失败、无效路径、跨工程缺失和非 Static Mesh 对象均保持不可用并显示中文原因；
+- 所有动作只读，不保存、重命名、移动或自动修复资产。
+
+完成证据：UE 5.8 `UE_5.8-v0.10.0-dev1` BuildPlugin 已通过；独立隐藏宿主从真实
+`/Engine/BasicShapes` 报告问题定位到 Content Browser，并生成 15 张当前 Slate 截图。完整记录见
+`artifacts/goal/checkpoint-0021.json`；不把自动化同步选择宣称成可见人工点击测试。
+
 ## 后续候选路线
 
 | 里程碑 | 方向 | 边界 |

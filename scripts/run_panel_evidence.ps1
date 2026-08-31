@@ -8,10 +8,11 @@ param(
     [int]$ExpectedAssets = 26,
     [int]$ExpectedIssues = 47,
     [int]$ExpectedComparisons = 53,
+    [int]$ExpectedScreenshots = 14,
     [int]$TimeoutSeconds = 120,
     [string]$EvidenceMilestone = "m9",
     [string]$EvidenceLabelSuffix = "",
-    [ValidateSet("v2", "v3-material")]
+    [ValidateSet("v2", "v3-material", "review")]
     [string]$EvidenceMode = "v2",
     [switch]$PanelOnly
 )
@@ -186,7 +187,7 @@ $evidencePath = Join-Path $repoRoot "artifacts\host-validation\$EvidenceMileston
 $result | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $evidencePath -Encoding utf8
 
 if ($timedOut -or $process.ExitCode -ne 0 -or -not $automationPassed -or
-    $screenshots.Count -ne 14) {
+    $screenshots.Count -ne $ExpectedScreenshots) {
     throw "Panel evidence failed; inspect $evidencePath and $logPath"
 }
 Write-Output "Panel evidence passed: $evidencePath"

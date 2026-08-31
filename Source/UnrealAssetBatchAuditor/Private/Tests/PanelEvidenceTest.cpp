@@ -105,8 +105,9 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
     TestTrue(
         TEXT("Recursive folder scope discovers real Engine Static Mesh assets"),
         Panel->GetEvidenceSelectedAssetCount() >= 4);
-    const FString EvidenceRiskCategory =
-        EvidenceMode == TEXT("v3-material") ? TEXT("materials") : TEXT("geometry");
+    const FString EvidenceRiskCategory = EvidenceMode == TEXT("v3-material")
+        ? TEXT("materials")
+        : (EvidenceMode == TEXT("review") ? TEXT("structure") : TEXT("geometry"));
     Panel->SetRiskCategoryForEvidence(EvidenceRiskCategory);
     TestTrue(
         TEXT("Risk spectrum filters the report to the evidence category"),
@@ -122,7 +123,7 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
     Capture(TEXT("04-assets-needing-work.png"));
     Panel->SetEvidenceView(false, TEXT(""));
     Capture(TEXT("05-issue-details.png"));
-    if (EvidenceMode == TEXT("v2"))
+    if (EvidenceMode == TEXT("v2") || EvidenceMode == TEXT("review"))
     {
         Panel->SetEvidenceView(false, TEXT("简单碰撞"));
         Capture(TEXT("06-collision-evidence.png"));
@@ -197,11 +198,27 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         Capture(TEXT("08-collection-failures.png"));
     }
 
+    Panel->SetEvidenceView(false, TEXT(""));
+    if (Panel->SelectFirstResolvableIssueForEvidence())
+    {
+        const FString Summary = Panel->GetSelectedEvidenceSummaryForEvidence();
+        TestTrue(TEXT("Review summary carries deterministic Evidence ID"), Summary.Contains(TEXT("Evidence ID：")));
+        FString LocateError;
+        TestTrue(TEXT("Selected report issue locates a real Static Mesh in Content Browser"),
+            Panel->LocateSelectedAssetForEvidence(LocateError));
+        if (!LocateError.IsEmpty()) AddError(LocateError);
+        Capture(TEXT("13-review-actions.png"));
+    }
+    else
+    {
+        AddWarning(TEXT("Evidence report has no issue whose Static Mesh resolves in this host project"));
+    }
+
     Panel->SetEvidenceView(true, TEXT(""));
     Panel->SetTaskEvidenceState(TEXT("running"), 16, 64, 2, 8);
-    Capture(TEXT("13-running-batch-task.png"));
+    Capture(TEXT("14-running-batch-task.png"));
     Panel->SetTaskEvidenceState(TEXT("cancelling"), 24, 64, 3, 8);
-    Capture(TEXT("14-cancelling-task.png"));
+    Capture(TEXT("15-cancelling-task.png"));
 
     FSlateApplication::Get().RequestDestroyWindow(Window);
     return bPassed;

@@ -8,7 +8,9 @@
 #include "IContentBrowserSingleton.h"
 #include "DesktopPlatformModule.h"
 #include "Framework/Application/SlateApplication.h"
+#include "HAL/PlatformApplicationMisc.h"
 #include "HAL/PlatformProcess.h"
+#include "Editor.h"
 #include "Interfaces/IPluginManager.h"
 #include "IPythonScriptPlugin.h"
 #include "JsonObjectConverter.h"
@@ -16,6 +18,8 @@
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Modules/ModuleManager.h"
+#include "Subsystems/AssetEditorSubsystem.h"
+#include "UObject/SoftObjectPath.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Widgets/Images/SImage.h"
@@ -640,6 +644,49 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         .HintText(FText::FromString(TEXT("搜索资产、状态、规则或证据说明")))
                         .OnTextChanged(this, &SUnrealAssetAuditPanel::HandleSearchChanged)
                     ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(14, 0, 14, 8)
+                    [
+                        SNew(SBorder)
+                        .BorderImage(FAppStyle::GetBrush(TEXT("Brushes.Header")))
+                        .BorderBackgroundColor(FLinearColor(0.045f, 0.055f, 0.058f, 1.0f))
+                        .Padding(FMargin(10, 6))
+                        [
+                            SNew(SHorizontalBox)
+                            + SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)
+                            [
+                                SNew(STextBlock)
+                                .Text(this, &SUnrealAssetAuditPanel::GetReviewContextText)
+                                .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(8, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                                .Text(FText::FromString(TEXT("定位资产")))
+                                .ToolTipText(this, &SUnrealAssetAuditPanel::GetReviewActionTooltip)
+                                .IsEnabled(this, &SUnrealAssetAuditPanel::CanLocateReviewAsset)
+                                .OnClicked(this, &SUnrealAssetAuditPanel::LocateReviewAsset)
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                                .Text(FText::FromString(TEXT("打开复核")))
+                                .ToolTipText(this, &SUnrealAssetAuditPanel::GetReviewActionTooltip)
+                                .IsEnabled(this, &SUnrealAssetAuditPanel::CanOpenReviewAsset)
+                                .OnClicked(this, &SUnrealAssetAuditPanel::OpenReviewAsset)
+                            ]
+                            + SHorizontalBox::Slot().AutoWidth().Padding(6, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .ButtonStyle(FAppStyle::Get(), TEXT("SimpleButton"))
+                                .Text(FText::FromString(TEXT("复制证据")))
+                                .ToolTipText(FText::FromString(TEXT("复制资产、规则、实测、阈值与 Evidence ID")))
+                                .IsEnabled(this, &SUnrealAssetAuditPanel::CanCopyReviewEvidence)
+                                .OnClicked(this, &SUnrealAssetAuditPanel::CopyReviewEvidence)
+                            ]
+                        ]
+                    ]
                     + SVerticalBox::Slot().FillHeight(1).Padding(14, 0, 14, 10)
                     [
                         SNew(SOverlay)
@@ -650,6 +697,8 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                             .ListItemsSource(&FilteredAssets)
                             .SelectionMode(ESelectionMode::Single)
                             .OnGenerateRow(this, &SUnrealAssetAuditPanel::GenerateAssetRow)
+                            .OnSelectionChanged(this, &SUnrealAssetAuditPanel::HandleAssetSelectionChanged)
+                            .OnMouseButtonDoubleClick(this, &SUnrealAssetAuditPanel::HandleAssetDoubleClick)
                             .HeaderRow
                             (
                                 SNew(SHeaderRow)
@@ -674,6 +723,8 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                             .ListItemsSource(&FilteredIssues)
                             .SelectionMode(ESelectionMode::Single)
                             .OnGenerateRow(this, &SUnrealAssetAuditPanel::GenerateIssueRow)
+                            .OnSelectionChanged(this, &SUnrealAssetAuditPanel::HandleIssueSelectionChanged)
+                            .OnMouseButtonDoubleClick(this, &SUnrealAssetAuditPanel::HandleIssueDoubleClick)
                             .HeaderRow
                             (
                                 SNew(SHeaderRow)
@@ -1148,6 +1199,8 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
     CurrentReportCreatedAt = Root->GetStringField(TEXT("created_at"));
     AllIssues.Reset();
     AllAssets.Reset();
+    SelectedReviewIssue.Reset();
+    SelectedReviewAsset.Reset();
     TSet<FString> AssetsWithIssues;
     TMap<FString, int32> IssueCountByAsset;
 
@@ -1165,6 +1218,7 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         Item->Severity = Issue->GetStringField(TEXT("severity"));
         Item->AssetPath = Issue->GetStringField(TEXT("asset_path"));
         Item->RuleId = Issue->GetStringField(TEXT("rule_id"));
+        Item->EvidenceId = Issue->GetStringField(TEXT("evidence_id"));
         const FString RawMessage = Issue->GetStringField(TEXT("message"));
         AssetsWithIssues.Add(Item->AssetPath);
         IssueCountByAsset.FindOrAdd(Item->AssetPath) += 1;
@@ -1463,6 +1517,56 @@ void SUnrealAssetAuditPanel::SetEvidenceView(bool bAssetOverview, const FString&
     }
 }
 
+bool SUnrealAssetAuditPanel::SelectIssueForEvidence(const FString& AssetPath, const FString& RuleId)
+{
+    for (const FIssuePtr& Item : AllIssues)
+    {
+        if (Item->AssetPath == AssetPath && Item->RuleId == RuleId)
+        {
+            ResultViewMode = 1;
+            HandleIssueSelectionChanged(Item, ESelectInfo::Direct);
+            if (IssueList.IsValid()) IssueList->SetSelection(Item);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool SUnrealAssetAuditPanel::SelectFirstResolvableIssueForEvidence()
+{
+    for (const FIssuePtr& Item : AllIssues)
+    {
+        HandleIssueSelectionChanged(Item, ESelectInfo::Direct);
+        FAssetData AssetData;
+        FString Error;
+        if (!Item->EvidenceId.IsEmpty() && TryResolveReviewAsset(AssetData, Error))
+        {
+            ResultViewMode = 1;
+            if (IssueList.IsValid()) IssueList->SetSelection(Item);
+            return true;
+        }
+    }
+    SelectedReviewIssue.Reset();
+    return false;
+}
+
+FString SUnrealAssetAuditPanel::GetSelectedEvidenceSummaryForEvidence() const
+{
+    return BuildReviewEvidenceSummary();
+}
+
+bool SUnrealAssetAuditPanel::LocateSelectedAssetForEvidence(FString& OutError)
+{
+    FAssetData AssetData;
+    if (!TryResolveReviewAsset(AssetData, OutError)) return false;
+    FContentBrowserModule& ContentBrowserModule =
+        FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
+    TArray<FAssetData> AssetsToSync{AssetData};
+    ContentBrowserModule.Get().SyncBrowserToAssets(AssetsToSync);
+    OutError.Reset();
+    return true;
+}
+
 
 void SUnrealAssetAuditPanel::SetComparisonEvidenceView(const FString& FilterText)
 {
@@ -1595,6 +1699,186 @@ TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateComparisonRow(
     FComparisonPtr Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
     return SNew(SAuditComparisonRow, OwnerTable).Item(Item);
+}
+
+void SUnrealAssetAuditPanel::HandleIssueSelectionChanged(FIssuePtr Item, ESelectInfo::Type SelectInfo)
+{
+    SelectedReviewIssue = Item;
+    if (!Item.IsValid()) return;
+    SelectedReviewAsset.Reset();
+    if (AssetList.IsValid()) AssetList->ClearSelection();
+}
+
+void SUnrealAssetAuditPanel::HandleAssetSelectionChanged(FAssetPtr Item, ESelectInfo::Type SelectInfo)
+{
+    SelectedReviewAsset = Item;
+    if (!Item.IsValid()) return;
+    SelectedReviewIssue.Reset();
+    if (IssueList.IsValid()) IssueList->ClearSelection();
+}
+
+void SUnrealAssetAuditPanel::HandleIssueDoubleClick(FIssuePtr Item)
+{
+    HandleIssueSelectionChanged(Item, ESelectInfo::Direct);
+    OpenReviewAsset();
+}
+
+void SUnrealAssetAuditPanel::HandleAssetDoubleClick(FAssetPtr Item)
+{
+    HandleAssetSelectionChanged(Item, ESelectInfo::Direct);
+    OpenReviewAsset();
+}
+
+FString SUnrealAssetAuditPanel::GetReviewAssetPath() const
+{
+    if (SelectedReviewIssue.IsValid()) return SelectedReviewIssue->AssetPath;
+    if (SelectedReviewAsset.IsValid()) return SelectedReviewAsset->AssetPath;
+    return FString();
+}
+
+bool SUnrealAssetAuditPanel::TryResolveReviewAsset(FAssetData& OutAssetData, FString& OutError) const
+{
+    const FString AssetPath = GetReviewAssetPath();
+    if (AssetPath.IsEmpty())
+    {
+        OutError = TEXT("请先在资产总览或问题明细中选择一行");
+        return false;
+    }
+    if (SelectedReviewIssue.IsValid() && SelectedReviewIssue->RuleId == TEXT("collection.failure"))
+    {
+        OutError = TEXT("该行是采集失败记录，没有可复核的 Static Mesh 对象");
+        return false;
+    }
+    const FSoftObjectPath ObjectPath(AssetPath);
+    if (!ObjectPath.IsValid())
+    {
+        OutError = TEXT("报告中的资产路径格式无效");
+        return false;
+    }
+    const FAssetRegistryModule& AssetRegistryModule =
+        FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+    OutAssetData = AssetRegistryModule.Get().GetAssetByObjectPath(ObjectPath);
+    if (!OutAssetData.IsValid())
+    {
+        OutError = TEXT("当前工程找不到该资产；它可能已被移动、删除或来自另一工程");
+        return false;
+    }
+    if (OutAssetData.AssetClassPath != UStaticMesh::StaticClass()->GetClassPathName())
+    {
+        OutError = TEXT("该对象不是 Static Mesh，无法进入本插件的复核流程");
+        return false;
+    }
+    OutError.Reset();
+    return true;
+}
+
+bool SUnrealAssetAuditPanel::CanLocateReviewAsset() const
+{
+    FAssetData AssetData;
+    FString Error;
+    return TryResolveReviewAsset(AssetData, Error);
+}
+
+bool SUnrealAssetAuditPanel::CanOpenReviewAsset() const
+{
+    return CanLocateReviewAsset();
+}
+
+bool SUnrealAssetAuditPanel::CanCopyReviewEvidence() const
+{
+    return SelectedReviewIssue.IsValid() && !SelectedReviewIssue->EvidenceId.IsEmpty();
+}
+
+FText SUnrealAssetAuditPanel::GetReviewContextText() const
+{
+    if (SelectedReviewIssue.IsValid())
+    {
+        return FText::Format(
+            FText::FromString(TEXT("复核：{0}  /  {1}")),
+            FText::FromString(FPaths::GetBaseFilename(SelectedReviewIssue->AssetPath)),
+            RuleLabel(SelectedReviewIssue->RuleId));
+    }
+    if (SelectedReviewAsset.IsValid())
+    {
+        return FText::FromString(FString::Printf(TEXT("复核：%s"), *SelectedReviewAsset->AssetName));
+    }
+    return FText::FromString(TEXT("选择结果行后，可定位资源、打开 Static Mesh 编辑器或复制审计证据"));
+}
+
+FText SUnrealAssetAuditPanel::GetReviewActionTooltip() const
+{
+    FAssetData AssetData;
+    FString Error;
+    return FText::FromString(
+        TryResolveReviewAsset(AssetData, Error)
+            ? TEXT("在 Content Browser 定位，或打开 Static Mesh 编辑器复核")
+            : Error);
+}
+
+FString SUnrealAssetAuditPanel::BuildReviewEvidenceSummary() const
+{
+    if (!SelectedReviewIssue.IsValid() || SelectedReviewIssue->EvidenceId.IsEmpty()) return FString();
+    return FString::Printf(
+        TEXT("资产：%s\n检查项：%s (%s)\n实测：%s\n阈值：%s\nEvidence ID：%s\n说明：%s"),
+        *SelectedReviewIssue->AssetPath,
+        *RuleLabel(SelectedReviewIssue->RuleId).ToString(),
+        *SelectedReviewIssue->RuleId,
+        *SelectedReviewIssue->Observed,
+        *SelectedReviewIssue->Expected,
+        *SelectedReviewIssue->EvidenceId,
+        *SelectedReviewIssue->Message);
+}
+
+FReply SUnrealAssetAuditPanel::LocateReviewAsset()
+{
+    FAssetData AssetData;
+    FString Error;
+    if (!TryResolveReviewAsset(AssetData, Error))
+    {
+        StatusMessage = Error;
+        return FReply::Handled();
+    }
+    FContentBrowserModule& ContentBrowserModule =
+        FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
+    TArray<FAssetData> AssetsToSync{AssetData};
+    ContentBrowserModule.Get().SyncBrowserToAssets(AssetsToSync);
+    StatusMessage = FString::Printf(TEXT("已在 Content Browser 定位：%s"), *AssetData.AssetName.ToString());
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::OpenReviewAsset()
+{
+    FAssetData AssetData;
+    FString Error;
+    if (!TryResolveReviewAsset(AssetData, Error))
+    {
+        StatusMessage = Error;
+        return FReply::Handled();
+    }
+    UObject* Asset = AssetData.GetAsset();
+    UAssetEditorSubsystem* AssetEditorSubsystem = GEditor
+        ? GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()
+        : nullptr;
+    if (!Asset || !AssetEditorSubsystem || !AssetEditorSubsystem->OpenEditorForAsset(Asset))
+    {
+        StatusMessage = TEXT("Static Mesh 编辑器未能打开；可先使用“定位资产”复核路径");
+        return FReply::Handled();
+    }
+    StatusMessage = FString::Printf(TEXT("已打开 Static Mesh 复核：%s"), *AssetData.AssetName.ToString());
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::CopyReviewEvidence()
+{
+    const FString Summary = BuildReviewEvidenceSummary();
+    if (Summary.IsEmpty())
+    {
+        StatusMessage = TEXT("当前行没有可复制的规则 Evidence；请在问题明细中选择一条审计问题");
+        return FReply::Handled();
+    }
+    FPlatformApplicationMisc::ClipboardCopy(*Summary);
+    StatusMessage = FString::Printf(TEXT("已复制审计证据：%s"), *SelectedReviewIssue->EvidenceId);
+    return FReply::Handled();
 }
 
 FReply SUnrealAssetAuditPanel::ShowAssetOverview()

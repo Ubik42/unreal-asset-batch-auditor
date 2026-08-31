@@ -4,6 +4,7 @@
 #include "Widgets/SCompoundWidget.h"
 
 class ITableRow;
+struct FAssetData;
 class SEditableTextBox;
 class SSearchBox;
 class STableViewBase;
@@ -19,6 +20,7 @@ struct FAuditPanelIssue
     FString Metric;
     FString Observed;
     FString Expected;
+    FString EvidenceId;
 };
 
 struct FAuditProfileOption
@@ -93,6 +95,10 @@ public:
     int32 GetEvidenceComparisonCount() const { return AllComparisons.Num(); }
     int32 GetEvidenceSelectedAssetCount() const { return SelectedAssetPaths.Num(); }
     int32 GetEvidenceFilteredIssueCount() const { return FilteredIssues.Num(); }
+    bool SelectIssueForEvidence(const FString& AssetPath, const FString& RuleId);
+    bool SelectFirstResolvableIssueForEvidence();
+    FString GetSelectedEvidenceSummaryForEvidence() const;
+    bool LocateSelectedAssetForEvidence(FString& OutError);
 #endif
 
 private:
@@ -110,6 +116,10 @@ private:
     TSharedRef<SWidget> GenerateProfileOption(FProfilePtr Item) const;
     void HandleSearchChanged(const FText& Text);
     void HandleSessionChanged(FSessionPtr Item, ESelectInfo::Type SelectInfo);
+    void HandleIssueSelectionChanged(FIssuePtr Item, ESelectInfo::Type SelectInfo);
+    void HandleAssetSelectionChanged(FAssetPtr Item, ESelectInfo::Type SelectInfo);
+    void HandleIssueDoubleClick(FIssuePtr Item);
+    void HandleAssetDoubleClick(FAssetPtr Item);
     void RebuildFilteredIssues();
     void RebuildFilteredAssets();
     void RebuildFilteredComparisons();
@@ -125,6 +135,9 @@ private:
     FReply ShowAssetOverview();
     FReply ShowIssueDetails();
     FReply ShowComparison();
+    FReply LocateReviewAsset();
+    FReply OpenReviewAsset();
+    FReply CopyReviewEvidence();
     TSharedRef<SWidget> BuildSummaryCell(const FText& Label, TAttribute<FText> Value, const FLinearColor& Accent) const;
     TSharedRef<SWidget> BuildRiskCell(const FText& Label, const FString& Category, const FLinearColor& Accent);
     FReply ToggleRiskCategory(FString Category);
@@ -140,6 +153,8 @@ private:
     FText GetSelectedProfileLabel() const;
     FText GetSelectedProfileSummary() const;
     FText GetResultViewHint() const;
+    FText GetReviewContextText() const;
+    FText GetReviewActionTooltip() const;
     FText GetSelectedSessionLabel() const;
     FText GetComparisonBaselineText() const;
     FText GetNewIssueCountText() const;
@@ -157,6 +172,12 @@ private:
     bool CanRunAudit() const;
     bool CanCancelAudit() const;
     bool CanRunComparison() const;
+    bool CanLocateReviewAsset() const;
+    bool CanOpenReviewAsset() const;
+    bool CanCopyReviewEvidence() const;
+    bool TryResolveReviewAsset(FAssetData& OutAssetData, FString& OutError) const;
+    FString GetReviewAssetPath() const;
+    FString BuildReviewEvidenceSummary() const;
 
     TArray<FString> SelectedAssetPaths;
     TArray<FString> SelectedFolderPaths;
@@ -166,6 +187,8 @@ private:
     TArray<FAssetPtr> AllAssets;
     TArray<FAssetPtr> FilteredAssets;
     TSharedPtr<SListView<FAssetPtr>> AssetList;
+    FAssetPtr SelectedReviewAsset;
+    FIssuePtr SelectedReviewIssue;
     TArray<FComparisonPtr> AllComparisons;
     TArray<FComparisonPtr> FilteredComparisons;
     TSharedPtr<SListView<FComparisonPtr>> ComparisonList;
