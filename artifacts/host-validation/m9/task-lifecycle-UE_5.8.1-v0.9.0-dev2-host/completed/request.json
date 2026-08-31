@@ -1,0 +1,17 @@
+{
+	"task_id": "task-completed",
+	"profile_path": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-193529/Plugins/UnrealAssetBatchAuditor/Resources/Profiles/host-material-evidence.v3.json",
+	"output_path": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-193529/Saved/UnrealAssetBatchAuditor/TaskLifecycleEvidence/completed/latest-report.json",
+	"session_root": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-193529/Saved/UnrealAssetBatchAuditor/TaskLifecycleEvidence/completed/Sessions",
+	"handoff_root": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-193529/Saved/UnrealAssetBatchAuditor/TaskLifecycleEvidence/completed/Handoffs",
+	"state_path": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-193529/Saved/UnrealAssetBatchAuditor/TaskLifecycleEvidence/completed/task-state.json",
+	"cancel_path": "D:/3D/_tools/unreal-asset-batch-auditor/artifacts/host-runtime/panel-20260830-193529/Saved/UnrealAssetBatchAuditor/TaskLifecycleEvidence/completed/cancel.json",
+	"batch_size": 2,
+	"asset_paths": [
+		"/Engine/BasicShapes/Cone.Cone",
+		"/Engine/BasicShapes/Cube.Cube",
+		"/Engine/BasicShapes/Cylinder.Cylinder",
+		"/Engine/BasicShapes/Sphere.Sphere",
+		"/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/TextureBasedWPO/DemoBoxMesh.DemoBoxMesh"
+	]
+}

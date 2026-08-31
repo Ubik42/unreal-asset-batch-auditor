@@ -92,9 +92,7 @@ class UnrealCppCollector:
                     )
                 )
                 continue
-            result.assets.append(
-                StaticMeshMetadata.from_dict(
-                    {
+            metadata = {
                         "asset_path": str(row.asset_path),
                         "asset_name": str(row.asset_name),
                         "lods": [
@@ -123,8 +121,26 @@ class UnrealCppCollector:
                         ),
                         "lightmap_resolution": getattr(row, "lightmap_resolution", None),
                     }
-                )
+            dependency_fields = (
+                "material_paths",
+                "missing_material_slot_count",
+                "unique_material_count",
+                "texture_paths",
+                "texture_dependency_count",
+                "max_texture_dimension",
             )
+            if all(hasattr(row, name) for name in dependency_fields):
+                metadata.update(
+                    {
+                        "material_paths": sorted(str(item) for item in row.material_paths),
+                        "missing_material_slot_count": int(row.missing_material_slot_count),
+                        "unique_material_count": int(row.unique_material_count),
+                        "texture_paths": sorted(str(item) for item in row.texture_paths),
+                        "texture_dependency_count": int(row.texture_dependency_count),
+                        "max_texture_dimension": int(row.max_texture_dimension),
+                    }
+                )
+            result.assets.append(StaticMeshMetadata.from_dict(metadata))
         for missing_path in sorted(set(asset_paths) - returned_paths):
             result.failures.append(
                 CollectionFailure(

@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from demo_audit_common import run_demo
 
 run_demo(
-    "demo-desktop-balanced.v2.json",
+    "demo-desktop-balanced.v3.json",
     manifest_filename="demo-baseline-asset-manifest.json",
-    output_stem="demo-desktop-balanced-v2-baseline",
+    output_stem="demo-desktop-balanced-v3-baseline",
 )

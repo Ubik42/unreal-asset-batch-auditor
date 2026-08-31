@@ -1,6 +1,13 @@
 # 工作流截图说明
 
-## v0.9-dev1 当前源码界面
+## v0.9-dev2 当前源码界面
+
+`v0.9-material/` 中的 01–14 来自独立 UE 5.8.1 宿主，展示材质/纹理依赖台账、材质风险谱、
+纹理依赖与尺寸证据、回归对比和任务状态。源 Report 真实采集 5 个 Engine Static Mesh；证据位于：
+
+`artifacts/host-validation/m9/panel-lifecycle-UE_5.8.1-v0.9.0-dev2-material-ui.json`
+
+## v0.9-dev1 文件夹范围历史
 
 `v0.9/` 中的 01–14 来自独立 UE 5.8.1 宿主，展示“资产交付验收台”、文件夹批次范围和交付风险谱。
 宿主还实际从 `/Engine/BasicShapes` 递归发现 Static Mesh 并验证几何风险筛选。证据位于：

@@ -1,0 +1,18 @@
+{
+  "schema_version": "unreal-audit-comparison@1.0.0",
+  "status": "no_baseline",
+  "current_session": {
+    "session_id": "session-4b6f3ab0fb2bf33b",
+    "created_at": "2026-08-31T01:35:55.418070+00:00",
+    "report_id": "report-ead7b262974bf3ab",
+    "profile_id": "host-material-evidence-v3",
+    "profile_version": "3.0.0",
+    "report_path": "Reports/20260831013555418070-report-ead7b262974bf3ab-4b6f3ab0.json",
+    "report_sha256": "4b6f3ab0fb2bf33b221e295bd209e8b95f60717d9d082344659ff215d12730f3",
+    "asset_count": 5,
+    "issue_count": 9,
+    "collection_failure_count": 0,
+    "cancelled_asset_count": 0
+  },
+  "message": "当前 Profile 尚无更早会话，完成下一次审计后即可比较。"
+}

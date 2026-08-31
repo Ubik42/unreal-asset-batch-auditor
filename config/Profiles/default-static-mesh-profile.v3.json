@@ -1,0 +1,22 @@
+{
+  "schema_version": "unreal-static-mesh-profile@3.0.0",
+  "profile_id": "example-desktop-prop-v3",
+  "profile_version": "3.0.0",
+  "description": "示例规则：加入材质赋值和纹理依赖预算；所有数值必须由项目负责人重新评审。",
+  "rules": {
+    "triangle_budget": { "enabled": true, "max_lod0": 50000, "severity": "error" },
+    "vertex_budget": { "enabled": true, "max_lod0": 35000, "severity": "error" },
+    "material_slots": { "enabled": true, "max_count": 4, "severity": "warning" },
+    "lod_count": { "enabled": true, "min_count": 3, "severity": "warning" },
+    "nanite": { "enabled": true, "expected": "enabled", "severity": "warning" },
+    "simple_collision": { "enabled": true, "min_primitive_count": 1, "allow_complex_as_simple": true, "severity": "warning" },
+    "lightmap_uv": { "enabled": true, "required": true, "min_uv_channel_count": 2, "severity": "warning" },
+    "lightmap_resolution": { "enabled": true, "min_resolution": 32, "severity": "info" },
+    "object_name": { "enabled": true, "required_prefixes": ["SM_"], "pattern": "^SM_[A-Za-z0-9_]+$", "severity": "warning" },
+    "package_path": { "enabled": true, "allowed_roots": ["/Game/Props"], "forbidden_segments": ["Developers", "Temp", "Test"], "severity": "warning" },
+    "missing_materials": { "enabled": true, "max_missing_slots": 0, "severity": "error" },
+    "unique_materials": { "enabled": true, "max_count": 4, "severity": "warning" },
+    "texture_dependencies": { "enabled": true, "max_count": 16, "severity": "warning" },
+    "texture_dimension": { "enabled": true, "max_size": 4096, "severity": "warning" }
+  }
+}

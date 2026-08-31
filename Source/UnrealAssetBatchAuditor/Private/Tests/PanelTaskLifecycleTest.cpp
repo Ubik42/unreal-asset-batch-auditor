@@ -122,7 +122,7 @@ public:
                 return true;
             }
             if (Value != TEXT("completed")) return false;
-            ValidateTerminal(FullPaths, State, TEXT("completed"), 4, 0);
+            ValidateTerminal(FullPaths, State, TEXT("completed"), 5, 0);
             if (!StartTask(
                 Test, Root, ProfilePath, TEXT("cancelled"), CancelAssets, 2, CancelPaths))
             {
@@ -197,6 +197,41 @@ private:
             TEXT("Cancelled count"), State->GetIntegerField(TEXT("cancelled_count")),
             ExpectedCancelled);
         Test.TestTrue(TEXT("Terminal Report exists"), FPaths::FileExists(Paths.Report));
+        if (ExpectedState == TEXT("completed"))
+        {
+            TSharedPtr<FJsonObject> Report;
+            Test.TestTrue(TEXT("v3 Report is parseable"), ReadJson(Paths.Report, Report));
+            if (Report.IsValid())
+            {
+                Test.TestEqual(
+                    TEXT("Material dependency Report schema"),
+                    Report->GetStringField(TEXT("schema_version")),
+                    FString(TEXT("unreal-asset-audit@3.0.0")));
+                bool bFoundMaterial = false;
+                bool bFoundTexture = false;
+                for (const TSharedPtr<FJsonValue>& Value : Report->GetArrayField(TEXT("assets")))
+                {
+                    const TSharedPtr<FJsonObject> Asset = Value->AsObject();
+                    if (!Asset.IsValid()) continue;
+                    bFoundMaterial |= Asset->GetIntegerField(TEXT("unique_material_count")) > 0;
+                    bFoundTexture |= Asset->GetIntegerField(TEXT("texture_dependency_count")) > 0;
+                }
+                Test.TestTrue(TEXT("Real Static Mesh exposes an assigned material"), bFoundMaterial);
+                Test.TestTrue(TEXT("Real material exposes at least one used texture"), bFoundTexture);
+                TSet<FString> IssueRules;
+                for (const TSharedPtr<FJsonValue>& Value : Report->GetArrayField(TEXT("issues")))
+                {
+                    const TSharedPtr<FJsonObject> Issue = Value->AsObject();
+                    if (Issue.IsValid()) IssueRules.Add(Issue->GetStringField(TEXT("rule_id")));
+                }
+                Test.TestTrue(
+                    TEXT("Real texture dependency exceeds evidence Profile"),
+                    IssueRules.Contains(TEXT("static_mesh.texture_dependencies")));
+                Test.TestTrue(
+                    TEXT("Real texture dimension exceeds evidence Profile"),
+                    IssueRules.Contains(TEXT("static_mesh.texture_dimension")));
+            }
+        }
         const FString HandoffPath = State->GetStringField(TEXT("handoff_path"));
         Test.TestTrue(TEXT("Handoff HTML exists"), FPaths::FileExists(FPaths::Combine(HandoffPath, TEXT("审计交接报告.html"))));
         Test.TestTrue(TEXT("Handoff CSV exists"), FPaths::FileExists(FPaths::Combine(HandoffPath, TEXT("审计问题明细.csv"))));
@@ -228,14 +263,15 @@ bool FUnrealAssetBatchAuditorPanelTaskLifecycleTest::RunTest(const FString& Para
         return false;
     }
     const FString ProfilePath = FPaths::Combine(
-        Plugin->GetBaseDir(), TEXT("Resources/Profiles/desktop-balanced.v2.json"));
+        Plugin->GetBaseDir(), TEXT("Resources/Profiles/host-material-evidence.v3.json"));
     const FString Root = FPaths::Combine(
         FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/TaskLifecycleEvidence"));
     const TArray<FString> BasicShapes = {
         TEXT("/Engine/BasicShapes/Cone.Cone"),
         TEXT("/Engine/BasicShapes/Cube.Cube"),
         TEXT("/Engine/BasicShapes/Cylinder.Cylinder"),
-        TEXT("/Engine/BasicShapes/Sphere.Sphere")};
+        TEXT("/Engine/BasicShapes/Sphere.Sphere"),
+        TEXT("/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/TextureBasedWPO/DemoBoxMesh.DemoBoxMesh")};
     FTaskPaths FullPaths;
     if (!StartTask(*this, Root, ProfilePath, TEXT("completed"), BasicShapes, 2, FullPaths))
     {

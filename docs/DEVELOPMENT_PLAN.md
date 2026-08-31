@@ -134,10 +134,21 @@ Demo 资产、三套 UE Report、UE 5.8.1 `UE_5.8.1-v0.6.0-dev1` BuildPlugin、�
 完成证据：63 项 Python 测试和 Ruff；UE 5.8.1 `UE_5.8.1-v0.9.0-dev1` BuildPlugin；独立隐藏
 宿主从真实 `/Engine/BasicShapes` 递归发现网格并验证风险分类；14 张 v0.9-dev1 原生 Slate 截图。
 
+## M9：材质与纹理依赖政策（已完成）
+
+- Profile / Report v3 保留 v1/v2 解析兼容；
+- 缺失材质槽、唯一有效材质数、已加载纹理依赖数和最大纹理尺寸四项政策可独立启停；
+- C++ 只采集所选 Static Mesh 的材质与 `UMaterialInterface::GetUsedTextures` 可见事实；
+- Python 按 Profile 判定，Slate 台账显示“槽/材”和“纹理/最大”，风险谱可只看材质链路。
+
+完成证据：68 项 Python 测试与 Ruff；UE 5.8.1 `UE_5.8.1-v0.9.0-dev2` BuildPlugin；独立隐藏宿主
+真实采集 5 个 Engine Static Mesh，得到每资产 1 个有效材质、2 个已加载纹理依赖，最大边长为 512
+或 32；证据专用模拟 Profile 产生 9 条可追溯问题；14 张当前 Slate 图位于
+`docs/images/workflow/v0.9-material/`。这些事实不等同于完整 Cook 依赖、Shader 成本或 GPU 性能。
+
 ## 后续候选路线
 
 | 里程碑 | 方向 | 边界 |
 | --- | --- | --- |
-| M9 | 材质实例、纹理尺寸/数量与依赖政策 | 仍由 Profile 判定，不做生成式建议 |
 | M10 | 项目预设和无人值守审计入口 | 明确退出码和报告位置，不隐式扫描整个项目 |
 | M11 | v0.9 安装包与作品级交付 | 到发布阶段才跑完整安装/升级矩阵 |

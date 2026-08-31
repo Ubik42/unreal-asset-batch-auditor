@@ -9,8 +9,10 @@ from typing import Any, Literal
 
 CONTRACT_VERSION = "unreal-asset-audit@1.0.0"
 CONTRACT_VERSION_V2 = "unreal-asset-audit@2.0.0"
+CONTRACT_VERSION_V3 = "unreal-asset-audit@3.0.0"
 PROFILE_VERSION = "unreal-static-mesh-profile@1.0.0"
 PROFILE_VERSION_V2 = "unreal-static-mesh-profile@2.0.0"
+PROFILE_VERSION_V3 = "unreal-static-mesh-profile@3.0.0"
 Severity = Literal["info", "warning", "error"]
 
 
@@ -123,21 +125,29 @@ class AuditProfile:
     lightmap_resolution: MinimumRule | None = None
     object_name: ObjectNameRule | None = None
     package_path: PackagePathRule | None = None
+    missing_materials: LimitRule | None = None
+    unique_materials: LimitRule | None = None
+    texture_dependencies: LimitRule | None = None
+    texture_dimension: LimitRule | None = None
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> AuditProfile:
         schema_version = _required(raw, "schema_version")
-        if schema_version not in {PROFILE_VERSION, PROFILE_VERSION_V2}:
+        if schema_version not in {PROFILE_VERSION, PROFILE_VERSION_V2, PROFILE_VERSION_V3}:
             raise ContractError(f"unsupported profile schema_version: {schema_version!r}")
         rules = _required(raw, "rules")
         if not isinstance(rules, dict):
             raise ContractError("rules must be an object")
 
-        def limit(name: str, threshold: str) -> LimitRule:
+        def limit(name: str, threshold: str, *, allow_zero: bool = False) -> LimitRule:
             item = _required(rules, name)
             return LimitRule(
                 enabled=_boolean(_required(item, "enabled"), f"rules.{name}.enabled"),
-                max_value=_positive_int(_required(item, threshold), f"rules.{name}.{threshold}"),
+                max_value=_positive_int(
+                    _required(item, threshold),
+                    f"rules.{name}.{threshold}",
+                    allow_zero=allow_zero,
+                ),
                 severity=_severity(_required(item, "severity"), f"rules.{name}.severity"),
             )
 
@@ -157,7 +167,11 @@ class AuditProfile:
         lightmap_resolution = None
         object_name = None
         package_path = None
-        if schema_version == PROFILE_VERSION_V2:
+        missing_materials = None
+        unique_materials = None
+        texture_dependencies = None
+        texture_dimension = None
+        if schema_version in {PROFILE_VERSION_V2, PROFILE_VERSION_V3}:
             collision = _required(rules, "simple_collision")
             lightmap = _required(rules, "lightmap_uv")
             resolution = _required(rules, "lightmap_resolution")
@@ -249,6 +263,13 @@ class AuditProfile:
                         _required(path_policy, "severity"), "rules.package_path.severity"
                     ),
                 )
+            if schema_version == PROFILE_VERSION_V3:
+                missing_materials = limit(
+                    "missing_materials", "max_missing_slots", allow_zero=True
+                )
+                unique_materials = limit("unique_materials", "max_count")
+                texture_dependencies = limit("texture_dependencies", "max_count")
+                texture_dimension = limit("texture_dimension", "max_size")
 
         return cls(
             schema_version=schema_version,
@@ -273,6 +294,10 @@ class AuditProfile:
             lightmap_resolution=lightmap_resolution,
             object_name=object_name,
             package_path=package_path,
+            missing_materials=missing_materials,
+            unique_materials=unique_materials,
+            texture_dependencies=texture_dependencies,
+            texture_dimension=texture_dimension,
         )
 
     @classmethod
@@ -309,6 +334,12 @@ class StaticMeshMetadata:
     uv_channel_count: int | None = None
     lightmap_coordinate_index: int | None = None
     lightmap_resolution: int | None = None
+    material_paths: tuple[str, ...] | None = None
+    missing_material_slot_count: int | None = None
+    unique_material_count: int | None = None
+    texture_paths: tuple[str, ...] | None = None
+    texture_dependency_count: int | None = None
+    max_texture_dimension: int | None = None
 
     @property
     def has_extended_metadata(self) -> bool:
@@ -330,6 +361,20 @@ class StaticMeshMetadata:
             and self.lightmap_coordinate_index is not None
             and self.uv_channel_count > 0
             and 0 <= self.lightmap_coordinate_index < self.uv_channel_count
+        )
+
+    @property
+    def has_dependency_metadata(self) -> bool:
+        return all(
+            value is not None
+            for value in (
+                self.material_paths,
+                self.missing_material_slot_count,
+                self.unique_material_count,
+                self.texture_paths,
+                self.texture_dependency_count,
+                self.max_texture_dimension,
+            )
         )
 
     @classmethod
@@ -354,6 +399,23 @@ class StaticMeshMetadata:
             not isinstance(collision_complexity, str) or not collision_complexity.strip()
         ):
             raise ContractError("collision_complexity must be a non-empty string or null")
+        def optional_paths(name: str) -> tuple[str, ...] | None:
+            value = raw.get(name)
+            if value is None:
+                return None
+            paths = _string_tuple(value, name, allow_empty=True)
+            if paths != tuple(sorted(set(paths))):
+                raise ContractError(f"{name} must be unique and sorted")
+            return paths
+
+        material_paths = optional_paths("material_paths")
+        texture_paths = optional_paths("texture_paths")
+        unique_material_count = optional_int("unique_material_count")
+        texture_dependency_count = optional_int("texture_dependency_count")
+        if material_paths is not None and unique_material_count != len(material_paths):
+            raise ContractError("unique_material_count must match material_paths")
+        if texture_paths is not None and texture_dependency_count != len(texture_paths):
+            raise ContractError("texture_dependency_count must match texture_paths")
         return cls(
             asset_path=str(_required(raw, "asset_path")),
             asset_name=str(_required(raw, "asset_name")),
@@ -373,6 +435,12 @@ class StaticMeshMetadata:
                 "lightmap_coordinate_index", allow_negative_one=True
             ),
             lightmap_resolution=optional_int("lightmap_resolution"),
+            material_paths=material_paths,
+            missing_material_slot_count=optional_int("missing_material_slot_count"),
+            unique_material_count=unique_material_count,
+            texture_paths=texture_paths,
+            texture_dependency_count=texture_dependency_count,
+            max_texture_dimension=optional_int("max_texture_dimension"),
         )
 
 
@@ -476,13 +544,22 @@ class Report:
             isinstance(batch_size, bool) or not isinstance(batch_size, int) or batch_size < 1
         ):
             raise ContractError("batch_size must be null or a positive integer")
-        use_v2 = profile.schema_version == PROFILE_VERSION_V2 or any(
+        use_v3 = profile.schema_version == PROFILE_VERSION_V3 or any(
+            asset.has_dependency_metadata for asset in assets
+        )
+        use_v2 = profile.schema_version in {PROFILE_VERSION_V2, PROFILE_VERSION_V3} or any(
             asset.has_extended_metadata for asset in assets
         )
+        if use_v3 and any(not asset.has_dependency_metadata for asset in assets):
+            raise ContractError("v3 reports require complete material and texture metadata")
         if use_v2 and any(not asset.has_extended_metadata for asset in assets):
             raise ContractError("v2 reports require complete collision and Lightmap metadata")
         return cls(
-            schema_version=CONTRACT_VERSION_V2 if use_v2 else CONTRACT_VERSION,
+            schema_version=(
+                CONTRACT_VERSION_V3
+                if use_v3
+                else CONTRACT_VERSION_V2 if use_v2 else CONTRACT_VERSION
+            ),
             report_id=report_id,
             created_at=datetime.now(UTC).isoformat(),
             profile_id=profile.profile_id,

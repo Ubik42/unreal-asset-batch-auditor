@@ -1,0 +1,12 @@
+LogCsvProfiler: Display: Metadata set : engineversion="5.8.1-56057345+++UE5+Release-5.8"
+LogCsvProfiler: Display: Metadata set : commandline="" D:\3D\_tools\unreal-asset-batch-auditor\artifacts\host-runtime\panel-20260830-193529\UnrealAssetBatchAuditorHost.uproject -ExecCmds="Automation RunTests UnrealAssetBatchAuditor" -TestExit="Automation Test Queue Empty" -unattended -nop4 -nosplash -RenderOffscreen""
+LogInit: Command Line: -ExecCmds="Automation RunTests UnrealAssetBatchAuditor" -TestExit="Automation Test Queue Empty" -unattended -nop4 -nosplash -RenderOffscreen
+[2026.08.31-01.35.54:824][171]LogAutomationController: Display: Test Started. Name={PanelEvidence} Path={UnrealAssetBatchAuditor.PanelEvidence}
+[2026.08.31-01.35.55:291][174]LogAutomationController: Display: Test Completed. Result={Success} Name={PanelEvidence} Path={UnrealAssetBatchAuditor.PanelEvidence}
+[2026.08.31-01.35.55:291][175]LogAutomationController: Display: Test Started. Name={PanelTaskLifecycle} Path={UnrealAssetBatchAuditor.PanelTaskLifecycle}
+[2026.08.31-01.35.55:465][184]LogAutomationController: Display: Test Completed. Result={Success} Name={PanelTaskLifecycle} Path={UnrealAssetBatchAuditor.PanelTaskLifecycle}
+[2026.08.31-01.35.55:465][185]LogAutomationController: Display: Test Started. Name={ReleaseInstallSmoke} Path={UnrealAssetBatchAuditor.ReleaseInstallSmoke}
+[2026.08.31-01.35.55:481][186]LogAutomationController: Display: Test Completed. Result={Success} Name={ReleaseInstallSmoke} Path={UnrealAssetBatchAuditor.ReleaseInstallSmoke}
+[2026.08.31-01.35.55:482][187]LogAutomationCommandLine: Display: ...Automation Test Queue Empty 3 tests performed.
+[2026.08.31-01.35.55:482][187]LogExit: Display: **** TestExit: Automation Test Queue Empty ****
+[2026.08.31-01.35.55:482][187]LogCore: Engine exit requested (reason: Win RequestExit)

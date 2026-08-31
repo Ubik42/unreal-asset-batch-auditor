@@ -13,6 +13,7 @@ dist/
 *.egg-info/
 artifacts/host-build/
 artifacts/host-runtime/
+artifacts/host-validation/*/preflight-screenshots/
 artifacts/python-dist/
 tests/host/Plugins/
 Demo/Plugins/

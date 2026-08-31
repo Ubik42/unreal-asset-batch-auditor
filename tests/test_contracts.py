@@ -13,6 +13,7 @@ from unreal_asset_batch_auditor.contracts import (
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE = ROOT / "config" / "Profiles" / "default-static-mesh-profile.v1.json"
 PROFILE_V2 = ROOT / "config" / "Profiles" / "default-static-mesh-profile.v2.json"
+PROFILE_V3 = ROOT / "config" / "Profiles" / "default-static-mesh-profile.v3.json"
 
 
 def test_profile_loads_all_project_owned_thresholds() -> None:
@@ -83,6 +84,28 @@ def test_older_v2_profile_without_naming_policy_remains_readable() -> None:
     profile = AuditProfile.from_dict(raw)
     assert profile.object_name is None
     assert profile.package_path is None
+    assert profile.texture_dependencies is None
+
+
+def test_v3_profile_loads_independent_material_dependency_policies() -> None:
+    profile = AuditProfile.load(PROFILE_V3)
+
+    assert profile.schema_version == "unreal-static-mesh-profile@3.0.0"
+    assert profile.missing_materials is not None
+    assert profile.missing_materials.max_value == 0
+    assert profile.unique_materials is not None
+    assert profile.unique_materials.max_value == 4
+    assert profile.texture_dependencies is not None
+    assert profile.texture_dependencies.max_value == 16
+    assert profile.texture_dimension is not None
+    assert profile.texture_dimension.max_value == 4096
+
+
+def test_v3_profile_rejects_missing_dependency_policy() -> None:
+    raw = json.loads(PROFILE_V3.read_text(encoding="utf-8"))
+    del raw["rules"]["texture_dependencies"]
+    with pytest.raises(ContractError, match="texture_dependencies"):
+        AuditProfile.from_dict(raw)
 
 
 def test_offline_report_cannot_claim_real_unreal_validation() -> None:

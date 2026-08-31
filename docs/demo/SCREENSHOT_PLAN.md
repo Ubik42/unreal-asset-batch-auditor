@@ -1,9 +1,9 @@
 # 当前版本真实截图与验收清单
 
-状态：v0.9-dev1 原生面板证据已完成。01–14 位于 `docs/images/workflow/v0.9/`，哈希、测试 PID、
-退出状态、源报告、任务产物与比较 JSON 记录于
-`artifacts/host-validation/m8/panel-lifecycle-UE_5.8.1-v0.9.0-dev1.json`。独立 HTML 交接图 15
-仍使用未变化的 v0.8 发布证据。
+状态：v0.9-dev2 材质/纹理面板证据已完成。01–14 位于 `docs/images/workflow/v0.9-material/`，
+哈希、测试 PID、退出状态与源报告记录于
+`artifacts/host-validation/m9/panel-lifecycle-UE_5.8.1-v0.9.0-dev2-material-ui.json`。v0.9-dev1
+文件夹/几何证据仍保留在 `docs/images/workflow/v0.9/`；独立 HTML 交接图继续使用未变化的 v0.8 发布证据。
 
 截图必须来自当前打包版本的真实 Unreal Editor 会话。离线 fixture、UI 草图、旧版截图和合成图不能代替以下证据。
 
@@ -25,11 +25,15 @@
 | 14 | 正在取消 | cancelling 状态与“保留部分结果”说明 | 取消语义发生在批次之间 |
 | 15 | 团队交接报告 | 中文摘要、验证边界、问题证据表 | Report 可交给无 Unreal 环境的协作者 |
 
+v0.9-dev2 的 06–10 改为材质专项证据：纹理依赖预算、纹理尺寸预算、512 实测筛选、材质风险谱和
+材质风险总览；11–14 继续覆盖回归与任务状态。README 优先使用这组当前源码图，旧图仅说明没有变化的
+碰撞、Lightmap、命名、目录与交接流程。
+
 ## 截图验收
 
 - 统一使用 16:9 或接近 16:9 的清晰画面，面板文字可读；
 - 不出现个人账号、聊天窗口、密钥、无关工程路径或其他项目内容；
-- 当前原生面板图放入 `docs/images/workflow/v0.9/`，名称使用 `01-` 至 `14-` 的稳定前缀；
+- 当前原生面板图放入 `docs/images/workflow/v0.9-material/`，名称使用 `01-` 至 `14-` 的稳定前缀；
 - README 只引用已经真实拍摄并核对当前版本的图片；
 - 每次 UI 大改后重新拍摄，不沿用无法证明当前行为的旧图。
 

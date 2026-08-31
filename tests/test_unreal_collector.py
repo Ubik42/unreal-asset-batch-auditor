@@ -79,3 +79,41 @@ def test_real_unreal_marker_requires_engine_version_from_host_api() -> None:
     )
     assert report.real_unreal_validation is True
     assert report.host_engine_version.startswith("5.8.1")
+
+
+def test_unreal_adapter_preserves_material_and_texture_dependency_facts() -> None:
+    class DependencyLibrary:
+        @staticmethod
+        def collect_static_mesh_metadata(asset_paths: list[str]) -> list[SimpleNamespace]:
+            return [
+                SimpleNamespace(
+                    collected=True,
+                    asset_path=asset_paths[0],
+                    asset_name="MaterialAsset",
+                    lod_metadata=[SimpleNamespace(index=0, triangle_count=12, vertex_count=16)],
+                    material_slot_count=2,
+                    material_paths=["/Game/M/MI_A.MI_A", "/Game/M/MI_B.MI_B"],
+                    missing_material_slot_count=0,
+                    unique_material_count=2,
+                    texture_paths=["/Game/T/T_A.T_A", "/Game/T/T_N.T_N"],
+                    texture_dependency_count=2,
+                    max_texture_dimension=2048,
+                    nanite_enabled=False,
+                    simple_collision_primitive_count=1,
+                    collision_complexity="project_default",
+                    uv_channel_count=2,
+                    lightmap_coordinate_index=1,
+                    lightmap_resolution=64,
+                    error_code="",
+                    error="",
+                )
+            ]
+
+    batch = UnrealCppCollector(
+        SimpleNamespace(UnrealAssetBatchAuditorLibrary=DependencyLibrary)
+    ).collect(["/Game/MaterialAsset.MaterialAsset"])
+    asset = batch.assets[0]
+    assert asset.has_dependency_metadata is True
+    assert asset.material_paths == ("/Game/M/MI_A.MI_A", "/Game/M/MI_B.MI_B")
+    assert asset.texture_dependency_count == 2
+    assert asset.max_texture_dimension == 2048

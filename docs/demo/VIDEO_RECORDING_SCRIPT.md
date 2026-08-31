@@ -20,7 +20,7 @@ Engine 内容二进制。此外还加入一个 Material 和一个不存在路径
 
 ## 1:20–2:00 Profile
 
-画面：打开 `demo-desktop-balanced.v2.json`。
+画面：打开 `demo-desktop-balanced.v3.json`。
 
 指出：
 
@@ -38,17 +38,17 @@ Engine 内容二进制。此外还加入一个 Material 和一个不存在路径
 
 讲解：
 
-> 24 个当前选择按 8 个一批进入 C++。Python 在 Editor Tick 之间推进批次，所以用户能看到阶段并在批次边界取消。5 个资产通过，19 个需要处理，共 45 条问题。界面展示的是同一份正式 JSON 报告，不是预置表格。
+> 24 个当前选择按 8 个一批进入 C++。Python 在 Editor Tick 之间推进批次，所以用户能看到阶段并在批次边界取消。界面展示的是同一份正式 JSON 报告，不是预置表格；通过数和问题数以本次录制结果为准。
 
 ## 3:15–4:20 报告与证据
 
-画面：先在面板中搜索 `material`，观察实测值与阈值；再点击“打开报告目录”，打开
+画面：先点击“材质负载”风险谱，再搜索“纹理依赖”或“纹理尺寸”，观察实测值与阈值；随后点击“打开报告目录”，打开
 `Saved/UnrealAssetBatchAuditor/Reports/latest-report.json`。
 
 依次展示：
 
 1. `real_unreal_validation=true`；
-2. `assets` 中的真实三角形、顶点、简单碰撞、UV 通道和 Lightmap 元数据；
+2. `assets` 中的真实三角形、顶点、材质路径、纹理依赖、简单碰撞、UV 通道和 Lightmap 元数据；
 3. 一条 Issue；
 4. 对应 Evidence 的 observed、expected、profile_pointer；
 5. 两条 collection failure；
@@ -82,19 +82,23 @@ Engine 内容二进制。此外还加入一个 Material 和一个不存在路径
 
 在面板下拉框中切换为“移动端严格”，对同一选择再次审计。
 
-画面保留五条 `UABA_DEMO_RULE`：
+画面保留关键 `UABA_DEMO_RULE`：
 
 - triangle budget；
 - vertex budget；
 - material slots；
 - LOD count；
 - Nanite state。
+- missing material slots；
+- unique materials；
+- texture dependencies；
+- maximum texture dimension。
 
 讲解：
 
-> 同一批资产没有改变，只是项目 Profile 改成了严格移动端训练配置，Issue 从 45 条变成 113 条。这证明规则属于项目政策，而不是被写死在 C++ 里。
+> 同一批资产没有改变，只是项目 Profile 改成了严格移动端训练配置，问题分布随项目预算改变。这证明规则属于项目政策，而不是被写死在 C++ 里。
 
-再切换“宽松复核”，展示 Issue 降至 19 条，并指出它关闭了简单碰撞门禁、放宽了 UV 通道要求，但命名和目录错误仍被保留。
+再切换“宽松复核”，指出它关闭了简单碰撞与 Lightmap 门禁、放宽几何和纹理预算，但仍保留材质完整性检查。
 
 ## 8:00–8:40 架构说明
 

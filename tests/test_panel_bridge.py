@@ -43,18 +43,29 @@ def test_panel_request_file_forwards_explicit_inputs(tmp_path: Path, monkeypatch
 
 
 def test_all_packaged_panel_profiles_are_valid() -> None:
-    profiles = sorted((ROOT / "Resources" / "Profiles").glob("*.v2.json"))
+    names = [
+        "desktop-balanced.v3.json",
+        "mobile-strict.v3.json",
+        "review-lenient.v3.json",
+    ]
+    profiles = [ROOT / "Resources" / "Profiles" / name for name in names]
 
     assert [path.name for path in profiles] == [
-        "desktop-balanced.v2.json",
-        "mobile-strict.v2.json",
-        "review-lenient.v2.json",
+        "desktop-balanced.v3.json",
+        "mobile-strict.v3.json",
+        "review-lenient.v3.json",
     ]
     assert {AuditProfile.load(path).profile_id for path in profiles} == {
-        "demo-desktop-balanced-v2",
-        "demo-mobile-strict-v2",
-        "demo-review-lenient-v2",
+        "demo-desktop-balanced-v3",
+        "demo-mobile-strict-v3",
+        "demo-review-lenient-v3",
     }
+    evidence_profile = AuditProfile.load(
+        ROOT / "Resources" / "Profiles" / "host-material-evidence.v3.json"
+    )
+    assert "证据专用模拟规则" in evidence_profile.description
+    assert evidence_profile.texture_dependencies is not None
+    assert evidence_profile.texture_dependencies.max_value == 1
 
 
 def test_native_panel_exposes_complete_asset_ledger_and_issue_detail_views() -> None:
@@ -74,6 +85,8 @@ def test_native_panel_exposes_complete_asset_ledger_and_issue_detail_views() -> 
     assert 'TEXT("session_root")' in source
     assert 'TEXT("三角形")' in source
     assert 'TEXT("材质槽")' in source
+    assert 'TEXT("纹理/最大")' in source
+    assert 'TEXT("交付风险谱")' in source
     assert 'TEXT("回归对比")' in source
     assert 'TEXT("回归基线（同一 Profile）")' in source
     assert 'TEXT("与所选基线比较")' in source

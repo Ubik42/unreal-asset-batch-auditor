@@ -17,15 +17,15 @@ def main() -> None:
         shutil.rmtree(session_root)
     store = SessionStore(session_root)
     baseline = store.save_report(
-        artifact_root / "demo-desktop-balanced-v2-baseline-report.json"
+        artifact_root / "demo-desktop-balanced-v3-baseline-report.json"
     )
-    current = store.save_report(artifact_root / "demo-desktop-balanced-v2-report.json")
+    current = store.save_report(artifact_root / "demo-desktop-balanced-v3-report.json")
     comparison = store.write_latest_comparison(current)
     handoff_root = artifact_root / "handoff"
     if handoff_root.exists():
         shutil.rmtree(handoff_root)
     handoff = export_handoff(
-        artifact_root / "demo-desktop-balanced-v2-report.json", handoff_root
+        artifact_root / "demo-desktop-balanced-v3-report.json", handoff_root
     )
 
     committed = artifact_root / "session-history"

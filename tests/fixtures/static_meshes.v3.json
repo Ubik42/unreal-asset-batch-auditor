@@ -1,0 +1,41 @@
+{
+  "schema_version": "unreal-static-mesh-fixture@1.0.0",
+  "assets": [
+    {
+      "asset_path": "/Game/Props/SM_Healthy.SM_Healthy",
+      "asset_name": "SM_Healthy",
+      "lods": [{ "index": 0, "triangles": 12000, "vertices": 9000 }, { "index": 1, "triangles": 6000, "vertices": 4500 }, { "index": 2, "triangles": 2500, "vertices": 1900 }],
+      "material_slot_count": 2,
+      "nanite_enabled": true,
+      "simple_collision_primitive_count": 2,
+      "collision_complexity": "simple_and_complex",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64,
+      "material_paths": ["/Game/Materials/MI_PropA.MI_PropA", "/Game/Materials/MI_PropB.MI_PropB"],
+      "missing_material_slot_count": 0,
+      "unique_material_count": 2,
+      "texture_paths": ["/Game/Textures/T_Prop_A.T_Prop_A", "/Game/Textures/T_Prop_N.T_Prop_N"],
+      "texture_dependency_count": 2,
+      "max_texture_dimension": 2048
+    },
+    {
+      "asset_path": "/Game/Props/SM_MaterialRisk.SM_MaterialRisk",
+      "asset_name": "SM_MaterialRisk",
+      "lods": [{ "index": 0, "triangles": 12000, "vertices": 9000 }, { "index": 1, "triangles": 6000, "vertices": 4500 }, { "index": 2, "triangles": 2500, "vertices": 1900 }],
+      "material_slot_count": 6,
+      "nanite_enabled": true,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "simple_and_complex",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64,
+      "material_paths": ["/Game/Materials/MI_A.MI_A", "/Game/Materials/MI_B.MI_B", "/Game/Materials/MI_C.MI_C", "/Game/Materials/MI_D.MI_D", "/Game/Materials/MI_E.MI_E"],
+      "missing_material_slot_count": 1,
+      "unique_material_count": 5,
+      "texture_paths": ["/Game/Textures/T_01.T_01", "/Game/Textures/T_02.T_02", "/Game/Textures/T_03.T_03", "/Game/Textures/T_04.T_04", "/Game/Textures/T_05.T_05", "/Game/Textures/T_06.T_06", "/Game/Textures/T_07.T_07", "/Game/Textures/T_08.T_08", "/Game/Textures/T_09.T_09", "/Game/Textures/T_10.T_10", "/Game/Textures/T_11.T_11", "/Game/Textures/T_12.T_12", "/Game/Textures/T_13.T_13", "/Game/Textures/T_14.T_14", "/Game/Textures/T_15.T_15", "/Game/Textures/T_16.T_16", "/Game/Textures/T_17.T_17"],
+      "texture_dependency_count": 17,
+      "max_texture_dimension": 8192
+    }
+  ]
+}

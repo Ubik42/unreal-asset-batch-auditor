@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0018",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 18,
+  "completedSlice": "M9-S1",
+  "summary": "v0.9-dev2 将材质与纹理依赖纳入同一只读证据链：Profile / Report v3 保持旧合同可读，C++ 采集宿主事实，Python 独立判定四项政策，Slate 资产账本与风险谱直接展示材质链路。",
+  "evidence": [
+    "Profile / Report v3 增加缺失材质槽、唯一材质数、纹理依赖数和最大纹理尺寸，v1/v2 继续解析",
+    "四项新规则均可独立禁用，Issue / Evidence 保存 observed、expected 和 Profile JSON Pointer",
+    "C++ 从显式 Static Mesh 的 StaticMaterials 与 UMaterialInterface::GetUsedTextures 采集排序后的依赖事实",
+    "68 项 Python 测试与 Ruff 通过",
+    "UE 5.8.1 BuildPlugin UE_5.8.1-v0.9.0-dev2 完成 UHT、C++ 编译、链接和 Win64 打包",
+    "独立隐藏 UE 宿主真实采集 5 个 Engine Static Mesh：每资产 1 个有效材质、2 个纹理依赖，最大纹理边长为 512 或 32",
+    "证据专用模拟 Profile 产生 5 条纹理依赖和 4 条纹理尺寸问题，全部可追到阈值",
+    "14 张 v0.9-dev2 原生 Slate 图片及哈希保存在 docs/images/workflow/v0.9-material 与 artifacts/host-validation/m9"
+  ],
+  "nextSlice": "M10-S1",
+  "knownLimits": [
+    "GetUsedTextures 反映已加载材质所报告的纹理，不是完整 Cook 依赖图",
+    "纹理尺寸是资源最大边长，不是运行时 residency、显存占用或 GPU 成本",
+    "真实宿主样本为 5 个 Engine Static Mesh，不代表生产规模性能",
+    "当前只验证 UE 5.8.1 Win64，公开可安装版本仍为 v0.8.0"
+  ]
+}

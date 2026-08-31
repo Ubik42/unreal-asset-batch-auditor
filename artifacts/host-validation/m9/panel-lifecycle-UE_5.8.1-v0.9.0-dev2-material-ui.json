@@ -1,0 +1,112 @@
+{
+  "schema_version": "unreal-panel-lifecycle@1.0.0",
+  "created_at": "2026-08-31T01:26:44.4440725+00:00",
+  "engine": "UE 5.8.1",
+  "plugin_build": "UE_5.8.1-v0.9.0-dev2",
+  "execution": "independent hidden UnrealEditor-Cmd -RenderOffscreen",
+  "test_pid": 40676,
+  "created_unreal_pids": [
+    40676
+  ],
+  "existing_unreal_pids_before": [
+    41084
+  ],
+  "existing_unreal_pids_after": [
+    41084
+  ],
+  "existing_processes_survived": true,
+  "started_at": "2026-08-31T01:26:10.4292154+00:00",
+  "finished_at": "2026-08-31T01:26:44.4440725+00:00",
+  "duration_seconds": 34.015,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "automation_tests": "UnrealAssetBatchAuditor.PanelEvidence",
+  "automation_passed": true,
+  "panel_evidence_passed": true,
+  "panel_task_lifecycle_passed": true,
+  "report_path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/latest-report.json",
+  "report_sha256": "CB17874E92660294FA068FEC7BB70AC3D0BE5BDD2ABEFA67BAD1F39E2AF2C6A0",
+  "comparison_path": "artifacts/demo/session-history/latest-comparison.v1.json",
+  "comparison_sha256": "4C8B5029591D6E47A7983D9398B2823B44E00835ED5DBF2D543BA32DBBE4514F",
+  "log_path": "artifacts/host-runtime/panel-20260830-192610/Saved/Logs/UnrealAssetBatchAuditorHost.log",
+  "committed_log_excerpt": "artifacts/host-validation/m9/panel-lifecycle-UE_5.8.1-v0.9.0-dev2-material-ui-log.txt",
+  "committed_log_excerpt_sha256": "8EB6FF66012F7A255D8A55CCDC129AED880BA73F00F1C464FF61063E0D30AF69",
+  "screenshot_count": 14,
+  "screenshots": [
+    {
+      "path": "docs/images/workflow/v0.9-material/01-empty-state.png",
+      "bytes": 113690,
+      "sha256": "0B43BE9691A9551906A0B5A98A86C9E6F2EA0D4890DB66D190E15C3D5929884D"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/02-asset-overview.png",
+      "bytes": 132209,
+      "sha256": "FC45A76BC9B79713D566C0BF9791D924C6E46EF2BA62636FBFE020CC3CBE8121"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/03-passing-assets.png",
+      "bytes": 111811,
+      "sha256": "E78F911F72FEB66CF9C4D30958CA1C3B5B7B078FE489B2CCA1E5C73690340D25"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/04-assets-needing-work.png",
+      "bytes": 130206,
+      "sha256": "01321395AF75D08AD7DE05D38B949BA0384A88AC916B87F8A5EA146905B55039"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/05-issue-details.png",
+      "bytes": 152853,
+      "sha256": "0A514D74B78C0E05FCB811DB71747F3672E8C122C0107D7755B86BF294DC5DF0"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/06-texture-dependencies.png",
+      "bytes": 130703,
+      "sha256": "11C522786857B6A94E53368A3DD3A738A823CD3BEA7A4B7874518FDA3DB51A15"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/07-texture-dimension.png",
+      "bytes": 128393,
+      "sha256": "C163F163A8A92A57CE258A82608CC09133033DA3C1486BCFBC5609565F56C65C"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/08-texture-size-evidence.png",
+      "bytes": 127611,
+      "sha256": "72909F3B3EE5C3C29426BDA6380B3858F742DBF29C9BA138984A89D4C0FAA05B"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/09-material-risk-spectrum.png",
+      "bytes": 151422,
+      "sha256": "D6DB5579122DE3DAF34E3F5C6545FDFA1C5A5E44810DC0E33452672EF4588E6C"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/10-material-risk-overview.png",
+      "bytes": 152853,
+      "sha256": "0A514D74B78C0E05FCB811DB71747F3672E8C122C0107D7755B86BF294DC5DF0"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/11-regression-overview.png",
+      "bytes": 223283,
+      "sha256": "ECE5316F1896C96CFAF0A489093B012B95FA102E5D298CEC3412376957C9193A"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/12-resolved-changes.png",
+      "bytes": 171058,
+      "sha256": "7D32D351EE99E5C52B8D8D7376473C4F937C5F8CE3D7B941B3B3C7D692423C77"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/13-running-batch-task.png",
+      "bytes": 137728,
+      "sha256": "B7EE5412E38AFAAC81647801489574DE46E86150C4B2B283A47E3C198768C51A"
+    },
+    {
+      "path": "docs/images/workflow/v0.9-material/14-cancelling-task.png",
+      "bytes": 137830,
+      "sha256": "6598DBDCB4E626AD1CE3FBFE21B84FCDB98FCA512DA3EA8C482169F13BFFC977"
+    }
+  ],
+  "task_artifact_count": 0,
+  "task_artifacts": null,
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false
+}

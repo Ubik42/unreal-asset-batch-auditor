@@ -10,6 +10,8 @@ PROFILE = ROOT / "config" / "Profiles" / "default-static-mesh-profile.v1.json"
 FIXTURE = ROOT / "tests" / "fixtures" / "static_meshes.v1.json"
 PROFILE_V2 = ROOT / "config" / "Profiles" / "default-static-mesh-profile.v2.json"
 FIXTURE_V2 = ROOT / "tests" / "fixtures" / "static_meshes.v2.json"
+PROFILE_V3 = ROOT / "config" / "Profiles" / "default-static-mesh-profile.v3.json"
+FIXTURE_V3 = ROOT / "tests" / "fixtures" / "static_meshes.v3.json"
 
 
 def test_problem_asset_emits_all_five_profile_driven_issues() -> None:
@@ -118,3 +120,55 @@ def test_v2_name_and_package_policy_are_profile_driven() -> None:
     evidence = {item.metric: item for item in report.evidence}
     assert evidence["asset_name"].observed == "SM_Healthy"
     assert evidence["package_directory"].observed == "/Game/Props"
+
+
+def test_v3_material_risk_emits_profile_driven_dependency_issues() -> None:
+    report = audit_assets(
+        profile=AuditProfile.load(PROFILE_V3),
+        collector=FixtureCollector(FIXTURE_V3),
+        asset_paths=["/Game/Props/SM_MaterialRisk.SM_MaterialRisk"],
+    )
+
+    assert report.schema_version == "unreal-asset-audit@3.0.0"
+    dependency_rules = {
+        "static_mesh.missing_materials",
+        "static_mesh.unique_materials",
+        "static_mesh.texture_dependencies",
+        "static_mesh.texture_dimension",
+    }
+    assert dependency_rules.issubset({issue.rule_id for issue in report.issues})
+    dependency_evidence = {
+        item.metric: item
+        for item in report.evidence
+        if item.metric in {
+            "missing_material_slot_count",
+            "unique_material_count",
+            "texture_dependency_count",
+            "max_texture_dimension",
+        }
+    }
+    assert dependency_evidence["missing_material_slot_count"].observed == 1
+    assert dependency_evidence["max_texture_dimension"].expected == 4096
+    assert all(item.profile_pointer.startswith("/rules/") for item in dependency_evidence.values())
+    assert report.assets[0].material_paths[0].startswith("/Game/Materials/")
+    assert report.assets[0].texture_dependency_count == 17
+
+
+def test_v3_dependency_policies_can_be_disabled_independently() -> None:
+    raw = json.loads(PROFILE_V3.read_text(encoding="utf-8"))
+    dependency_names = (
+        "missing_materials",
+        "unique_materials",
+        "texture_dependencies",
+        "texture_dimension",
+    )
+    for name in dependency_names:
+        raw["rules"][name]["enabled"] = False
+    report = audit_assets(
+        profile=AuditProfile.from_dict(raw),
+        collector=FixtureCollector(FIXTURE_V3),
+        asset_paths=["/Game/Props/SM_MaterialRisk.SM_MaterialRisk"],
+    )
+    assert not {
+        f"static_mesh.{name}" for name in dependency_names
+    }.intersection(issue.rule_id for issue in report.issues)

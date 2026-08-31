@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 17,
+  "stateRevision": 18,
   "status": "active",
-  "currentMilestone": "M9",
+  "currentMilestone": "M10",
   "milestones": [
     { "id": "M0", "title": "Scope and repository baseline", "status": "completed", "dependsOn": [] },
     { "id": "M1", "title": "Read-only Static Mesh audit MVP", "status": "completed", "dependsOn": ["M0"] },
@@ -14,28 +14,30 @@
     { "id": "M6", "title": "Sessions, regression and team handoff", "status": "completed", "dependsOn": ["M5"] },
     { "id": "M7", "title": "v0.8 installable portfolio release", "status": "completed", "dependsOn": ["M6"] },
     { "id": "M8", "title": "Delivery-batch scope and risk-spectrum workbench", "status": "completed", "dependsOn": ["M7"] },
-    { "id": "M9", "title": "Material and texture dependency policies", "status": "in_progress", "dependsOn": ["M8"] },
-    { "id": "M10", "title": "Project presets and unattended audit entry point", "status": "pending", "dependsOn": ["M9"] },
+    { "id": "M9", "title": "Material and texture dependency policies", "status": "completed", "dependsOn": ["M8"] },
+    { "id": "M10", "title": "Project presets and unattended audit entry point", "status": "in_progress", "dependsOn": ["M9"] },
     { "id": "M11", "title": "v0.9 portfolio release", "status": "pending", "dependsOn": ["M10"] }
   ],
   "nextSlice": {
-    "id": "M9-S1",
-    "milestoneId": "M9",
-    "title": "材质与纹理依赖事实合同",
+    "id": "M10-S1",
+    "milestoneId": "M10",
+    "title": "项目预设与无人值守审计入口",
     "scope": [
-      "定义向后兼容的材质与纹理依赖事实字段及 Profile 可选政策",
-      "采集每个 Static Mesh 的有效材质路径、唯一材质数、纹理依赖数和最大纹理尺寸",
-      "首批规则覆盖缺失材质、唯一材质预算、纹理依赖预算和最大尺寸",
-      "资产总览与风险谱展示新事实，并提供可录屏的明确证据"
+      "定义项目级预设清单，将 Profile、显式资产路径或允许扫描的项目目录绑定为可评审配置",
+      "提供 UnrealEditor-Cmd 可调用的无人值守入口，明确成功、规则不通过、配置错误和采集失败退出码",
+      "输出稳定的报告位置与机器可读运行摘要，保留现有 Report 和 Evidence 合同",
+      "在中文面板和文档中说明人工验收与 CI 门禁使用同一规则源"
     ],
     "nonGoals": [
       "不自动修改资产",
       "不加入 AI 对话、PCG 或生成能力",
-      "不分析 Shader 编译时长或运行时 GPU 精确成本",
+      "不接入外部 CI 云服务或凭据",
+      "不默认扫描整个项目，目录范围必须由项目预设显式声明",
       "不做跨 Unreal 版本兼容声明",
       "不重复执行完整发布安装矩阵"
     ],
     "allowedPaths": [
+      "Content/Python",
       "Source/UnrealAssetBatchAuditor",
       "UnrealAssetBatchAuditor.uplugin",
       "pyproject.toml",
@@ -44,24 +46,25 @@
       "docs",
       "tests",
       "config",
+      "scripts",
       "README.md",
       "AGENTS.md"
     ],
-    "evidenceCeiling": "本切片最多证明 UE 5.8.1 中所选 Static Mesh 的材质与已加载纹理依赖事实及 Profile 判定；不等同于运行时 GPU 成本、Shader 性能或完整 Cook 依赖分析。",
+    "evidenceCeiling": "本切片最多证明 UE 5.8.1 中明确项目预设范围的无人值守审计、退出码和报告落盘；不等同于已接入某家公司 CI、跨版本兼容或生产规模性能。",
     "realHostRequired": true,
     "acceptanceCriteria": [
-      "旧 v1/v2 Profile 与 Report 继续解析，新字段缺失时行为明确",
-      "所有新阈值都来自 Profile，可单独禁用",
-      "Issue 和 Evidence 保留材质/纹理实测、阈值与 JSON Pointer",
-      "至少用一种真实 UE 材质/纹理依赖完成宿主采集验证",
-      "README 与演示文档只声明实际通过的依赖边界"
+      "项目预设使用版本化 JSON Schema，非法路径、未知 Profile 和空范围给出明确中文诊断",
+      "无人值守入口不依赖打开面板，并为通过、规则不通过、配置错误和采集失败提供稳定退出语义",
+      "范围只来自预设中显式资产或允许目录，结果去重并稳定排序",
+      "至少完成一次真实 UE 命令行宿主审计并核对退出码、Report 与运行摘要",
+      "README 给出可复制命令，同时不冒充外部 CI 已接入"
     ],
     "validationCommands": [
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0017.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0018.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -75,6 +78,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "v0.9-dev1 完成 BuildPlugin；独立 UE 5.8.1 宿主从 /Engine/BasicShapes 递归发现网格、验证几何风险筛选并生成 14 张原生 Slate 截图。"
+    },
+    {
+      "id": "m9s1-material-host",
+      "status": "completed",
+      "blocking": false,
+      "reason": "v0.9-dev2 完成 v3 合同、四项材质/纹理政策、UE 5.8.1 BuildPlugin、真实依赖采集与 14 张材质风险 Slate 截图。"
     }
   ]
 }

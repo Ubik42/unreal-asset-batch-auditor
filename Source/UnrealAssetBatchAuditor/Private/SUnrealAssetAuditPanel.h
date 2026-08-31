@@ -37,6 +37,8 @@ struct FAuditPanelAsset
     FString TriangleCount;
     FString VertexCount;
     FString MaterialSlotCount;
+    FString MaterialDependencyState;
+    FString TextureDependencyState;
     FString LodCount;
     FString NaniteState;
     FString CollisionState;

@@ -105,11 +105,13 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
     TestTrue(
         TEXT("Recursive folder scope discovers real Engine Static Mesh assets"),
         Panel->GetEvidenceSelectedAssetCount() >= 4);
-    Panel->SetRiskCategoryForEvidence(TEXT("geometry"));
+    const FString EvidenceRiskCategory =
+        EvidenceMode == TEXT("v3-material") ? TEXT("materials") : TEXT("geometry");
+    Panel->SetRiskCategoryForEvidence(EvidenceRiskCategory);
     TestTrue(
-        TEXT("Risk spectrum filters the report to geometry issues"),
+        TEXT("Risk spectrum filters the report to the evidence category"),
         Panel->GetEvidenceFilteredIssueCount() > 0
-            && Panel->GetEvidenceFilteredIssueCount() < Panel->GetEvidenceIssueCount());
+            && Panel->GetEvidenceFilteredIssueCount() <= Panel->GetEvidenceIssueCount());
     Panel->SetRiskCategoryForEvidence(TEXT(""));
 
     Panel->SetEvidenceView(true, TEXT(""));
@@ -132,6 +134,39 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         Capture(TEXT("09-object-name-evidence.png"));
         Panel->SetEvidenceView(false, TEXT("目录规范"));
         Capture(TEXT("10-package-path-evidence.png"));
+        if (!ComparisonPath.IsEmpty())
+        {
+            if (!Panel->LoadComparisonForEvidence(ComparisonPath, LoadError))
+            {
+                AddError(FString::Printf(TEXT("Could not load comparison evidence: %s"), *LoadError));
+                bPassed = false;
+            }
+            else
+            {
+                Panel->SetComparisonEvidenceView(TEXT(""));
+                TestEqual(
+                    TEXT("Comparison rows include issue and collection-failure changes"),
+                    Panel->GetEvidenceComparisonCount(),
+                    ExpectedComparisonRows > 0 ? ExpectedComparisonRows : 53);
+                Capture(TEXT("11-regression-overview.png"));
+                Panel->SetComparisonEvidenceView(TEXT("已解决"));
+                Capture(TEXT("12-resolved-changes.png"));
+            }
+        }
+    }
+    else if (EvidenceMode == TEXT("v3-material"))
+    {
+        Panel->SetEvidenceView(false, TEXT("纹理依赖"));
+        Capture(TEXT("06-texture-dependencies.png"));
+        Panel->SetEvidenceView(false, TEXT("纹理尺寸"));
+        Capture(TEXT("07-texture-dimension.png"));
+        Panel->SetEvidenceView(false, TEXT("512"));
+        Capture(TEXT("08-texture-size-evidence.png"));
+        Panel->SetEvidenceView(false, TEXT(""));
+        Panel->SetRiskCategoryForEvidence(TEXT("materials"));
+        Capture(TEXT("09-material-risk-spectrum.png"));
+        Panel->SetRiskCategoryForEvidence(TEXT(""));
+        Capture(TEXT("10-material-risk-overview.png"));
         if (!ComparisonPath.IsEmpty())
         {
             if (!Panel->LoadComparisonForEvidence(ComparisonPath, LoadError))

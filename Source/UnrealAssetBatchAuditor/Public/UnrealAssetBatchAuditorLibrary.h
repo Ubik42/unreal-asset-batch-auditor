@@ -37,6 +37,24 @@ struct FStaticMeshAuditMetadata
     int32 MaterialSlotCount = 0;
 
     UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    TArray<FString> MaterialPaths;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 MissingMaterialSlotCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 UniqueMaterialCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    TArray<FString> TexturePaths;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 TextureDependencyCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 MaxTextureDimension = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
     bool bNaniteEnabled = false;
 
     UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
@@ -68,8 +86,9 @@ struct FStaticMeshAuditMetadata
  * Read-only Editor boundary used by Python orchestration.
  *
  * This class intentionally exposes no SavePackage, build, Nanite toggle, or asset mutation API.
- * Passing explicit object paths keeps scan scope reviewable. A later optimized implementation may
- * replace the internals without changing the Python-facing batch contract.
+ * Material dependency facts come from UMaterialInterface::GetUsedTextures in the current Editor;
+ * they are not a cooked dependency graph or a runtime GPU-cost measurement. Passing explicit object
+ * paths keeps scan scope reviewable.
  */
 UCLASS()
 class UNREALASSETBATCHAUDITOR_API UUnrealAssetBatchAuditorLibrary final

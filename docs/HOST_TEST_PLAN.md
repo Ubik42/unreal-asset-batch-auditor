@@ -143,3 +143,15 @@ Python 在报告层完成。`-RenderOffscreen` 证据不声明人工鼠标交互
 ```
 
 manifest 只保存相对路径和 SHA-256，不写入测试项目的绝对路径。
+
+## 2026-08-30 v0.9-dev2 材质与纹理依赖
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| Development Editor BuildPlugin | 通过；UE 5.8.1 Win64 完成 UHT、C++ 编译、链接与打包 | 本机忽略目录 `artifacts/host-build/UE_5.8.1-v0.9.0-dev2` |
+| 真实材质/纹理采集 | 通过；5 个 Engine Static Mesh 均采到有效材质与 2 个已加载纹理依赖 | `artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/latest-report.json` |
+| Profile v3 判定 | 通过；证据专用模拟规则产生 5 条纹理依赖与 4 条纹理尺寸问题 | 同上 |
+| 原生 Slate 证据 | 通过；独立隐藏 Editor 生成 14 张图，测试 PID 未复用用户会话 | `artifacts/host-validation/m9/panel-lifecycle-UE_5.8.1-v0.9.0-dev2-material-ui.json` |
+
+本轮只证明 UE 5.8.1 中显式选择的 Static Mesh、其已加载材质和材质所报告的纹理依赖；不声明完整
+Cook 依赖、运行时 residency、Shader 编译成本、GPU 性能或跨版本兼容。

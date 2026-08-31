@@ -1,0 +1,19 @@
+{
+  "schema_version": "unreal-audit-task-state@1.0.0",
+  "task_id": "task-cancelled",
+  "state": "cancelled",
+  "message": "已取消：保留 2 个已处理对象，18 个未处理",
+  "can_cancel": false,
+  "started_at": "2026-08-31T01:35:55.426087+00:00",
+  "updated_at": "2026-08-31T01:35:55.460126+00:00",
+  "requested_count": 20,
+  "processed_count": 2,
+  "collected_count": 2,
+  "failed_count": 0,
+  "cancelled_count": 18,
+  "completed_batch_count": 1,
+  "total_batch_count": 10,
+  "progress_fraction": 0.1,
+  "report_path": "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\host-runtime\\panel-20260830-193529\\Saved\\UnrealAssetBatchAuditor\\TaskLifecycleEvidence\\cancelled\\latest-report.json",
+  "handoff_path": "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\host-runtime\\panel-20260830-193529\\Saved\\UnrealAssetBatchAuditor\\TaskLifecycleEvidence\\cancelled\\Handoffs\\report-4cdf1836e2bd3807"
+}

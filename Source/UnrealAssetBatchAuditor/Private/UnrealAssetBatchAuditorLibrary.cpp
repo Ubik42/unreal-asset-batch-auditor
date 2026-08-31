@@ -1,6 +1,8 @@
 #include "UnrealAssetBatchAuditorLibrary.h"
 
 #include "Engine/StaticMesh.h"
+#include "Engine/Texture.h"
+#include "Materials/MaterialInterface.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "StaticMeshResources.h"
@@ -45,6 +47,39 @@ TArray<FStaticMeshAuditMetadata> UUnrealAssetBatchAuditorLibrary::CollectStaticM
 
         Result.AssetName = StaticMesh->GetName();
         Result.MaterialSlotCount = StaticMesh->GetStaticMaterials().Num();
+        TSet<FString> UniqueMaterialPaths;
+        TSet<UTexture*> UniqueTextures;
+        for (const FStaticMaterial& StaticMaterial : StaticMesh->GetStaticMaterials())
+        {
+            const UMaterialInterface* Material = StaticMaterial.MaterialInterface;
+            if (Material == nullptr)
+            {
+                ++Result.MissingMaterialSlotCount;
+                continue;
+            }
+            UniqueMaterialPaths.Add(Material->GetPathName());
+            TArray<UTexture*> UsedTextures;
+            Material->GetUsedTextures(UsedTextures);
+            for (UTexture* Texture : UsedTextures)
+            {
+                if (Texture != nullptr)
+                {
+                    UniqueTextures.Add(Texture);
+                }
+            }
+        }
+        Result.MaterialPaths = UniqueMaterialPaths.Array();
+        Result.MaterialPaths.Sort();
+        Result.UniqueMaterialCount = Result.MaterialPaths.Num();
+        for (UTexture* Texture : UniqueTextures)
+        {
+            Result.TexturePaths.Add(Texture->GetPathName());
+            Result.MaxTextureDimension = FMath::Max(
+                Result.MaxTextureDimension,
+                FMath::RoundToInt(FMath::Max(Texture->GetSurfaceWidth(), Texture->GetSurfaceHeight())));
+        }
+        Result.TexturePaths.Sort();
+        Result.TextureDependencyCount = Result.TexturePaths.Num();
 #if ENGINE_MAJOR_VERSION > 5 || (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 8)
         Result.bNaniteEnabled = StaticMesh->GetNaniteSettings().bEnabled;
 #else

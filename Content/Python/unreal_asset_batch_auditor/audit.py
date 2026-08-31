@@ -129,6 +129,70 @@ def _evaluate_asset(
                 f"Material slots {asset.material_slot_count} exceed profile limit {rule.max_value}."
             ),
         )
+    missing_materials_rule = profile.missing_materials
+    if missing_materials_rule and missing_materials_rule.enabled:
+        missing_count = asset.missing_material_slot_count
+        check(
+            missing_count is None or missing_count > missing_materials_rule.max_value,
+            rule_id="static_mesh.missing_materials",
+            severity=missing_materials_rule.severity,
+            metric="missing_material_slot_count",
+            observed=missing_count if missing_count is not None else "missing",
+            expected=missing_materials_rule.max_value,
+            pointer="/rules/missing_materials/max_missing_slots",
+            message=(
+                f"Missing material slots {missing_count} exceed profile limit "
+                f"{missing_materials_rule.max_value}."
+            ),
+        )
+    unique_materials_rule = profile.unique_materials
+    if unique_materials_rule and unique_materials_rule.enabled:
+        unique_count = asset.unique_material_count
+        check(
+            unique_count is None or unique_count > unique_materials_rule.max_value,
+            rule_id="static_mesh.unique_materials",
+            severity=unique_materials_rule.severity,
+            metric="unique_material_count",
+            observed=unique_count if unique_count is not None else "missing",
+            expected=unique_materials_rule.max_value,
+            pointer="/rules/unique_materials/max_count",
+            message=(
+                f"Unique materials {unique_count} exceed profile limit "
+                f"{unique_materials_rule.max_value}."
+            ),
+        )
+    texture_dependencies_rule = profile.texture_dependencies
+    if texture_dependencies_rule and texture_dependencies_rule.enabled:
+        texture_count = asset.texture_dependency_count
+        check(
+            texture_count is None or texture_count > texture_dependencies_rule.max_value,
+            rule_id="static_mesh.texture_dependencies",
+            severity=texture_dependencies_rule.severity,
+            metric="texture_dependency_count",
+            observed=texture_count if texture_count is not None else "missing",
+            expected=texture_dependencies_rule.max_value,
+            pointer="/rules/texture_dependencies/max_count",
+            message=(
+                f"Material-reported texture dependencies {texture_count} exceed profile limit "
+                f"{texture_dependencies_rule.max_value}."
+            ),
+        )
+    texture_dimension_rule = profile.texture_dimension
+    if texture_dimension_rule and texture_dimension_rule.enabled:
+        max_dimension = asset.max_texture_dimension
+        check(
+            max_dimension is None or max_dimension > texture_dimension_rule.max_value,
+            rule_id="static_mesh.texture_dimension",
+            severity=texture_dimension_rule.severity,
+            metric="max_texture_dimension",
+            observed=max_dimension if max_dimension is not None else "missing",
+            expected=texture_dimension_rule.max_value,
+            pointer="/rules/texture_dimension/max_size",
+            message=(
+                f"Maximum texture dimension {max_dimension} exceeds profile limit "
+                f"{texture_dimension_rule.max_value}."
+            ),
+        )
     lod_rule = profile.lod_count
     if lod_rule.enabled:
         check(

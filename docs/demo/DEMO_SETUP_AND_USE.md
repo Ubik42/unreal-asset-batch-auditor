@@ -45,7 +45,7 @@ D:\3D\_tools\unreal-asset-batch-auditor\Demo\UABADemo.uproject
 4. 在“检查规则”下拉框选择“桌面平衡（推荐演示）”；其下方会直接显示几何预算、简单碰撞、Lightmap UV 与分辨率阈值；
 5. 将单批资产数设为 8，点击“开始只读审计”；
 6. 观察左下任务卡：阶段、对象进度、批次进度会随 Editor Tick 更新；面板不会在扫描期间伪装成已完成；
-7. 在“资产总览”确认每个资产的状态、LOD0 三角形、顶点、材质槽、LOD、Nanite、碰撞、LM UV、LM 分辨率与问题数；
+7. 在“资产总览”确认每个资产的状态、LOD0 三角形、顶点、材质槽/唯一材质、纹理依赖/最大边长、LOD、Nanite、碰撞、LM UV、LM 分辨率与问题数；
 8. 切换“问题明细”，用搜索框筛选规则、证据说明或资产名，并对照实测值与 Profile 阈值；
 9. 点击“打开最新报告”直接查看 JSON，或点击“打开报告目录”进入本次报告所在目录。
 
@@ -88,8 +88,9 @@ D:\3D\_tools\unreal-asset-batch-auditor\Demo\UABADemo.uproject
 “已解决”表示当前 `asset_path + rule_id` 不再命中，不等于插件替用户修复了资产。命名或移动导致
 稳定路径改变时，旧路径会归类为已解决、新路径上的命中会归类为新增，这一语义需要在团队接入时明确。
 
-桌面平衡 v2 场景应显示：24 个资产完成真实采集，5 个资产通过，45 条 Issue。面板审计只处理当前选择，
-所以不会凭空加入不存在路径。若同时选中一个 Material，它会被显示为“采集失败”，其余网格仍继续完成。
+桌面平衡 v3 场景应显示 24 个资产完成真实采集，并增加材质完整性、唯一材质、纹理依赖数和最大纹理
+尺寸四类证据。具体 Issue 数以本机生成资产和当前 Profile 为准，不把录屏讲稿中的固定数字当成产品合同。
+面板审计只处理当前选择；若同时选中一个 Material，它会被显示为“采集失败”，其余网格仍继续完成。
 
 自动化和诊断演示仍可打开 `Window > Developer Tools > Output Log`，再执行
 `Tools > Execute Python Script`：
@@ -103,16 +104,16 @@ Demo/Scripts/run_demo_balanced.py
 报告位置：
 
 ```text
-Demo/Saved/UABAAudit/demo-desktop-balanced-v2-report.json
-artifacts/demo/demo-desktop-balanced-v2-report.json
+Demo/Saved/UABAAudit/demo-desktop-balanced-v3-report.json
+artifacts/demo/demo-desktop-balanced-v3-report.json
 ```
 
 ## 5. 展示“规则来自项目”
 
 回到面板，对同一批选择依次切换“移动端严格”和“宽松复核”后重复审计。
 
-- mobile-strict v2：113 条 Issue，10 类规则均可在同一批资产中复核；
-- review-lenient v2：19 条 Issue，简单碰撞规则被关闭、Lightmap UV 要求放宽，展示同一资产在不同项目政策下结论不同。
+- mobile-strict v3：启用严格几何、材质、纹理、碰撞与 Lightmap 门禁；
+- review-lenient v3：关闭简单碰撞与 Lightmap 门禁，放宽几何和纹理预算，但仍检查材质完整性。
 
 不要说“移动端标准就是这些数值”。正确说法是：“这是为了演示 Profile 驱动机制而模拟的项目阈值。”
 
@@ -123,6 +124,8 @@ artifacts/demo/demo-desktop-balanced-v2-report.json
 - `assets`：每个成功资产的真实采集元数据；
 - `simple_collision_primitive_count` / `collision_complexity`：简单碰撞体数量及 Collision Trace Policy；
 - `uv_channel_count` / `lightmap_coordinate_index` / `lightmap_resolution`：Lightmap 就绪事实；
+- `material_paths` / `missing_material_slot_count` / `unique_material_count`：材质槽完整性与唯一材质事实；
+- `texture_paths` / `texture_dependency_count` / `max_texture_dimension`：已加载材质报告的纹理依赖事实；
 - `static_mesh.object_name`：资产名、允许前缀、完整正则和对应 Profile 指针；
 - `static_mesh.package_path`：实际 package directory、允许根目录和禁用目录段；
 - `issues`：规则、严重度、消息与 Evidence ID；

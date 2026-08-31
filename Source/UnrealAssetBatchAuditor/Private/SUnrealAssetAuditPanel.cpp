@@ -48,7 +48,8 @@ bool RuleBelongsToRiskCategory(const FString& RuleId, const FString& Category)
     if (Category == TEXT("geometry"))
         return RuleId.Contains(TEXT("triangle_budget")) || RuleId.Contains(TEXT("vertex_budget"));
     if (Category == TEXT("materials"))
-        return RuleId.Contains(TEXT("material_slots"));
+        return RuleId.Contains(TEXT("material_slots")) || RuleId.Contains(TEXT("material"))
+            || RuleId.Contains(TEXT("texture_"));
     if (Category == TEXT("readiness"))
         return RuleId.Contains(TEXT("lod_count")) || RuleId.Contains(TEXT("nanite_state"))
             || RuleId.Contains(TEXT("simple_collision")) || RuleId.Contains(TEXT("lightmap"));
@@ -80,6 +81,10 @@ FText RuleLabel(const FString& RuleId)
     if (RuleId.Contains(TEXT("triangle_budget"))) return FText::FromString(TEXT("三角形预算"));
     if (RuleId.Contains(TEXT("vertex_budget"))) return FText::FromString(TEXT("顶点预算"));
     if (RuleId.Contains(TEXT("material_slots"))) return FText::FromString(TEXT("材质槽"));
+    if (RuleId.Contains(TEXT("missing_materials"))) return FText::FromString(TEXT("缺失材质"));
+    if (RuleId.Contains(TEXT("unique_materials"))) return FText::FromString(TEXT("唯一材质"));
+    if (RuleId.Contains(TEXT("texture_dependencies"))) return FText::FromString(TEXT("纹理依赖"));
+    if (RuleId.Contains(TEXT("texture_dimension"))) return FText::FromString(TEXT("纹理尺寸"));
     if (RuleId.Contains(TEXT("lod_count"))) return FText::FromString(TEXT("LOD 数量"));
     if (RuleId.Contains(TEXT("nanite_state"))) return FText::FromString(TEXT("Nanite 状态"));
     if (RuleId.Contains(TEXT("simple_collision"))) return FText::FromString(TEXT("简单碰撞"));
@@ -99,6 +104,14 @@ FString LocalizedIssueMessage(const FString& RuleId, const FString& Observed, co
         return FString::Printf(TEXT("LOD0 顶点为 %s，超过 Profile 上限 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("material_slots")))
         return FString::Printf(TEXT("材质槽为 %s，超过 Profile 上限 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("missing_materials")))
+        return FString::Printf(TEXT("缺失材质槽为 %s，超过 Profile 上限 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("unique_materials")))
+        return FString::Printf(TEXT("唯一材质为 %s 个，超过 Profile 上限 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("texture_dependencies")))
+        return FString::Printf(TEXT("纹理依赖为 %s 个，超过 Profile 上限 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("texture_dimension")))
+        return FString::Printf(TEXT("最大纹理边长为 %s，超过 Profile 上限 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("lod_count")))
         return FString::Printf(TEXT("LOD 数量为 %s，低于 Profile 下限 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("nanite_state")))
@@ -256,7 +269,14 @@ public:
         }
         if (ColumnName == TEXT("Triangles")) return SNew(STextBlock).Text(FText::FromString(Item->TriangleCount));
         if (ColumnName == TEXT("Vertices")) return SNew(STextBlock).Text(FText::FromString(Item->VertexCount));
-        if (ColumnName == TEXT("Materials")) return SNew(STextBlock).Text(FText::FromString(Item->MaterialSlotCount));
+        if (ColumnName == TEXT("Materials"))
+            return SNew(STextBlock)
+                .Text(FText::FromString(Item->MaterialDependencyState))
+                .ToolTipText(FText::FromString(TEXT("材质槽 / 唯一有效材质；缺失槽会进入问题明细")));
+        if (ColumnName == TEXT("Textures"))
+            return SNew(STextBlock)
+                .Text(FText::FromString(Item->TextureDependencyState))
+                .ToolTipText(FText::FromString(TEXT("材质接口报告的唯一纹理数 / 最大纹理边长")));
         if (ColumnName == TEXT("LODs")) return SNew(STextBlock).Text(FText::FromString(Item->LodCount));
         if (ColumnName == TEXT("Nanite")) return SNew(STextBlock).Text(FText::FromString(Item->NaniteState));
         if (ColumnName == TEXT("Collision")) return SNew(STextBlock).Text(FText::FromString(Item->CollisionState));
@@ -333,16 +353,16 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
     ProfileOptions = {
         MakeShared<FAuditProfileOption>(FAuditProfileOption{
             TEXT("桌面平衡（推荐演示）"),
-            TEXT("三角形 ≤ 2,000 · 材质槽 ≤ 2 · 简单碰撞 ≥ 1 · 有效 Lightmap UV · 分辨率 ≥ 32 · SM_UABA_ 命名 · /Game/UABADemo"),
-            FPaths::Combine(ProfilesRoot, TEXT("desktop-balanced.v2.json"))}),
+            TEXT("三角形 ≤ 2,000 · 唯一材质 ≤ 2 · 纹理 ≤ 8 · 最大 2K · 无缺失材质 · 碰撞/Lightmap/命名"),
+            FPaths::Combine(ProfilesRoot, TEXT("desktop-balanced.v3.json"))}),
         MakeShared<FAuditProfileOption>(FAuditProfileOption{
             TEXT("移动端严格"),
-            TEXT("三角形 ≤ 500 · 材质槽 ≤ 1 · LOD ≥ 2 · 简单碰撞 ≥ 1 · Lightmap ≥ 64 · 严格命名/目录"),
-            FPaths::Combine(ProfilesRoot, TEXT("mobile-strict.v2.json"))}),
+            TEXT("三角形 ≤ 500 · 唯一材质 ≤ 1 · 纹理 ≤ 4 · 最大 1K · LOD ≥ 2 · 严格交付规则"),
+            FPaths::Combine(ProfilesRoot, TEXT("mobile-strict.v3.json"))}),
         MakeShared<FAuditProfileOption>(FAuditProfileOption{
             TEXT("宽松复核"),
-            TEXT("三角形 ≤ 10,000 · 材质槽 ≤ 4 · Lightmap 仅信息提示 · 碰撞不限制 · SM_ 命名"),
-            FPaths::Combine(ProfilesRoot, TEXT("review-lenient.v2.json"))})
+            TEXT("三角形 ≤ 10,000 · 唯一材质 ≤ 4 · 纹理 ≤ 16 · 最大 4K · 宽松复核"),
+            FPaths::Combine(ProfilesRoot, TEXT("review-lenient.v3.json"))})
     };
     SelectedProfile = ProfileOptions[0];
     ReportPath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/Reports/latest-report.json"));
@@ -637,7 +657,8 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                                 + SHeaderRow::Column(TEXT("Asset")).DefaultLabel(FText::FromString(TEXT("资产"))).FillWidth(0.31f)
                                 + SHeaderRow::Column(TEXT("Triangles")).DefaultLabel(FText::FromString(TEXT("三角形"))).FixedWidth(86)
                                 + SHeaderRow::Column(TEXT("Vertices")).DefaultLabel(FText::FromString(TEXT("顶点"))).FixedWidth(78)
-                                + SHeaderRow::Column(TEXT("Materials")).DefaultLabel(FText::FromString(TEXT("材质槽"))).FixedWidth(68)
+                                + SHeaderRow::Column(TEXT("Materials")).DefaultLabel(FText::FromString(TEXT("槽/材"))).FixedWidth(62)
+                                + SHeaderRow::Column(TEXT("Textures")).DefaultLabel(FText::FromString(TEXT("纹理/最大"))).FixedWidth(82)
                                 + SHeaderRow::Column(TEXT("LODs")).DefaultLabel(FText::FromString(TEXT("LOD"))).FixedWidth(52)
                                 + SHeaderRow::Column(TEXT("Nanite")).DefaultLabel(FText::FromString(TEXT("Nanite"))).FixedWidth(66)
                                 + SHeaderRow::Column(TEXT("Collision")).DefaultLabel(FText::FromString(TEXT("碰撞"))).FixedWidth(58)
@@ -1178,6 +1199,8 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         FailedAsset->TriangleCount = TEXT("—");
         FailedAsset->VertexCount = TEXT("—");
         FailedAsset->MaterialSlotCount = TEXT("—");
+        FailedAsset->MaterialDependencyState = TEXT("—");
+        FailedAsset->TextureDependencyState = TEXT("—");
         FailedAsset->LodCount = TEXT("—");
         FailedAsset->NaniteState = TEXT("—");
         FailedAsset->CollisionState = TEXT("—");
@@ -1196,6 +1219,35 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         Item->IssueCount = IssueCountByAsset.FindRef(Item->AssetPath);
         Item->Status = Item->IssueCount > 0 ? TEXT("issue") : TEXT("pass");
         Item->MaterialSlotCount = FText::AsNumber(Asset->GetIntegerField(TEXT("material_slot_count"))).ToString();
+        double UniqueMaterials = 0.0;
+        double MissingMaterials = 0.0;
+        if (Asset->TryGetNumberField(TEXT("unique_material_count"), UniqueMaterials)
+            && Asset->TryGetNumberField(TEXT("missing_material_slot_count"), MissingMaterials))
+        {
+            Item->MaterialDependencyState = FString::Printf(
+                TEXT("%s/%d%s"), *Item->MaterialSlotCount, FMath::RoundToInt(UniqueMaterials),
+                MissingMaterials > 0.0 ? TEXT(" !") : TEXT(""));
+        }
+        else
+        {
+            Item->MaterialDependencyState = Item->MaterialSlotCount;
+        }
+        double TextureCount = 0.0;
+        double MaxTextureDimension = 0.0;
+        if (Asset->TryGetNumberField(TEXT("texture_dependency_count"), TextureCount)
+            && Asset->TryGetNumberField(TEXT("max_texture_dimension"), MaxTextureDimension))
+        {
+            const int32 MaxSize = FMath::RoundToInt(MaxTextureDimension);
+            const FString SizeLabel = MaxSize >= 1024 && MaxSize % 1024 == 0
+                ? FString::Printf(TEXT("%dK"), MaxSize / 1024)
+                : FText::AsNumber(MaxSize).ToString();
+            Item->TextureDependencyState = FString::Printf(
+                TEXT("%d/%s"), FMath::RoundToInt(TextureCount), *SizeLabel);
+        }
+        else
+        {
+            Item->TextureDependencyState = TEXT("—");
+        }
         Item->NaniteState = Asset->GetBoolField(TEXT("nanite_enabled")) ? TEXT("启用") : TEXT("关闭");
         double CollisionCount = 0.0;
         Item->CollisionState = Asset->TryGetNumberField(TEXT("simple_collision_primitive_count"), CollisionCount)

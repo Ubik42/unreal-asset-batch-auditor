@@ -1,0 +1,213 @@
+{
+  "schema_version": "unreal-panel-lifecycle@1.0.0",
+  "created_at": "2026-08-31T01:35:55.8864808+00:00",
+  "engine": "UE 5.8.1",
+  "plugin_build": "UE_5.8.1-v0.9.0-dev2",
+  "execution": "independent hidden UnrealEditor-Cmd -RenderOffscreen",
+  "test_pid": 43288,
+  "created_unreal_pids": [
+    43288
+  ],
+  "existing_unreal_pids_before": [
+    19972
+  ],
+  "existing_unreal_pids_after": [
+    19972
+  ],
+  "existing_processes_survived": true,
+  "missing_preexisting_pids": [],
+  "preexisting_processes_managed_by_test": false,
+  "started_at": "2026-08-31T01:35:29.7015368+00:00",
+  "finished_at": "2026-08-31T01:35:55.8864808+00:00",
+  "duration_seconds": 26.185,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "automation_tests": [
+    "UnrealAssetBatchAuditor.PanelEvidence",
+    "UnrealAssetBatchAuditor.PanelTaskLifecycle"
+  ],
+  "automation_passed": true,
+  "panel_evidence_passed": true,
+  "panel_task_lifecycle_passed": true,
+  "report_path": "artifacts/demo/demo-desktop-balanced-v2-report.json",
+  "report_sha256": "6700BF18FBF4F9058807D3BAB71AE8A9C7A396D0D142424D322DC07074906170",
+  "comparison_path": "artifacts/demo/session-history/latest-comparison.v1.json",
+  "comparison_sha256": "4C8B5029591D6E47A7983D9398B2823B44E00835ED5DBF2D543BA32DBBE4514F",
+  "log_path": "artifacts/host-runtime/panel-20260830-193529/Saved/Logs/UnrealAssetBatchAuditorHost.log",
+  "committed_log_excerpt": "artifacts/host-validation/m9/panel-lifecycle-UE_5.8.1-v0.9.0-dev2-host-log.txt",
+  "committed_log_excerpt_sha256": "E300EB992EB1C40AC12D062D67F760E9004FDA9E3760B38809FBECAD8ACF1B34",
+  "screenshot_count": 14,
+  "screenshots": [
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/01-empty-state.png",
+      "bytes": 113690,
+      "sha256": "0B43BE9691A9551906A0B5A98A86C9E6F2EA0D4890DB66D190E15C3D5929884D"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/02-asset-overview.png",
+      "bytes": 178223,
+      "sha256": "83D153A601334C417A71824B205297D3FBF257336FCC670FFB16B60FF33DF02A"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/03-passing-assets.png",
+      "bytes": 130974,
+      "sha256": "DDB4AB0E1B09D0BE1F34BCF1683E84CE8A405BD6678576AAFA7226B4C5FB19CC"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/04-assets-needing-work.png",
+      "bytes": 182390,
+      "sha256": "E6BE7E155CEB8827BB129EE24B3E058EBAE48E062A31C7366F2A43A138F6D49F"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/05-issue-details.png",
+      "bytes": 209189,
+      "sha256": "DF34FA9AE8C714E5048FDD76FEDD3DD909C1E628D4726B031678C4F16885D955"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/06-collision-evidence.png",
+      "bytes": 172552,
+      "sha256": "F120B1B6586D0DC7606F1349EE49C8E6F88B4C50B23D9113536C36BA7A85878B"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/07-lightmap-uv-evidence.png",
+      "bytes": 152517,
+      "sha256": "2B4D7152FCFEDB04A9C0E085B525B33B0657F30498294CA4081BD3F417B1FF1E"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/08-lightmap-resolution-evidence.png",
+      "bytes": 132639,
+      "sha256": "E9F67B8D230BD8E8927C252876A33CA366D4AA2457AF0021F89340278FC57260"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/09-object-name-evidence.png",
+      "bytes": 114368,
+      "sha256": "6506D8DFFB175E1A27B003AE7EE6CDD5A896FBE429B42AA5366734BD8C74E719"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/10-package-path-evidence.png",
+      "bytes": 115637,
+      "sha256": "D815C67784EA401E9E7F9D1A7EE192C85F4320549661D7CC9440640AF35FFD5B"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/11-regression-overview.png",
+      "bytes": 224695,
+      "sha256": "A69463DFEC32D46AB66C3FC7602EA43EE2152B4340754E38DF07CD603CA44FB4"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/12-resolved-changes.png",
+      "bytes": 172328,
+      "sha256": "0CD8CCC41F04E68374F326853FB7960F036320AF9244D8756972FC32762D341C"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/13-running-batch-task.png",
+      "bytes": 182878,
+      "sha256": "97FD8A3E78EAE983071CC78301FBB580BC5091C7870F1C24BD1828EFBD301CCA"
+    },
+    {
+      "path": "artifacts/host-validation/m9/preflight-screenshots/14-cancelling-task.png",
+      "bytes": 182923,
+      "sha256": "6D48C07C9FF8194CB034333B924F7DD27A128EE934E4B1B5C81BFBD40C518C8A"
+    }
+  ],
+  "task_artifact_count": 19,
+  "task_artifacts": [
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/cancelled/cancel.json",
+      "bytes": 51,
+      "sha256": "B25A1C9B233E27D8FA1E60CDA3F451FE11366ED9DC3C05A308456947DFFF4162"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/cancelled/Handoffs/report-4cdf1836e2bd3807/交接清单.json",
+      "bytes": 1082,
+      "sha256": "5B2EBFAA8E5E3A692E84986EDAF17D34D7115866213E53800ACF21E77F781964"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/cancelled/Handoffs/report-4cdf1836e2bd3807/审计交接报告.html",
+      "bytes": 4141,
+      "sha256": "A14BD2F51EF2C82850A14575BCA9600012196891183A38A1BCD8A5720768A92C"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/cancelled/Handoffs/report-4cdf1836e2bd3807/审计问题明细.csv",
+      "bytes": 1340,
+      "sha256": "22A2FB592AC53EA6C3A05FEAD62B624FE85F47AF1E719E090501A1DE9EBEE3F8"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/cancelled/latest-report.json",
+      "bytes": 5586,
+      "sha256": "B845C73913A4A9EC302272ED730126002DE346A191859E4D9B4263E2D9CA2B3F"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/cancelled/request.json",
+      "bytes": 2213,
+      "sha256": "10478A3B526F033F6CD82C0CC93C78CFE5D67060705F519CBE1D8272ED69C232"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/cancelled/Sessions/latest-comparison.v1.json",
+      "bytes": 740,
+      "sha256": "28C2C5BEF06B23CE14E6ED5D8A1F03680EC05F1965BEA94033D4A1E6886F1865"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/cancelled/Sessions/Reports/20260831013555454615-report-4cdf1836e2bd3807-b845c739.json",
+      "bytes": 5586,
+      "sha256": "B845C73913A4A9EC302272ED730126002DE346A191859E4D9B4263E2D9CA2B3F"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/cancelled/Sessions/session-index.v1.json",
+      "bytes": 644,
+      "sha256": "204655FAECB7BD270AADED3A7FFE41A9DEF0FF203C6C727FB7438D55BD76D2CE"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/cancelled/task-state.json",
+      "bytes": 945,
+      "sha256": "BF277572913DB4C010EB50F45DD5A379A8BFCC929ED05463E89B9BC3A7FD3047"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/Handoffs/report-ead7b262974bf3ab/交接清单.json",
+      "bytes": 1080,
+      "sha256": "BFFB3E282F3FBEF8D5CCD98C0071F46AE6D59DA7D44F459CB8896BB18B8F1AB4"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/Handoffs/report-ead7b262974bf3ab/审计交接报告.html",
+      "bytes": 5222,
+      "sha256": "5A712A252E094A285D960A21D89F88AB1C84137FD51F1AC972F74E4BF051174C"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/Handoffs/report-ead7b262974bf3ab/审计问题明细.csv",
+      "bytes": 2958,
+      "sha256": "90CD34611D2B05EA050518C06145B08B3DE029C3F3E3344D5671D075E681AC3A"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/latest-report.json",
+      "bytes": 12513,
+      "sha256": "4B6F3AB0FB2BF33B221E295BD209E8B95F60717D9D082344659FF215D12730F3"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/request.json",
+      "bytes": 1427,
+      "sha256": "8E04285A8DE48D938B3D95ADB9B235AC7E3D75A70E67BB122B2451D262AFC433"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/Sessions/latest-comparison.v1.json",
+      "bytes": 732,
+      "sha256": "75F1AECDA444EBE259B3FA396F69DBC30718A53B841559FCA001F5B3C2037B63"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/Sessions/Reports/20260831013555418070-report-ead7b262974bf3ab-4b6f3ab0.json",
+      "bytes": 12513,
+      "sha256": "4B6F3AB0FB2BF33B221E295BD209E8B95F60717D9D082344659FF215D12730F3"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/Sessions/session-index.v1.json",
+      "bytes": 643,
+      "sha256": "547E2DE0504EFA8EF23F5C33B6954CE29F28E549AE2A39661CBA02A5FDC23CB2"
+    },
+    {
+      "path": "artifacts/host-validation/m9/task-lifecycle-UE_5.8.1-v0.9.0-dev2-host/completed/task-state.json",
+      "bytes": 925,
+      "sha256": "456DF9A94E503DCFC6DB6AD4B3045616053CB00EED00DF0CF0AA4A14990B5577"
+    }
+  ],
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false
+}

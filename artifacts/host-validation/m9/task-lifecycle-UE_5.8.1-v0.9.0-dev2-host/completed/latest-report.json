@@ -1,0 +1,342 @@
+{
+  "schema_version": "unreal-asset-audit@3.0.0",
+  "report_id": "report-ead7b262974bf3ab",
+  "created_at": "2026-08-31T01:35:55.418070+00:00",
+  "profile_id": "host-material-evidence-v3",
+  "profile_version": "3.0.0",
+  "profile_schema_version": "unreal-static-mesh-profile@3.0.0",
+  "collection_mode": "unreal_editor",
+  "real_unreal_validation": true,
+  "host_engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "asset_count": 5,
+  "issue_count": 9,
+  "collection_failure_count": 0,
+  "requested_asset_count": 5,
+  "processed_asset_count": 5,
+  "cancelled_asset_count": 0,
+  "completed_batch_count": 3,
+  "batch_size": 2,
+  "assets": [
+    {
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "asset_name": "Cone",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 284,
+          "vertices": 198
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 4,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32,
+      "material_paths": [
+        "/Engine/EngineMaterials/DefaultMaterial.DefaultMaterial"
+      ],
+      "missing_material_slot_count": 0,
+      "unique_material_count": 1,
+      "texture_paths": [
+        "/Engine/EngineMaterials/T_Default_Material_Grid_M.T_Default_Material_Grid_M",
+        "/Engine/EngineMaterials/T_Default_Material_Grid_N.T_Default_Material_Grid_N"
+      ],
+      "texture_dependency_count": 2,
+      "max_texture_dimension": 512
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "asset_name": "Cube",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 48,
+          "vertices": 54
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64,
+      "material_paths": [
+        "/Engine/EngineMaterials/WorldGridMaterial.WorldGridMaterial"
+      ],
+      "missing_material_slot_count": 0,
+      "unique_material_count": 1,
+      "texture_paths": [
+        "/Engine/EngineMaterials/T_Default_Material_Grid_M.T_Default_Material_Grid_M",
+        "/Engine/EngineMaterials/T_Default_Material_Grid_N.T_Default_Material_Grid_N"
+      ],
+      "texture_dependency_count": 2,
+      "max_texture_dimension": 512
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "asset_name": "Cylinder",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 512,
+          "vertices": 334
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32,
+      "material_paths": [
+        "/Engine/EngineMaterials/DefaultMaterial.DefaultMaterial"
+      ],
+      "missing_material_slot_count": 0,
+      "unique_material_count": 1,
+      "texture_paths": [
+        "/Engine/EngineMaterials/T_Default_Material_Grid_M.T_Default_Material_Grid_M",
+        "/Engine/EngineMaterials/T_Default_Material_Grid_N.T_Default_Material_Grid_N"
+      ],
+      "texture_dependency_count": 2,
+      "max_texture_dimension": 512
+    },
+    {
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "asset_name": "Sphere",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 960,
+          "vertices": 559
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 32,
+      "material_paths": [
+        "/Engine/EngineMaterials/DefaultMaterial.DefaultMaterial"
+      ],
+      "missing_material_slot_count": 0,
+      "unique_material_count": 1,
+      "texture_paths": [
+        "/Engine/EngineMaterials/T_Default_Material_Grid_M.T_Default_Material_Grid_M",
+        "/Engine/EngineMaterials/T_Default_Material_Grid_N.T_Default_Material_Grid_N"
+      ],
+      "texture_dependency_count": 2,
+      "max_texture_dimension": 512
+    },
+    {
+      "asset_path": "/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/TextureBasedWPO/DemoBoxMesh.DemoBoxMesh",
+      "asset_name": "DemoBoxMesh",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 48,
+          "vertices": 54
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 0,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64,
+      "material_paths": [
+        "/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/TextureBasedWPO/TextureBasedMorphDemo.TextureBasedMorphDemo"
+      ],
+      "missing_material_slot_count": 0,
+      "unique_material_count": 1,
+      "texture_paths": [
+        "/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/TextureBasedWPO/DemoBox.DemoBox",
+        "/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/TextureBasedWPO/DemoBox_Normals.DemoBox_Normals"
+      ],
+      "texture_dependency_count": 2,
+      "max_texture_dimension": 32
+    }
+  ],
+  "issues": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-231849b0f67e3949",
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "rule_id": "static_mesh.texture_dependencies",
+      "severity": "warning",
+      "message": "Material-reported texture dependencies 2 exceed profile limit 1.",
+      "evidence_id": "ev-62e7edaa256520bf"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-deee563cb8c1d6a0",
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "rule_id": "static_mesh.texture_dimension",
+      "severity": "warning",
+      "message": "Maximum texture dimension 512 exceeds profile limit 256.",
+      "evidence_id": "ev-8f4ca431950e66c7"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-60dcbcc561d791fb",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "rule_id": "static_mesh.texture_dependencies",
+      "severity": "warning",
+      "message": "Material-reported texture dependencies 2 exceed profile limit 1.",
+      "evidence_id": "ev-3a985eeb86d2a49d"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-89ff65a0cd621482",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "rule_id": "static_mesh.texture_dimension",
+      "severity": "warning",
+      "message": "Maximum texture dimension 512 exceeds profile limit 256.",
+      "evidence_id": "ev-21936e2ce0069c7a"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-191e2f7d4c9b651b",
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "rule_id": "static_mesh.texture_dependencies",
+      "severity": "warning",
+      "message": "Material-reported texture dependencies 2 exceed profile limit 1.",
+      "evidence_id": "ev-c98a9eeeffe24f4d"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-9fef31e030bf1560",
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "rule_id": "static_mesh.texture_dimension",
+      "severity": "warning",
+      "message": "Maximum texture dimension 512 exceeds profile limit 256.",
+      "evidence_id": "ev-e21490fcb650260a"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-918e0ab29b7a94b2",
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "rule_id": "static_mesh.texture_dependencies",
+      "severity": "warning",
+      "message": "Material-reported texture dependencies 2 exceed profile limit 1.",
+      "evidence_id": "ev-fb987c7bac738cf5"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-c47a4e0d48553038",
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "rule_id": "static_mesh.texture_dimension",
+      "severity": "warning",
+      "message": "Maximum texture dimension 512 exceeds profile limit 256.",
+      "evidence_id": "ev-35a4596001a5b1fd"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-afcbbf41bcb10f55",
+      "asset_path": "/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/TextureBasedWPO/DemoBoxMesh.DemoBoxMesh",
+      "rule_id": "static_mesh.texture_dependencies",
+      "severity": "warning",
+      "message": "Material-reported texture dependencies 2 exceed profile limit 1.",
+      "evidence_id": "ev-1f872d358e2545ca"
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-62e7edaa256520bf",
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "metric": "texture_dependency_count",
+      "observed": 2,
+      "expected": 1,
+      "profile_pointer": "/rules/texture_dependencies/max_count",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-8f4ca431950e66c7",
+      "asset_path": "/Engine/BasicShapes/Cone.Cone",
+      "metric": "max_texture_dimension",
+      "observed": 512,
+      "expected": 256,
+      "profile_pointer": "/rules/texture_dimension/max_size",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-3a985eeb86d2a49d",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "metric": "texture_dependency_count",
+      "observed": 2,
+      "expected": 1,
+      "profile_pointer": "/rules/texture_dependencies/max_count",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-21936e2ce0069c7a",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "metric": "max_texture_dimension",
+      "observed": 512,
+      "expected": 256,
+      "profile_pointer": "/rules/texture_dimension/max_size",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-c98a9eeeffe24f4d",
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "metric": "texture_dependency_count",
+      "observed": 2,
+      "expected": 1,
+      "profile_pointer": "/rules/texture_dependencies/max_count",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-e21490fcb650260a",
+      "asset_path": "/Engine/BasicShapes/Cylinder.Cylinder",
+      "metric": "max_texture_dimension",
+      "observed": 512,
+      "expected": 256,
+      "profile_pointer": "/rules/texture_dimension/max_size",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-fb987c7bac738cf5",
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "metric": "texture_dependency_count",
+      "observed": 2,
+      "expected": 1,
+      "profile_pointer": "/rules/texture_dependencies/max_count",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-35a4596001a5b1fd",
+      "asset_path": "/Engine/BasicShapes/Sphere.Sphere",
+      "metric": "max_texture_dimension",
+      "observed": 512,
+      "expected": 256,
+      "profile_pointer": "/rules/texture_dimension/max_size",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-1f872d358e2545ca",
+      "asset_path": "/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/TextureBasedWPO/DemoBoxMesh.DemoBoxMesh",
+      "metric": "texture_dependency_count",
+      "observed": 2,
+      "expected": 1,
+      "profile_pointer": "/rules/texture_dependencies/max_count",
+      "collector": "unreal_editor"
+    }
+  ],
+  "collection_failures": []
+}

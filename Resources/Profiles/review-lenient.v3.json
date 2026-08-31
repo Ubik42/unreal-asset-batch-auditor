@@ -1,0 +1,22 @@
+{
+  "schema_version": "unreal-static-mesh-profile@3.0.0",
+  "profile_id": "demo-review-lenient-v3",
+  "profile_version": "3.0.0",
+  "description": "演示用宽松复核规则：保留材质完整性，放宽纹理依赖预算。数值为模拟项目数据。",
+  "rules": {
+    "triangle_budget": { "enabled": true, "max_lod0": 10000, "severity": "warning" },
+    "vertex_budget": { "enabled": true, "max_lod0": 7000, "severity": "warning" },
+    "material_slots": { "enabled": true, "max_count": 4, "severity": "info" },
+    "lod_count": { "enabled": true, "min_count": 1, "severity": "info" },
+    "nanite": { "enabled": false, "expected": "any", "severity": "info" },
+    "simple_collision": { "enabled": false, "min_primitive_count": 0, "allow_complex_as_simple": true, "severity": "info" },
+    "lightmap_uv": { "enabled": false, "required": false, "min_uv_channel_count": 1, "severity": "info" },
+    "lightmap_resolution": { "enabled": false, "min_resolution": 16, "severity": "info" },
+    "object_name": { "enabled": true, "required_prefixes": ["SM_"], "pattern": "^SM_[A-Za-z0-9_]+$", "severity": "info" },
+    "package_path": { "enabled": false, "allowed_roots": ["/Game"], "forbidden_segments": [], "severity": "info" },
+    "missing_materials": { "enabled": true, "max_missing_slots": 0, "severity": "warning" },
+    "unique_materials": { "enabled": true, "max_count": 4, "severity": "info" },
+    "texture_dependencies": { "enabled": true, "max_count": 16, "severity": "info" },
+    "texture_dimension": { "enabled": true, "max_size": 4096, "severity": "info" }
+  }
+}

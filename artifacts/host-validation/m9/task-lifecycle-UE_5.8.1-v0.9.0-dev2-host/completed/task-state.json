@@ -1,0 +1,19 @@
+{
+  "schema_version": "unreal-audit-task-state@1.0.0",
+  "task_id": "task-completed",
+  "state": "completed",
+  "message": "审计完成：5 个资产，9 个问题",
+  "can_cancel": false,
+  "started_at": "2026-08-31T01:35:55.370484+00:00",
+  "updated_at": "2026-08-31T01:35:55.424087+00:00",
+  "requested_count": 5,
+  "processed_count": 5,
+  "collected_count": 5,
+  "failed_count": 0,
+  "cancelled_count": 0,
+  "completed_batch_count": 3,
+  "total_batch_count": 3,
+  "progress_fraction": 1.0,
+  "report_path": "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\host-runtime\\panel-20260830-193529\\Saved\\UnrealAssetBatchAuditor\\TaskLifecycleEvidence\\completed\\latest-report.json",
+  "handoff_path": "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\host-runtime\\panel-20260830-193529\\Saved\\UnrealAssetBatchAuditor\\TaskLifecycleEvidence\\completed\\Handoffs\\report-ead7b262974bf3ab"
+}

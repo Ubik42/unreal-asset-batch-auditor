@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unreal-asset-audit-report@3.0.0",
+  "title": "Unreal Asset Audit Report v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "report_id", "created_at", "profile_id", "profile_version",
+    "profile_schema_version", "collection_mode", "real_unreal_validation", "host_engine_version",
+    "asset_count", "issue_count", "collection_failure_count", "requested_asset_count",
+    "processed_asset_count", "cancelled_asset_count", "completed_batch_count", "batch_size",
+    "assets", "issues", "evidence", "collection_failures"
+  ],
+  "properties": {
+    "schema_version": { "const": "unreal-asset-audit@3.0.0" },
+    "report_id": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "profile_id": { "type": "string", "minLength": 1 },
+    "profile_version": { "type": "string", "minLength": 1 },
+    "profile_schema_version": { "enum": ["unreal-static-mesh-profile@1.0.0", "unreal-static-mesh-profile@2.0.0", "unreal-static-mesh-profile@3.0.0"] },
+    "collection_mode": { "enum": ["offline_fixture", "unreal_editor"] },
+    "real_unreal_validation": { "type": "boolean" },
+    "host_engine_version": { "type": ["string", "null"] },
+    "asset_count": { "type": "integer", "minimum": 0 },
+    "issue_count": { "type": "integer", "minimum": 0 },
+    "collection_failure_count": { "type": "integer", "minimum": 0 },
+    "requested_asset_count": { "type": "integer", "minimum": 0 },
+    "processed_asset_count": { "type": "integer", "minimum": 0 },
+    "cancelled_asset_count": { "type": "integer", "minimum": 0 },
+    "completed_batch_count": { "type": "integer", "minimum": 0 },
+    "batch_size": { "type": ["integer", "null"], "minimum": 1 },
+    "assets": { "type": "array", "items": { "$ref": "#/$defs/staticMesh" } },
+    "issues": { "type": "array", "items": { "$ref": "issue.v1.schema.json" } },
+    "evidence": { "type": "array", "items": { "$ref": "evidence.v1.schema.json" } },
+    "collection_failures": { "type": "array", "items": { "$ref": "report.v2.schema.json#/properties/collection_failures/items" } }
+  },
+  "$defs": {
+    "lod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index", "triangles", "vertices"],
+      "properties": {
+        "index": { "type": "integer", "minimum": 0 },
+        "triangles": { "type": "integer", "minimum": 0 },
+        "vertices": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "staticMesh": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_path", "asset_name", "lods", "material_slot_count", "nanite_enabled",
+        "simple_collision_primitive_count", "collision_complexity", "uv_channel_count",
+        "lightmap_coordinate_index", "lightmap_resolution", "material_paths",
+        "missing_material_slot_count", "unique_material_count", "texture_paths",
+        "texture_dependency_count", "max_texture_dimension"
+      ],
+      "properties": {
+        "asset_path": { "type": "string", "minLength": 1 },
+        "asset_name": { "type": "string", "minLength": 1 },
+        "lods": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/lod" } },
+        "material_slot_count": { "type": "integer", "minimum": 0 },
+        "nanite_enabled": { "type": "boolean" },
+        "simple_collision_primitive_count": { "type": "integer", "minimum": 0 },
+        "collision_complexity": { "type": "string", "minLength": 1 },
+        "uv_channel_count": { "type": "integer", "minimum": 0 },
+        "lightmap_coordinate_index": { "type": "integer", "minimum": -1 },
+        "lightmap_resolution": { "type": "integer", "minimum": 0 },
+        "material_paths": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "missing_material_slot_count": { "type": "integer", "minimum": 0 },
+        "unique_material_count": { "type": "integer", "minimum": 0 },
+        "texture_paths": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "texture_dependency_count": { "type": "integer", "minimum": 0 },
+        "max_texture_dimension": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "collection_mode": { "const": "offline_fixture" } } },
+      "then": { "properties": { "real_unreal_validation": { "const": false }, "host_engine_version": { "type": "null" } } }
+    },
+    {
+      "if": { "properties": { "real_unreal_validation": { "const": true } } },
+      "then": { "properties": { "host_engine_version": { "type": "string", "minLength": 1 } } }
+    }
+  ]
+}

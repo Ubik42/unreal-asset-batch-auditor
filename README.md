@@ -2,12 +2,12 @@
 
 面向 Unreal 项目 Static Mesh 的只读交付验收台。项目 Profile 定义预算和预期，Editor-only C++ 模块批量采集元数据，Python 负责规则编排与 JSON 报告。扫描接口不保存资产、不重建网格，也不修改 Nanite。
 
-> **当前源码：v0.9.0-dev1** · 已通过 UE 5.8.1 BuildPlugin 与独立宿主验证<br>
+> **当前源码：v0.9.0-dev2** · 已通过 UE 5.8.1 BuildPlugin 与独立宿主验证<br>
 > **公开可安装版本：v0.8.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.8.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
-![资产交付验收台：文件夹批次与交付风险谱](docs/images/workflow/v0.9/02-asset-overview.png)
+![资产交付验收台：材质与纹理依赖台账](docs/images/workflow/v0.9-material/02-asset-overview.png)
 
 <p align="center"><sub>真实 UE 5.8.1 原生 Slate：左侧校准规则和交付批次，顶部风险谱按真实 Report 汇总问题，主表保留完整资产证据。</sub></p>
 
@@ -23,8 +23,8 @@
 
 ### 1. 选择项目检查规则
 
-从插件内置的规则下拉框选择审计 Profile，界面直接展示三角形、顶点、材质槽、LOD、Nanite、
-简单碰撞与 Lightmap 阈值。普通用户无需接触 JSON 路径；项目可以通过“导入自定义规则”接入自己的标准。
+从插件内置的规则下拉框选择审计 Profile，界面直接展示三角形、顶点、材质、纹理依赖、最大纹理尺寸、
+LOD、Nanite、碰撞与 Lightmap 阈值。普通用户无需接触 JSON 路径；项目可以通过“导入自定义规则”接入自己的标准。
 
 ![选择项目检查规则与空状态](docs/images/workflow/v0.8/01-empty-state.png)
 
@@ -34,20 +34,29 @@
 与单独选择的对象合并、去重并稳定排序；不会默认扫描整个项目。资产总览不会隐藏通过项，同一批次内
 可以直接对比通过、需处理和采集失败对象。
 
-![文件夹递归形成交付批次](docs/images/workflow/v0.9/02-asset-overview.png)
+![文件夹递归形成交付批次](docs/images/workflow/v0.9-material/02-asset-overview.png)
 
 ### 3. 查看可追溯报告
 
 切换“问题明细”即可看到严重度、规则、实测值、Profile 阈值和中文证据说明。面板把本次运行写入版本化 JSON Report，保留宿主版本、资产元数据、Issue、Evidence 与批次统计。
 
-![交付风险谱与可追溯问题明细](docs/images/workflow/v0.9/05-issue-details.png)
+![交付风险谱与可追溯问题明细](docs/images/workflow/v0.9-material/05-issue-details.png)
 
-以上 v0.9-dev1 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件，数据来自真实
-Engine Static Mesh 与 24 个项目 Demo `.uasset`；不是网页复刻或设计稿。生命周期记录保存测试 PID、
+以上 v0.9-dev2 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件，数据来自真实
+Engine Static Mesh；不是网页复刻或设计稿。完整演示流程另使用 24 个本机生成的项目 Demo `.uasset`。生命周期记录保存测试 PID、
 耗时、退出状态、截图、报告与交接包哈希。自动化证明面板渲染、任务状态、批次间取消和报告解析，
 不冒充鼠标点击人工测试。演示 Profile 使用模拟项目阈值，不代表行业统一标准。
 
 ## 真实状态画廊
+
+### 材质与纹理风险
+
+资产台账用“槽/材”和“纹理/最大”同时表达材质槽、唯一有效材质、已加载纹理依赖数与最大边长。
+风险谱可只查看材质链路，问题仍保留实测值、Profile 阈值和 JSON Pointer。
+
+![材质风险谱](docs/images/workflow/v0.9-material/09-material-risk-spectrum.png)
+
+![最大纹理尺寸证据](docs/images/workflow/v0.9-material/08-texture-size-evidence.png)
 
 ### 只看通过资产
 
@@ -105,6 +114,7 @@ CSV 和带 SHA-256 的交接清单；制片、主美或外包同事无需安装 
 - 版本化 JSON `Profile`、`Issue`、`Evidence`、`Report` 合同；
 - LOD0 三角形预算、LOD0 顶点预算、材质槽上限、LOD 数量下限、Nanite 预期状态；
 - 简单碰撞体数量与碰撞复杂度政策，可由 Profile 决定是否接受 `Complex As Simple`；
+- 缺失材质槽、唯一有效材质数、已加载纹理依赖数与最大纹理尺寸政策；
 - Lightmap UV 有效性与最少 UV 通道数、Lightmap 最低分辨率；
 - 可选资产名前缀、完整正则、允许项目根目录与禁用目录段；旧 v2 Profile 不配置时保持兼容；
 - 每条 Evidence 记录观测值、Profile 期望值及其 JSON Pointer；
@@ -113,7 +123,7 @@ CSV 和带 SHA-256 的交接清单；制片、主美或外包同事无需安装 
 - UE 原生中文 Slate 面板：读取 Content Browser 选择、从预置规则下拉框切换 Profile、运行审计与共享搜索；
 - 显式资产与文件夹可以组成同一交付批次；文件夹递归只发现 Static Mesh，结果去重并稳定排序；
 - “交付风险谱”按几何预算、材质负载、构建就绪、命名路径和采集异常汇总真实问题，点击即可筛选明细；
-- “资产总览”展示每个已采集资产的通过/需处理/失败状态、几何预算、LOD、Nanite、碰撞、Lightmap UV、Lightmap 分辨率和问题数，不再隐藏通过资产；
+- “资产总览”展示每个已采集资产的通过/需处理/失败状态、几何预算、材质/纹理依赖、LOD、Nanite、碰撞、Lightmap UV、Lightmap 分辨率和问题数，不再隐藏通过资产；
 - “问题明细”保留严重度、规则、实测值、Profile 阈值与本地化证据说明，并可直接打开最新 JSON 或报告目录；
 - 面板运行会在项目 `Saved/UnrealAssetBatchAuditor/Sessions` 中保存不可变历史报告和版本化轻量索引，不再只留下会被覆盖的 `latest-report.json`；
 - 中文面板可选择同 Profile 历史会话作为回归基线，查看新增、持续、已解决和采集失败变化；比较结果使用版本化 JSON，可供后续 CI 或团队看板消费；
@@ -133,8 +143,8 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 .\scripts\validate.ps1 -Tier quick
 .\.venv\Scripts\unreal-asset-audit.exe `
-  --profile config\Profiles\default-static-mesh-profile.v2.json `
-  --fixture tests\fixtures\static_meshes.v2.json `
+  --profile config\Profiles\default-static-mesh-profile.v3.json `
+  --fixture tests\fixtures\static_meshes.v3.json `
   --out artifacts\reports\offline-fixture-report.json
 ```
 
@@ -144,7 +154,7 @@ python -m venv .venv
 
 仓库内置一个 UE 5.8.1 非生产演示工程和确定性生成脚本。脚本从用户本机已安装的 `/Engine`
 内容生成 24 个真实项目 `.uasset`，并建立三种复杂度分组、三套训练 Profile、两个诊断输入、
-两轮真实 v2 报告与只读哈希证据。生成器先建立无三类注入故障的基线，再明确构造三个项目自有故障副本：错误命名、放入
+两轮真实 v3 报告与只读哈希证据。生成器先建立无三类注入故障的基线，再明确构造三个项目自有故障副本：错误命名、放入
 `Developers` 目录、移除简单碰撞并把 Lightmap 分辨率降到 8；生成器不会修改 `/Engine` 源资产。
 
 ```powershell
@@ -190,7 +200,7 @@ Demo Profile 是为了形成清晰对比而模拟的项目数据，不代表行�
    [宿主测试清单](docs/HOST_TEST_PLAN.md)执行真实验证。
 
 插件 descriptor 只声明 `Editor` 模块。C++ collector 仅接收显式 object path，并读取
-`UStaticMesh` render data、材质槽、Nanite、BodySetup 碰撞聚合体和 Lightmap 设置。当前实现为了获得
+`UStaticMesh` render data、材质/已加载纹理依赖、Nanite、BodySetup 碰撞聚合体和 Lightmap 设置。当前实现为了获得
 顶点/三角形和 UV 通道数据会加载指定网格；没有扫描整个项目，也没有逐顶点 Python 循环。
 
 Editor Python 的便捷入口默认每批 128 个显式 object path，也允许调用方注入取消和进度回调：
@@ -215,9 +225,9 @@ report = run(
 - 已建立 64 个 Engine Static Mesh、2 次预热、7 次重复的真实宿主热缓存基线；结果只用于回归，不外推到生产项目或数千资产；
 - 有界分批、进度、批次间取消和部分失败汇总已在真实 UE 5.8.1 宿主验证；完整场景调用尺寸为 `[2,2,1]`，取消场景只执行首批 `[2]`；
 - v0.8 发布基线完成历史会话、回归对比、批次间取消、团队包、确定性发布以及全新安装/升级验证；完整证据见 `artifacts/goal/checkpoint-0015.json`；
-- v0.9-dev1 已通过 63 项 Python 测试、Ruff、UE 5.8.1 BuildPlugin 和一次独立宿主生命周期；宿主从真实 `/Engine/BasicShapes` 递归发现 Static Mesh，并验证风险谱筛选；
-- v0.9-dev1 当前有 14 张原生 Slate 证据图，记录位于 `artifacts/host-validation/m8/`；这不代表人工点击测试或跨版本兼容；
-- 下一阶段按价值扩展材质/纹理依赖政策、项目预设与无人值守审计入口，不加入泛 AI 对话或 PCG；
+- v0.9-dev2 已通过 68 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主真实采集 5 个 Engine Static Mesh 的有效材质路径、纹理依赖数和最大纹理边长；
+- 材质证据宿主以明确标注的模拟 Profile 产生 9 条纹理风险，14 张原生 Slate 图与生命周期记录位于 `docs/images/workflow/v0.9-material/` 和 `artifacts/host-validation/m9/`；这不代表运行时 GPU 成本、完整 Cook 依赖或人工点击测试；
+- 下一阶段按价值实现项目预设与无人值守审计入口，不加入泛 AI 对话或 PCG；
 - 不声明 Marketplace 就绪、其他 UE 版本兼容或生产规模绝对无卡顿。
 
 ## 许可证与演示素材

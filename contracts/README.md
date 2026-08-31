@@ -3,7 +3,7 @@
 所有线上数据结构使用 JSON Schema Draft 2020-12。Profile 是项目拥有的输入，Report、Issue 与
 Evidence 是确定性的审计输出；破坏性变更必须新增 schema 文件、`$id` 和解析分支，不能静默改写旧格式。
 
-## v1 与 v2
+## v1、v2 与 v3
 
 - `profile.v1` / `report.v1`：三角形、顶点、材质槽、LOD、Nanite；
 - `profile.v2` / `report.v2`：在 v1 基础上增加简单碰撞体数量、碰撞复杂度、UV 通道数、Lightmap
@@ -13,6 +13,10 @@ Evidence 是确定性的审计输出；破坏性变更必须新增 schema 文件
 - v2 Profile 可选加入 `object_name` 与 `package_path`。前者配置允许前缀和完整正则，后者配置
   允许根目录与禁用目录段；旧 v2 Profile 缺少这两段时仍按原语义读取；
 - Issue、Evidence 和 collection failure 的字段形状没有改变，因此 v2 Report 继续复用 v1 子合同。
+- `profile.v3` / `report.v3`：增加有效材质路径、缺失材质槽、唯一材质数、材质接口报告的纹理路径、
+  纹理依赖数和最大纹理边长。四条新政策分别可禁用，不能用材质槽数量代替依赖事实；
+- v3 Report 要求所有成功资产同时具备完整 v2 与 v3 元数据。v1/v2 Profile 和没有依赖字段的旧
+  collector 继续生成对应旧版 Report，不会被静默升级。
 
 每条 Evidence 都记录观测值、期望值和提供阈值的 Profile JSON Pointer。`assets` 保存全部成功资产的
 元数据，所以通过项也能在 Editor 中逐项复核。执行计数覆盖请求、处理、取消、完成批次及实际批大小，
