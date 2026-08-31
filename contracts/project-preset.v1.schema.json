@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ubik42.github.io/unreal-asset-batch-auditor/project-preset.v1.schema.json",
+  "title": "Unreal Asset Audit Project Preset v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "preset_id", "description", "profile_path", "scope", "batch_size", "gate", "output"],
+  "properties": {
+    "schema_version": { "const": "unreal-asset-audit-preset@1.0.0" },
+    "preset_id": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "profile_path": { "type": "string", "minLength": 1 },
+    "batch_size": { "type": "integer", "minimum": 1 },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_paths", "folder_paths"],
+      "properties": {
+        "asset_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^/(Game|Engine)/.+\\.[^/]+$" }
+        },
+        "folder_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^/(Game|Engine)/[^*?]+$" }
+        }
+      },
+      "anyOf": [
+        { "properties": { "asset_paths": { "minItems": 1 } } },
+        { "properties": { "folder_paths": { "minItems": 1 } } }
+      ]
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blocking_severities"],
+      "properties": {
+        "blocking_severities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["info", "warning", "error"] }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["report_path", "summary_path"],
+      "properties": {
+        "report_path": { "type": "string", "minLength": 1 },
+        "summary_path": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

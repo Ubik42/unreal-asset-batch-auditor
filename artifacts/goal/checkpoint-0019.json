@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0019",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 19,
+  "completedSlice": "M10-S1",
+  "summary": "v0.9-dev3 让资产交付验收台进入可自动化的团队门禁：版本化项目预设显式绑定 Profile、资产/目录范围、阻断等级和输出，UnrealEditor-Cmd 包装层生成完整 Report、轻量摘要与稳定退出码。",
+  "evidence": [
+    "project-preset.v1 与 unattended-run.v1 两份 JSON Schema 已落盘",
+    "空范围、通配符、缺失 Profile 和非法严重度产生中文配置错误，不会隐式扫描整个项目",
+    "显式资产与递归文件夹中的 Static Mesh 合并、去重并稳定排序",
+    "0/10/20/30/40 分别表示通过、规则阻断、采集不完整、配置错误和宿主运行错误",
+    "73 项 Python 测试与 Ruff 通过",
+    "UE 5.8.1 BuildPlugin UE_5.8.1-v0.9.0-dev3 完成 UHT、C++ 编译、链接和 Win64 打包",
+    "独立隐藏命令行宿主使用打包插件与随包预设审计 /Engine/BasicShapes 的 6 个 Static Mesh",
+    "真实宿主产生 12 条非阻断告警、0 个采集失败、real_unreal_validation=true，包装退出码为 0",
+    "本轮临时目录对应的 UE 进程无残留，既有和并发 UE 进程不受测试管理",
+    "中文 README 与 UNATTENDED_AUDIT 教程提供预设、命令、退出码和证据边界"
+  ],
+  "nextSlice": "M11-S1",
+  "knownLimits": [
+    "尚未生成 v0.9 正式发布 ZIP 或 GitHub Release",
+    "无人值守验证只覆盖 Windows 11 与 UE 5.8.1 Win64",
+    "示例使用 Engine BasicShapes 小样本，不代表生产规模性能",
+    "本仓未连接任何外部 CI 服务，只有可被 CI 调用的本地命令"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ubik42.github.io/unreal-asset-batch-auditor/unattended-run.v1.schema.json",
+  "title": "Unreal Asset Audit Unattended Run Summary v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "created_at", "preset_id", "status", "exit_code", "message", "report_path", "requested_asset_count", "asset_count", "issue_count", "blocking_issue_count", "collection_failure_count"],
+  "properties": {
+    "schema_version": { "const": "unreal-asset-audit-run@1.0.0" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "preset_id": { "type": ["string", "null"] },
+    "status": { "enum": ["passed", "policy_failed", "collection_failed", "config_error", "runtime_error"] },
+    "exit_code": { "enum": [0, 10, 20, 30, 40] },
+    "message": { "type": "string" },
+    "report_path": { "type": ["string", "null"] },
+    "requested_asset_count": { "type": "integer", "minimum": 0 },
+    "asset_count": { "type": "integer", "minimum": 0 },
+    "issue_count": { "type": "integer", "minimum": 0 },
+    "blocking_issue_count": { "type": "integer", "minimum": 0 },
+    "collection_failure_count": { "type": "integer", "minimum": 0 }
+  }
+}

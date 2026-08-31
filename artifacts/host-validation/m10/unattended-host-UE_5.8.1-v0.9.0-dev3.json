@@ -1,0 +1,34 @@
+{
+  "schema_version": "unreal-unattended-host-evidence@1.0.0",
+  "created_at": "2026-08-31T01:49:28.8254777+00:00",
+  "passed": true,
+  "engine": "5.8.1-56057345+++UE5+Release-5.8",
+  "plugin_build": "UE_5.8.1-v0.9.0-dev3",
+  "execution": "independent hidden UnrealEditor-Cmd through stable-exit wrapper",
+  "wrapper_pid": 12556,
+  "wrapper_exit_code": 0,
+  "stdout": "UABA passed: 项目预设范围通过审计；资产 6，问题 12，采集失败 0；摘要 D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\host-runtime\\unattended-20260830-194903\\Saved\\UnrealAssetBatchAuditor\\CI\\latest-run-summary.json",
+  "stderr": "",
+  "started_at": "2026-08-31T01:49:03.7480542+00:00",
+  "finished_at": "2026-08-31T01:49:28.8254777+00:00",
+  "duration_seconds": 25.077,
+  "existing_unreal_pids_before": [
+    36364
+  ],
+  "existing_unreal_pids_after": [
+    36364,
+    46040
+  ],
+  "preexisting_processes_managed_by_test": false,
+  "concurrently_observed_new_unreal_pids": [
+    46040
+  ],
+  "residual_owned_unreal_pids": [],
+  "preset_path": "Resources/ProjectPresets/engine-basic-shapes-ci.v1.json",
+  "summary_path": "artifacts/host-validation/m10/unattended-summary.json",
+  "summary_sha256": "5D861635C03C52087B68B4B1A4BAA1C48867266B3D82CFD6FB69971F78C98D18",
+  "report_path": "artifacts/host-validation/m10/unattended-report.json",
+  "report_sha256": "E2717DBD9F12EAAFD26621C7390D6ED570BE5F3C303124CE95CB09227A43D8E5",
+  "log_path": "artifacts/host-validation/m10/unattended-host-log.txt",
+  "evidence_ceiling": "Explicit Engine BasicShapes scope on UE 5.8.1; not external CI integration, cross-version compatibility, or production-scale performance."
+}

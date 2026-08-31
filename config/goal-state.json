@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 18,
+  "stateRevision": 19,
   "status": "active",
-  "currentMilestone": "M10",
+  "currentMilestone": "M11",
   "milestones": [
     { "id": "M0", "title": "Scope and repository baseline", "status": "completed", "dependsOn": [] },
     { "id": "M1", "title": "Read-only Static Mesh audit MVP", "status": "completed", "dependsOn": ["M0"] },
@@ -15,24 +15,24 @@
     { "id": "M7", "title": "v0.8 installable portfolio release", "status": "completed", "dependsOn": ["M6"] },
     { "id": "M8", "title": "Delivery-batch scope and risk-spectrum workbench", "status": "completed", "dependsOn": ["M7"] },
     { "id": "M9", "title": "Material and texture dependency policies", "status": "completed", "dependsOn": ["M8"] },
-    { "id": "M10", "title": "Project presets and unattended audit entry point", "status": "in_progress", "dependsOn": ["M9"] },
-    { "id": "M11", "title": "v0.9 portfolio release", "status": "pending", "dependsOn": ["M10"] }
+    { "id": "M10", "title": "Project presets and unattended audit entry point", "status": "completed", "dependsOn": ["M9"] },
+    { "id": "M11", "title": "v0.9 portfolio release", "status": "in_progress", "dependsOn": ["M10"] }
   ],
   "nextSlice": {
-    "id": "M10-S1",
-    "milestoneId": "M10",
-    "title": "项目预设与无人值守审计入口",
+    "id": "M11-S1",
+    "milestoneId": "M11",
+    "title": "v0.9 作品级发布收口",
     "scope": [
-      "定义项目级预设清单，将 Profile、显式资产路径或允许扫描的项目目录绑定为可评审配置",
-      "提供 UnrealEditor-Cmd 可调用的无人值守入口，明确成功、规则不通过、配置错误和采集失败退出码",
-      "输出稳定的报告位置与机器可读运行摘要，保留现有 Report 和 Evidence 合同",
-      "在中文面板和文档中说明人工验收与 CI 门禁使用同一规则源"
+      "把 v0.9 材质依赖、交付风险谱、项目预设和无人值守入口纳入确定性发布白名单",
+      "生成 UE 5.8.1 Win64 发布候选包、版本清单、SHA-256 和中文安装文档",
+      "在全新临时项目验证安装、面板入口、真实采集和无人值守摘要",
+      "更新作品集 README、截图索引和录屏教程，并准备 GitHub v0.9.0 Release"
     ],
     "nonGoals": [
       "不自动修改资产",
       "不加入 AI 对话、PCG 或生成能力",
-      "不接入外部 CI 云服务或凭据",
-      "不默认扫描整个项目，目录范围必须由项目预设显式声明",
+      "不新增资产规则或自动修复能力",
+      "不在发布阶段重做现有 UI 架构",
       "不做跨 Unreal 版本兼容声明",
       "不重复执行完整发布安装矩阵"
     ],
@@ -47,24 +47,26 @@
       "tests",
       "config",
       "scripts",
+      "Resources",
+      "contracts",
       "README.md",
       "AGENTS.md"
     ],
-    "evidenceCeiling": "本切片最多证明 UE 5.8.1 中明确项目预设范围的无人值守审计、退出码和报告落盘；不等同于已接入某家公司 CI、跨版本兼容或生产规模性能。",
+    "evidenceCeiling": "本切片最多证明 v0.9 发布包在 Windows 11 + UE 5.8.1 Win64 的确定性打包、全新安装和真实烟雾；不等同于 Marketplace 审核、其他 UE 版本或生产规模认证。",
     "realHostRequired": true,
     "acceptanceCriteria": [
-      "项目预设使用版本化 JSON Schema，非法路径、未知 Profile 和空范围给出明确中文诊断",
-      "无人值守入口不依赖打开面板，并为通过、规则不通过、配置错误和采集失败提供稳定退出语义",
-      "范围只来自预设中显式资产或允许目录，结果去重并稳定排序",
-      "至少完成一次真实 UE 命令行宿主审计并核对退出码、Report 与运行摘要",
-      "README 给出可复制命令，同时不冒充外部 CI 已接入"
+      "发布白名单包含运行所需 C++/Python、v3 Profile、项目预设和对应 Schema，不包含开发缓存或 Engine 派生资产",
+      "同一提交连续两次生成的发布 ZIP 哈希一致",
+      "全新项目从发布包安装后可打开中文面板并完成至少一次真实 Static Mesh 采集",
+      "随包无人值守示例产生合法摘要并返回预期退出码",
+      "README、安装教程、版本说明和截图只声明实际验证范围"
     ],
     "validationCommands": [
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0018.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0019.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -84,6 +86,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "v0.9-dev2 完成 v3 合同、四项材质/纹理政策、UE 5.8.1 BuildPlugin、真实依赖采集与 14 张材质风险 Slate 截图。"
+    },
+    {
+      "id": "m10s1-unattended-host",
+      "status": "completed",
+      "blocking": false,
+      "reason": "v0.9-dev3 完成项目预设、稳定退出码、完整 Report/轻量摘要和独立 UE 5.8.1 命令行宿主验证。"
     }
   ]
 }

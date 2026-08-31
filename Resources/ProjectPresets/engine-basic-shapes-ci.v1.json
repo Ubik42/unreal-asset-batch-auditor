@@ -1,0 +1,18 @@
+{
+  "schema_version": "unreal-asset-audit-preset@1.0.0",
+  "preset_id": "engine-basic-shapes-ci-v1",
+  "description": "宿主演示预设：只递归审计 Engine BasicShapes，用于展示无人值守门禁，不代表生产项目标准。",
+  "profile_path": "../Profiles/desktop-balanced.v3.json",
+  "scope": {
+    "asset_paths": [],
+    "folder_paths": ["/Engine/BasicShapes"]
+  },
+  "batch_size": 32,
+  "gate": {
+    "blocking_severities": ["error"]
+  },
+  "output": {
+    "report_path": "Saved/UnrealAssetBatchAuditor/CI/latest-report.json",
+    "summary_path": "Saved/UnrealAssetBatchAuditor/CI/latest-run-summary.json"
+  }
+}

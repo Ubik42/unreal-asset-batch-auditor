@@ -146,9 +146,20 @@ Demo 资产、三套 UE Report、UE 5.8.1 `UE_5.8.1-v0.6.0-dev1` BuildPlugin、�
 或 32；证据专用模拟 Profile 产生 9 条可追溯问题；14 张当前 Slate 图位于
 `docs/images/workflow/v0.9-material/`。这些事实不等同于完整 Cook 依赖、Shader 成本或 GPU 性能。
 
+## M10：项目预设与无人值守门禁（已完成）
+
+- 版本化项目预设绑定 Profile、显式资产/目录范围、阻断严重度和输出位置；
+- 递归目录只发现 Static Mesh，与显式 object path 合并、去重并稳定排序；
+- 包装脚本提供 0/10/20/30/40 稳定退出语义，同时写完整 Report 和轻量运行摘要；
+- 面板人工验收与无人值守门禁共用 Profile、C++ collector 和 Evidence 合同。
+
+完成证据：73 项 Python 测试与 Ruff；UE 5.8.1 `UE_5.8.1-v0.9.0-dev3` BuildPlugin；独立隐藏
+命令行宿主使用打包插件递归审计 `/Engine/BasicShapes` 的 6 个 Static Mesh，记录 12 条非阻断告警、
+0 个采集失败并以包装退出码 0 完成；Report、摘要、日志和哈希位于 `artifacts/host-validation/m10/`。
+不声明已接入外部 CI、跨版本兼容或生产规模性能。
+
 ## 后续候选路线
 
 | 里程碑 | 方向 | 边界 |
 | --- | --- | --- |
-| M10 | 项目预设和无人值守审计入口 | 明确退出码和报告位置，不隐式扫描整个项目 |
 | M11 | v0.9 安装包与作品级交付 | 到发布阶段才跑完整安装/升级矩阵 |

@@ -21,7 +21,7 @@ if (-not (Test-Path -LiteralPath $plugin)) {
 try {
     New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
     Copy-Item -LiteralPath $plugin -Destination $stagingRoot
-    foreach ($directory in @("Source", "Content", "config", "Resources")) {
+    foreach ($directory in @("Source", "Content", "config", "contracts", "Resources")) {
         Copy-Item -LiteralPath (Join-Path $repoRoot $directory) -Destination $stagingRoot -Recurse
     }
     $stagedPlugin = Join-Path $stagingRoot "UnrealAssetBatchAuditor.uplugin"

@@ -2,7 +2,7 @@
 
 面向 Unreal 项目 Static Mesh 的只读交付验收台。项目 Profile 定义预算和预期，Editor-only C++ 模块批量采集元数据，Python 负责规则编排与 JSON 报告。扫描接口不保存资产、不重建网格，也不修改 Nanite。
 
-> **当前源码：v0.9.0-dev2** · 已通过 UE 5.8.1 BuildPlugin 与独立宿主验证<br>
+> **当前源码：v0.9.0-dev3** · 已通过 UE 5.8.1 BuildPlugin 与独立宿主验证<br>
 > **公开可安装版本：v0.8.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.8.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
@@ -17,6 +17,7 @@
 - **上下文与证据设计**：Profile、Issue、Evidence、Report 均有版本化合同，每个问题都能追到实测值、期望值和规则指针；
 - **生产可靠性**：逐批任务、批次间取消、部分失败隔离、不可变会话和修复前后回归，不把“没有抛异常”当作成功；
 - **团队交付**：一键生成中文 HTML、Excel 可读 CSV 和 SHA-256 清单，无 Unreal 环境也能参与复核；
+- **面板与门禁同源**：项目预设把 Profile、显式目录和阻断等级固化为可评审 JSON；人工验收和命令行门禁消费同一规则源；
 - **可安装而非只在开发机运行**：发布 ZIP 经过确定性打包、全新项目安装、升级、卸载和两轮独立 UE 宿主验证。
 
 ## 三步完成资产审计
@@ -133,6 +134,7 @@ CSV 和带 SHA-256 的交接清单；制片、主美或外包同事无需安装 
 - 从正式 Report 确定性生成中文单文件 HTML、UTF-8 BOM CSV 和 SHA-256 交接清单，不重新扫描资产；
 - Python fixture collector 与 Unreal C++ collector 使用同一编排边界；
 - 离线错误资产集、回归测试和显式 `real_unreal_validation=false` 报告。
+- 版本化项目预设与 `UnrealEditor-Cmd` 无人值守入口，输出正式 Report、轻量运行摘要和稳定退出码。
 
 示例 Profile 的数值只是格式示例，不代表行业标准。正式项目必须复制并评审自己的 Profile。
 
@@ -149,6 +151,25 @@ python -m venv .venv
 ```
 
 离线 fixture 只验证合同、规则和报告编排，不能证明插件已经在 Unreal 中编译或运行。
+
+## 无人值守项目门禁
+
+把项目 Profile、显式资产/目录范围、阻断严重度和输出位置写入项目预设，然后运行：
+
+```powershell
+.\scripts\run_unattended_audit.ps1 `
+  -EngineRoot "C:\Program Files\Epic Games\UE_5.8" `
+  -ProjectPath "D:\Project\MyGame.uproject" `
+  -PresetPath "D:\Project\Config\AssetAudit\delivery-gate.v1.json"
+```
+
+退出码固定为：`0` 通过、`10` 规则阻断、`20` 采集不完整、`30` 配置错误、`40` 宿主运行错误。
+工具不会默认扫描整个项目：预设必须显式写出 object path 或允许递归的 `/Game/...` 目录，空范围和
+通配符会被拒绝。每轮同时生成完整 Report 与轻量 `latest-run-summary.json`，便于本地脚本或 CI
+读取；本仓只证明命令行入口可用，不声称已经接入任何公司的外部 CI。
+
+- [项目预设与无人值守接入教程](docs/UNATTENDED_AUDIT.md)
+- [可复制的宿主演示预设](Resources/ProjectPresets/engine-basic-shapes-ci.v1.json)
 
 ## 可录制 Demo Kit
 
@@ -227,7 +248,8 @@ report = run(
 - v0.8 发布基线完成历史会话、回归对比、批次间取消、团队包、确定性发布以及全新安装/升级验证；完整证据见 `artifacts/goal/checkpoint-0015.json`；
 - v0.9-dev2 已通过 68 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主真实采集 5 个 Engine Static Mesh 的有效材质路径、纹理依赖数和最大纹理边长；
 - 材质证据宿主以明确标注的模拟 Profile 产生 9 条纹理风险，14 张原生 Slate 图与生命周期记录位于 `docs/images/workflow/v0.9-material/` 和 `artifacts/host-validation/m9/`；这不代表运行时 GPU 成本、完整 Cook 依赖或人工点击测试；
-- 下一阶段按价值实现项目预设与无人值守审计入口，不加入泛 AI 对话或 PCG；
+- v0.9-dev3 增加项目预设与稳定退出码；独立 UE 5.8.1 命令行宿主按显式 `/Engine/BasicShapes` 范围审计 6 个资产，生成 12 条非阻断告警、0 个采集失败并以退出码 0 结束；
+- 下一阶段只做 v0.9 作品级发布收口，不加入泛 AI 对话或 PCG；
 - 不声明 Marketplace 就绪、其他 UE 版本兼容或生产规模绝对无卡顿。
 
 ## 许可证与演示素材

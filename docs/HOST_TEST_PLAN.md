@@ -155,3 +155,14 @@ manifest 只保存相对路径和 SHA-256，不写入测试项目的绝对路径
 
 本轮只证明 UE 5.8.1 中显式选择的 Static Mesh、其已加载材质和材质所报告的纹理依赖；不声明完整
 Cook 依赖、运行时 residency、Shader 编译成本、GPU 性能或跨版本兼容。
+
+## 2026-08-30 v0.9-dev3 无人值守门禁
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| BuildPlugin | 通过；项目预设、两份 Schema 和 Python 入口均进入打包插件 | 本机忽略目录 `artifacts/host-build/UE_5.8.1-v0.9.0-dev3` |
+| 显式目录发现 | 通过；随包预设只声明 `/Engine/BasicShapes`，真实发现并审计 6 个 Static Mesh | `artifacts/host-validation/m10/unattended-report.json` |
+| 稳定退出 | 通过；12 条 warning 不属于本预设阻断等级，0 个采集失败，包装退出码为 0 | `artifacts/host-validation/m10/unattended-summary.json` |
+| 进程隔离 | 通过；独立隐藏宿主结束后无本轮临时目录对应的 UE 残留进程，既有与并发 UE 不受管理 | `artifacts/host-validation/m10/unattended-host-UE_5.8.1-v0.9.0-dev3.json` |
+
+本验证没有连接外部 CI；只证明该命令可以被 CI 调用并提供稳定机器语义。

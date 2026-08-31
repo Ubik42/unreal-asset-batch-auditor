@@ -39,6 +39,14 @@ failed 状态、对象/批次计数和最终产物路径。状态文件采用原
 `unreal-audit-handoff@1.0.0` 是 HTML/CSV 交接目录的清单，固定记录源 Report、Profile、宿主、验证边界、
 统计摘要和文件 SHA-256。导出器只消费已有 Report，不重新采集或修改资产。
 
+## 项目预设与无人值守摘要
+
+`unreal-asset-audit-preset@1.0.0` 把 Profile、显式 asset/folder 范围、批大小、阻断严重度和输出位置绑定为
+可评审项目配置。范围不能为空，不支持通配或隐式全项目扫描。
+
+`unreal-asset-audit-run@1.0.0` 是无人值守包装层的轻量结果，固定映射 0/10/20/30/40 五类退出语义，
+并指向完整 Report。它不复制 Issue/Evidence，也不能代替正式审计报告。
+
 ## 发布清单
 
 `unreal-audit-release@1.0.0` 描述可安装 ZIP 的插件版本、测试宿主、二进制兼容标识、源修订、payload
