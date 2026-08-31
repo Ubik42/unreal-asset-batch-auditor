@@ -1,6 +1,12 @@
 # 工作流截图说明
 
-## v0.10-dev3 当前源码界面
+## v0.11-dev3 当前源码界面
+
+`v0.11-material-interface/` 中的 13 张图来自独立 UE 5.8.1 宿主，展示 9 个真实 Material / Material
+Instance 的渲染状态、父级链、纹理负载、问题证据与复核动作。当前 README 第一屏使用材质血缘总览；
+生命周期证据位于 `artifacts/host-validation/m18/`。
+
+## v0.10-dev3 模型交付热区
 
 `v0.10-delivery-hotspots/` 中的 01–17 来自独立 UE 5.8.1 `-RenderOffscreen` 宿主，使用 24 个
 项目 Demo Static Mesh 与 2 个采集失败形成的真实 Report。13 展示 6 个交付目录组与稳定热区排序，

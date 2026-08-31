@@ -5,6 +5,9 @@
 #include "Engine/Texture.h"
 #include "Engine/Texture2D.h"
 #include "Materials/MaterialInterface.h"
+#include "Materials/Material.h"
+#include "Materials/MaterialInstance.h"
+#include "MaterialShared.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "Runtime/Launch/Resources/Version.h"
 #include "StaticMeshResources.h"
@@ -185,6 +188,118 @@ TArray<FTexture2DAuditMetadata> UUnrealAssetBatchAuditorLibrary::CollectTexture2
         Result.bSrgb = Texture->SRGB;
         Result.bVirtualTextureStreaming = Texture->VirtualTextureStreaming;
         Result.bNeverStream = Texture->NeverStream;
+        Result.bCollected = true;
+        Results.Add(MoveTemp(Result));
+    }
+
+    return Results;
+}
+
+TArray<FMaterialInterfaceAuditMetadata>
+UUnrealAssetBatchAuditorLibrary::CollectMaterialInterfaceMetadata(
+    const TArray<FString>& AssetPaths)
+{
+    TArray<FMaterialInterfaceAuditMetadata> Results;
+    Results.Reserve(AssetPaths.Num());
+
+    for (const FString& AssetPath : AssetPaths)
+    {
+        FMaterialInterfaceAuditMetadata Result;
+        Result.AssetPath = AssetPath;
+
+        const FSoftObjectPath SoftPath(AssetPath);
+        UObject* LoadedObject = SoftPath.TryLoad();
+        UMaterialInterface* MaterialInterface = Cast<UMaterialInterface>(LoadedObject);
+        if (MaterialInterface == nullptr)
+        {
+            Result.ErrorCode = TEXT("NOT_MATERIAL_INTERFACE");
+            Result.Error = TEXT("Object could not be loaded as UMaterialInterface.");
+            Results.Add(MoveTemp(Result));
+            continue;
+        }
+
+        Result.AssetName = MaterialInterface->GetName();
+        const UMaterialInstance* MaterialInstance = Cast<UMaterialInstance>(MaterialInterface);
+        Result.MaterialKind = MaterialInstance ? TEXT("material_instance") : TEXT("material");
+        const UMaterial* BaseMaterial = MaterialInterface->GetBaseMaterial();
+        if (BaseMaterial == nullptr)
+        {
+            Result.ErrorCode = TEXT("MISSING_BASE_MATERIAL");
+            Result.Error = TEXT("Material Interface has no readable base material.");
+            Results.Add(MoveTemp(Result));
+            continue;
+        }
+        Result.BaseMaterialPath = BaseMaterial->GetPathName();
+        Result.MaterialDomain = EnumName<EMaterialDomain>(BaseMaterial->MaterialDomain.GetValue());
+        Result.BlendMode = EnumName<EBlendMode>(MaterialInterface->GetBlendMode());
+        Result.bTwoSided = MaterialInterface->IsTwoSided();
+
+        const FMaterialShadingModelField ShadingModels = MaterialInterface->GetShadingModels();
+        for (int32 Index = 0; Index < static_cast<int32>(MSM_NUM); ++Index)
+        {
+            const EMaterialShadingModel ShadingModel =
+                static_cast<EMaterialShadingModel>(Index);
+            if (ShadingModels.HasShadingModel(ShadingModel))
+            {
+                Result.ShadingModels.Add(EnumName<EMaterialShadingModel>(ShadingModel));
+            }
+        }
+        if (Result.ShadingModels.IsEmpty())
+        {
+            Result.ShadingModels.Add(TEXT("MSM_Unlit"));
+        }
+
+        if (MaterialInstance != nullptr)
+        {
+            const UMaterialInterface* Current = MaterialInstance;
+            TSet<const UMaterialInterface*> Visited;
+            Visited.Add(Current);
+            while (const UMaterialInstance* CurrentInstance = Cast<UMaterialInstance>(Current))
+            {
+                const UMaterialInterface* Parent = CurrentInstance->Parent;
+                if (Parent == nullptr)
+                {
+                    break;
+                }
+                if (Result.ParentDepth == 0)
+                {
+                    Result.ParentPath = Parent->GetPathName();
+                }
+                if (Visited.Contains(Parent))
+                {
+                    Result.ErrorCode = TEXT("MATERIAL_PARENT_CYCLE");
+                    Result.Error = TEXT("Material Instance parent chain contains a cycle.");
+                    break;
+                }
+                Visited.Add(Parent);
+                ++Result.ParentDepth;
+                Current = Parent;
+            }
+            if (!Result.ErrorCode.IsEmpty())
+            {
+                Results.Add(MoveTemp(Result));
+                continue;
+            }
+        }
+
+        TArray<UTexture*> UsedTextures;
+        MaterialInterface->GetUsedTextures(UsedTextures);
+        TSet<FString> UniqueTexturePaths;
+        for (UTexture* Texture : UsedTextures)
+        {
+            if (Texture == nullptr)
+            {
+                continue;
+            }
+            UniqueTexturePaths.Add(Texture->GetPathName());
+            Result.MaxTextureDimension = FMath::Max(
+                Result.MaxTextureDimension,
+                FMath::RoundToInt(
+                    FMath::Max(Texture->GetSurfaceWidth(), Texture->GetSurfaceHeight())));
+        }
+        Result.TexturePaths = UniqueTexturePaths.Array();
+        Result.TexturePaths.Sort();
+        Result.TextureDependencyCount = Result.TexturePaths.Num();
         Result.bCollected = true;
         Results.Add(MoveTemp(Result));
     }

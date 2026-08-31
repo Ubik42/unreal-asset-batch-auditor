@@ -136,6 +136,60 @@ struct FTexture2DAuditMetadata
     FString Error;
 };
 
+USTRUCT(BlueprintType)
+struct FMaterialInterfaceAuditMetadata
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString AssetPath;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString AssetName;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString MaterialKind;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString MaterialDomain;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString BlendMode;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    bool bTwoSided = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    TArray<FString> ShadingModels;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString ParentPath;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString BaseMaterialPath;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 ParentDepth = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    TArray<FString> TexturePaths;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 TextureDependencyCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    int32 MaxTextureDimension = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    bool bCollected = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString ErrorCode;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Asset Audit")
+    FString Error;
+};
+
 /**
  * Read-only Editor boundary used by Python orchestration.
  *
@@ -157,5 +211,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Asset Audit")
     static TArray<FTexture2DAuditMetadata> CollectTexture2DMetadata(
+        const TArray<FString>& AssetPaths);
+
+    UFUNCTION(BlueprintCallable, Category = "Asset Audit")
+    static TArray<FMaterialInterfaceAuditMetadata> CollectMaterialInterfaceMetadata(
         const TArray<FString>& AssetPaths);
 };

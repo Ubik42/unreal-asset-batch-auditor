@@ -1,0 +1,15 @@
+{
+  "schema_version": "unreal-material-profile@1.0.0",
+  "profile_id": "material-mobile-strict-v1",
+  "profile_version": "1.0.0",
+  "description": "移动端道具材质演示规则；限制混合模式、父级层级与纹理依赖。",
+  "rules": {
+    "allowed_domains": {"enabled": true, "allowed_values": ["MD_Surface"], "severity": "error"},
+    "allowed_blend_modes": {"enabled": true, "allowed_values": ["BLEND_Opaque"], "severity": "error"},
+    "two_sided": {"enabled": true, "expected": "disabled", "severity": "error"},
+    "instance_parent": {"enabled": true, "required": true, "severity": "error"},
+    "parent_depth": {"enabled": true, "max_count": 1, "severity": "warning"},
+    "texture_dependencies": {"enabled": true, "max_count": 4, "severity": "error"},
+    "texture_dimension": {"enabled": true, "max_size": 2048, "severity": "error"}
+  }
+}

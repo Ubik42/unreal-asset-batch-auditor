@@ -1,0 +1,58 @@
+{
+  "schema_version": "unreal-material-demo-manifest@1.0.0",
+  "created_at": "2026-08-31T05:44:10.867272+00:00",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "generation": "public UE installation samples duplicated into an isolated demo project; Engine source assets remain unchanged",
+  "asset_count": 9,
+  "assets": [
+    {
+      "source_asset_path": "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial",
+      "demo_asset_path": "/Game/UABAMaterialDemo/01_Approved/M_UABA_BasicSurface.M_UABA_BasicSurface",
+      "scenario": "基础 Surface 材质"
+    },
+    {
+      "source_asset_path": "/Engine/BasicShapes/BasicShapeMaterial_Inst.BasicShapeMaterial_Inst",
+      "demo_asset_path": "/Game/UABAMaterialDemo/01_Approved/MI_UABA_BasicSurface.MI_UABA_BasicSurface",
+      "scenario": "单层材质实例"
+    },
+    {
+      "source_asset_path": "/Engine/EngineDebugMaterials/M_SimpleOpaque.M_SimpleOpaque",
+      "demo_asset_path": "/Game/UABAMaterialDemo/01_Approved/M_UABA_SimpleOpaque.M_UABA_SimpleOpaque",
+      "scenario": "Opaque 对照材质"
+    },
+    {
+      "source_asset_path": "/Engine/EngineDebugMaterials/M_SimpleTranslucent.M_SimpleTranslucent",
+      "demo_asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_Translucent.M_UABA_Translucent",
+      "scenario": "Translucent 混合模式样本"
+    },
+    {
+      "source_asset_path": "/Engine/EngineDebugMaterials/M_SimpleUnlitTranslucent.M_SimpleUnlitTranslucent",
+      "demo_asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_UnlitTranslucent.M_UABA_UnlitTranslucent",
+      "scenario": "Unlit + Translucent 样本"
+    },
+    {
+      "source_asset_path": "/Engine/EngineVolumetrics/Fogsheet/Materials/M_EV_FogSheet_2sided_Master_Addi.M_EV_FogSheet_2sided_Master_Addi",
+      "demo_asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_TwoSidedAdditive.M_UABA_TwoSidedAdditive",
+      "scenario": "Two Sided + Additive 样本"
+    },
+    {
+      "source_asset_path": "/Engine/EngineDebugMaterials/M_VolumeRenderSphereTracePP.M_VolumeRenderSphereTracePP",
+      "demo_asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_PostProcess.M_UABA_PostProcess",
+      "scenario": "Post Process Domain 样本"
+    },
+    {
+      "source_asset_path": "/Engine/EditorShapes/Materials/M_ShapeMaster.M_ShapeMaster",
+      "demo_asset_path": "/Game/UABAMaterialDemo/03_ParentChain/M_UABA_ShapeMaster.M_UABA_ShapeMaster",
+      "scenario": "带纹理依赖的父材质"
+    },
+    {
+      "source_asset_path": "/Engine/EditorShapes/Materials/MI_ShapeInstance.MI_ShapeInstance",
+      "demo_asset_path": "/Game/UABAMaterialDemo/03_ParentChain/MI_UABA_ShapeInstance.MI_UABA_ShapeInstance",
+      "scenario": "材质实例父级样本"
+    }
+  ],
+  "report_path": "D:\\3D\\_tools\\unreal-asset-batch-auditor\\artifacts\\demo\\demo-material-desktop-balanced-v1-report.json",
+  "report_sha256": "cf220068ec43a57236684fe5a6067c3f50554c1968d081c11c5849c30d9e526b",
+  "claims_runtime_performance": false,
+  "redistributes_engine_uasset": false
+}

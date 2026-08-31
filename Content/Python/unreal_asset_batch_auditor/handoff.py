@@ -101,6 +101,11 @@ def _rule_label(rule_id: str) -> str:
         ("compression_color_space", "压缩 / 色彩空间"),
         ("virtual_texture", "Virtual Texture"),
         ("texture2d.streaming", "纹理流送"),
+        ("allowed_domain", "材质域"),
+        ("allowed_blend_mode", "混合模式"),
+        ("two_sided", "双面渲染"),
+        ("instance_parent", "实例父级"),
+        ("parent_depth", "父级深度"),
         ("lod_count", "LOD 数量"),
         ("nanite_state", "Nanite 状态"),
         ("simple_collision", "简单碰撞"),
@@ -140,6 +145,11 @@ def _localized_issue(rule_id: str, observed: str, expected: str) -> str:
         ),
         ("virtual_texture", f"Virtual Texture 状态为 {observed}，Profile 期望为 {expected}。"),
         ("texture2d.streaming", f"纹理可流送状态为 {observed}，Profile 期望为 {expected}。"),
+        ("allowed_domain", f"材质域为 {observed}，Profile 允许 {expected}。"),
+        ("allowed_blend_mode", f"混合模式为 {observed}，Profile 允许 {expected}。"),
+        ("two_sided", f"双面状态为 {observed}，Profile 期望为 {expected}。"),
+        ("instance_parent", f"实例父级状态为 {observed}，Profile 期望为 {expected}。"),
+        ("parent_depth", f"父级深度为 {observed}，超过 Profile 上限 {expected}。"),
         ("lod_count", f"LOD 数量为 {observed}，低于 Profile 下限 {expected}。"),
         ("nanite_state", f"Nanite 状态为 {observed}，Profile 期望为 {expected}。"),
         ("simple_collision", f"碰撞实测为 {observed}；Profile 要求 {expected}。"),
@@ -172,9 +182,10 @@ def _rows(
         str(item.get("evidence_id", "")): item for item in report.get("evidence", [])
     }
     rows: list[dict[str, str]] = []
-    expected_asset_type = (
-        "可读取的 Texture2D" if report.get("asset_type") == "texture2d" else "可读取的 Static Mesh"
-    )
+    expected_asset_type = {
+        "texture2d": "可读取的 Texture2D",
+        "material_interface": "可读取的 Material Interface",
+    }.get(str(report.get("asset_type")), "可读取的 Static Mesh")
     for issue in report.get("issues", []):
         evidence = evidence_by_id.get(str(issue.get("evidence_id", "")), {})
         rule_id = str(issue.get("rule_id", ""))

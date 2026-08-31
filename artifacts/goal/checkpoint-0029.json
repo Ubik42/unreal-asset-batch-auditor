@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0029",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 29,
+  "completedSlice": "M18-S1",
+  "summary": "Material Interface 材质血缘轨道完成：Material 与 Material Instance 拥有独立合同、Profile 规则、只读采集、Slate 台账、真实演示素材和可追溯宿主证据。",
+  "evidence": [
+    "Material Profile、fixture、Report 与 JSON Schema 独立版本化，不污染 Static Mesh 与 Texture2D 合同",
+    "七组 Profile 规则覆盖 Domain、Blend Mode、Two Sided、实例父级、父级深度、纹理数量与最大尺寸",
+    "Editor-only C++ collector 只读采集有效渲染状态、Shading、直接父级、父级深度和已加载纹理依赖",
+    "原生 Slate 增加材质血缘轨道、材质专用列、类型搜索、定位、材质编辑器复核、审阅、回归与交接",
+    "隔离 Demo 工程生成 9 个公开 Engine Material Interface 副本，源资产不变且仓库不重新分发 uasset",
+    "真实 UE 5.8.1 Report 得到 5 个通过、4 个待处理、5 条问题和 0 个采集失败",
+    "110 项 Python 测试与 Ruff 通过",
+    "UE 5.8 UE_5.8-v0.11.0-dev3 BuildPlugin 完成 UHT、C++ 编译、链接和打包",
+    "独立 UE 5.8.1 面板宿主生成 13 张原生 Slate 图，测试 PID 退出且未管理用户已有进程",
+    "中文 README、材质教程、录屏脚本、宿主矩阵和开发计划已同步"
+  ],
+  "nextSlice": "M19-S1",
+  "knownLimits": [
+    "不采集或推断 GPU 时间、Shader permutation、PSO、Cook 体积和最终平台性能",
+    "纹理依赖只表示当前已加载 Material Interface 可见依赖，不等于完整 Cook 依赖图",
+    "宿主自动化不冒充人工鼠标交互",
+    "当前公开安装包仍为 v0.10.0；材质轨道位于 main 的 v0.11 开发线",
+    "只验证 Windows 11、Win64 与 UE 5.8.1"
+  ]
+}

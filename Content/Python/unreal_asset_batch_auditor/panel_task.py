@@ -12,6 +12,9 @@ from .audit import build_report_from_collection
 from .collectors import CollectionBatch, MetadataCollector, UnrealCppCollector
 from .contracts import AuditProfile
 from .handoff import export_handoff
+from .material_audit import build_material_report_from_collection
+from .material_collectors import MaterialUnrealCppCollector
+from .material_contracts import MaterialAuditProfile
 from .sessions import SessionStore
 from .texture_audit import build_texture_report_from_collection
 from .texture_collectors import TextureUnrealCppCollector
@@ -42,13 +45,16 @@ class PanelAuditTask:
         self.collector = collector
         self.task_id = str(request["task_id"])
         self.asset_type = str(request.get("asset_type", "static_mesh"))
-        if self.asset_type not in {"static_mesh", "texture2d"}:
-            raise ValueError("asset_type must be static_mesh or texture2d")
-        self.profile = (
-            TextureAuditProfile.load(str(request["profile_path"]))
-            if self.asset_type == "texture2d"
-            else AuditProfile.load(str(request["profile_path"]))
-        )
+        if self.asset_type not in {"static_mesh", "texture2d", "material_interface"}:
+            raise ValueError(
+                "asset_type must be static_mesh, texture2d, or material_interface"
+            )
+        profile_types = {
+            "static_mesh": AuditProfile,
+            "texture2d": TextureAuditProfile,
+            "material_interface": MaterialAuditProfile,
+        }
+        self.profile = profile_types[self.asset_type].load(str(request["profile_path"]))
         self.paths = [str(path) for path in request["asset_paths"]]
         self.batch_size = int(request.get("batch_size", 64))
         if self.batch_size < 1:
@@ -186,11 +192,12 @@ class PanelAuditTask:
             key=lambda item: (item.asset_path, item.code, item.message)
         )
         cancelled_count = len(self.paths) - self.processed_count if cancelled else 0
-        build_report = (
-            build_texture_report_from_collection
-            if self.asset_type == "texture2d"
-            else build_report_from_collection
-        )
+        report_builders = {
+            "static_mesh": build_report_from_collection,
+            "texture2d": build_texture_report_from_collection,
+            "material_interface": build_material_report_from_collection,
+        }
+        build_report = report_builders[self.asset_type]
         report = build_report(
             profile=self.profile,
             collector=self.collector,
@@ -245,10 +252,13 @@ def start_panel_task(
     cancel_path = Path(str(request["cancel_path"]))
     cancel_path.unlink(missing_ok=True)
     if collector_factory is None:
-        collector_factory = (
-            TextureUnrealCppCollector
-            if request.get("asset_type") == "texture2d"
-            else UnrealCppCollector
+        collector_factories = {
+            "static_mesh": UnrealCppCollector,
+            "texture2d": TextureUnrealCppCollector,
+            "material_interface": MaterialUnrealCppCollector,
+        }
+        collector_factory = collector_factories.get(
+            str(request.get("asset_type", "static_mesh")), UnrealCppCollector
         )
     task = PanelAuditTask(request, collector_factory())
     _ACTIVE_TASK = task

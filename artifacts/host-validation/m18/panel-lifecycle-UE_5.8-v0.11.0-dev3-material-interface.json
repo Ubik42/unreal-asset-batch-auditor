@@ -1,0 +1,226 @@
+{
+  "schema_version": "unreal-panel-lifecycle@1.0.0",
+  "created_at": "2026-08-31T05:45:02.3699513+00:00",
+  "engine": "UE 5.8.1",
+  "plugin_build": "UE_5.8-v0.11.0-dev3",
+  "execution": "independent hidden UnrealEditor-Cmd -RenderOffscreen",
+  "test_pid": 40140,
+  "created_unreal_pids": [
+    40140
+  ],
+  "concurrent_unreal_pids_observed": [],
+  "existing_unreal_pids_before": [],
+  "existing_unreal_pids_after": [],
+  "existing_processes_survived": true,
+  "missing_preexisting_pids": [],
+  "preexisting_processes_managed_by_test": false,
+  "started_at": "2026-08-31T05:44:33.4137874+00:00",
+  "finished_at": "2026-08-31T05:45:02.3699513+00:00",
+  "duration_seconds": 28.956,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "owned_pid_visible_at_snapshot": false,
+  "automation_tests": [
+    "UnrealAssetBatchAuditor.PanelEvidence",
+    "UnrealAssetBatchAuditor.PanelTaskLifecycle"
+  ],
+  "automation_passed": true,
+  "panel_evidence_passed": true,
+  "panel_task_lifecycle_passed": true,
+  "report_path": "artifacts/demo/demo-material-desktop-balanced-v1-report.json",
+  "report_sha256": "CF220068EC43A57236684FE5A6067C3F50554C1968D081C11C5849C30D9E526B",
+  "comparison_path": "artifacts/demo/session-history/latest-comparison.v1.json",
+  "comparison_sha256": "4C8B5029591D6E47A7983D9398B2823B44E00835ED5DBF2D543BA32DBBE4514F",
+  "log_path": "artifacts/host-runtime/panel-20260830-234433/Saved/Logs/UnrealAssetBatchAuditorHost.log",
+  "committed_log_excerpt": "artifacts/host-validation/m18/panel-lifecycle-UE_5.8-v0.11.0-dev3-material-interface-log.txt",
+  "committed_log_excerpt_sha256": "44EADA92F8A0731E2BB1560FEA7C6AA9CF14856F163D0D08CAD36900B2EBF2BF",
+  "screenshot_count": 13,
+  "screenshots": [
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/01-empty-state.png",
+      "bytes": 140641,
+      "sha256": "930937948B052D1DDEDAF3FFFC68599CB30269470E3CDBD5E89E2F2E5F8309A1"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/02-asset-overview.png",
+      "bytes": 187244,
+      "sha256": "D61B8574CFF12813D7EE132F208CFA671F2037463A6CAE3127F44BE3AF85ABC6"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/03-passing-assets.png",
+      "bytes": 161495,
+      "sha256": "B16A5303B409A3D99101F3B4ECB22FC0C14A7ABC8E97DEBCC8C9EF3FF834C0F1"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/04-assets-needing-work.png",
+      "bytes": 158252,
+      "sha256": "0625ACD89B569E2984E4BB1137AD3341F650FC6EF3ADB2094422D50276F49416"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/05-issue-details.png",
+      "bytes": 179767,
+      "sha256": "98764292D1BC3E839A0101113594BD0D8C7680A17A3F038DAD0FD3B82C626C3B"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/06-material-domain.png",
+      "bytes": 153003,
+      "sha256": "A30667CA6C6D170F28D175B7B9FD8D0BC1C56F5875EB9A6DF8CA981EA78165B6"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/07-blend-mode.png",
+      "bytes": 165008,
+      "sha256": "CB71D7D3F74FC684049E82FAB58C7E60A4F28DCE490159E6C627806EE8B8453C"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/08-two-sided.png",
+      "bytes": 153674,
+      "sha256": "23A27D6BC9686A9A7168F1BCB8F9E4FD72660F1D2CFE49E9EA283BF11740D5ED"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/09-parent-lineage.png",
+      "bytes": 145500,
+      "sha256": "2224419DE6C3A40D3ABF0DDEE9D8C37A638C69183087C59DE221BC14A6CC02F6"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/10-materials-needing-work.png",
+      "bytes": 158252,
+      "sha256": "0625ACD89B569E2984E4BB1137AD3341F650FC6EF3ADB2094422D50276F49416"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/13-review-actions.png",
+      "bytes": 179372,
+      "sha256": "1032FD8823B2D6E0CB6EB0B2C71C459EAFB373DA5672CA227503B37AEEA34823"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/14-running-batch-task.png",
+      "bytes": 185392,
+      "sha256": "3F6BD82E0A9C1FEB4287572B4D86A3EE810492088575000BC4AFAF6EE5F23F5A"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-material-interface/15-cancelling-task.png",
+      "bytes": 185872,
+      "sha256": "FC88710DCC33763D9A504C8C58C7AE7E7D05A575E6D3F50CE41A004002A2EC70"
+    }
+  ],
+  "task_artifact_count": 21,
+  "task_artifacts": [
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/cancel.json",
+      "bytes": 51,
+      "sha256": "B25A1C9B233E27D8FA1E60CDA3F451FE11366ED9DC3C05A308456947DFFF4162"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/Handoffs/report-4cdf1836e2bd3807/交付目录热区.csv",
+      "bytes": 259,
+      "sha256": "ED9F41D6AB5B0935565FED78006392B568E1C1877C76058D306A3210BA7403C1"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/Handoffs/report-4cdf1836e2bd3807/交接清单.json",
+      "bytes": 1782,
+      "sha256": "37EAAE69B2DFDC4DC79A9508C5B462475D8EBA1B2F00F8C723A4BE77BA143331"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/Handoffs/report-4cdf1836e2bd3807/审计交接报告.html",
+      "bytes": 7586,
+      "sha256": "E4617015241C84BFE4AB268867B1AEC81BC29701810D3F5F97BF624BBCEC1750"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/Handoffs/report-4cdf1836e2bd3807/审计问题明细.csv",
+      "bytes": 1424,
+      "sha256": "C297A03A8AE14AE5C81A4151E63A68A56093E2AF1A4AEA72C7646391E52DDB49"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/latest-report.json",
+      "bytes": 5586,
+      "sha256": "4B4AE910F82FBBB529801DAC3EE33151656B01830826C7A6C99F9C42A7374C75"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/request.json",
+      "bytes": 2213,
+      "sha256": "4F5D3685456A08581F0DA8DEEE459F0BB9CF631E5377CC236484C3C0E532E73B"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/Sessions/latest-comparison.v1.json",
+      "bytes": 740,
+      "sha256": "19FED812563CB98079F3F123D7A4566C6ABF32A917C7594AF43C411CD33B1A2C"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/Sessions/Reports/20260831054501183361-report-4cdf1836e2bd3807-4b4ae910.json",
+      "bytes": 5586,
+      "sha256": "4B4AE910F82FBBB529801DAC3EE33151656B01830826C7A6C99F9C42A7374C75"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/Sessions/session-index.v1.json",
+      "bytes": 644,
+      "sha256": "9D0E604BFC9E3232070532C481D12B420E14EA0F5F73BCD1F6A89D943691F85D"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/cancelled/task-state.json",
+      "bytes": 945,
+      "sha256": "B0F3EEDCD04435E45AF0D60CCA345FA0F4026DDE683B29AFF09A64B02A18C5A3"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/completed/Handoffs/report-ead7b262974bf3ab/交付目录热区.csv",
+      "bytes": 356,
+      "sha256": "696BBEBE0F22F357454E6B14C0B33178ACCEAAAA5A2FDDBFFD7BED78D552C2C0"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/completed/Handoffs/report-ead7b262974bf3ab/交接清单.json",
+      "bytes": 1780,
+      "sha256": "2806E0BF11DB7A827B4CF80E059D5F81C1F116ED11791E6359F5C9ED52AAADBB"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/completed/Handoffs/report-ead7b262974bf3ab/审计交接报告.html",
+      "bytes": 10206,
+      "sha256": "56225C8F634EE1950C56BDA752CC032189FCE5BB339479BB6BD82F70BC13B83F"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/completed/Handoffs/report-ead7b262974bf3ab/审计问题明细.csv",
+      "bytes": 3102,
+      "sha256": "C879C8A7B9B82D877F93EFD36963038EAAE54CD9CF96F049AB0217BC615D40AB"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/completed/latest-report.json",
+      "bytes": 12513,
+      "sha256": "4FCB8F1D47EE41F41D7F1C5AF7067931F26E0665F42E9B8122DBA8B253EA6B2A"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/completed/request.json",
+      "bytes": 1427,
+      "sha256": "F1E0396969E6FA1C8CE9D000FA29D37AC89FA356A6BFA4642F0AB4D9F04F94E8"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/completed/Sessions/latest-comparison.v1.json",
+      "bytes": 732,
+      "sha256": "030F51B1FD5C4DF96B29398BE3733A0771580639AACC4BD16E995B3CEAEB03BA"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/completed/Sessions/Reports/20260831054501147530-report-ead7b262974bf3ab-4fcb8f1d.json",
+      "bytes": 12513,
+      "sha256": "4FCB8F1D47EE41F41D7F1C5AF7067931F26E0665F42E9B8122DBA8B253EA6B2A"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/completed/Sessions/session-index.v1.json",
+      "bytes": 643,
+      "sha256": "D72FDC678AD6006170454AD242B1CF26E3A6D538EA1B53E48D13E04B44805F30"
+    },
+    {
+      "path": "artifacts/host-validation/m18/task-lifecycle-UE_5.8-v0.11.0-dev3-material-interface/completed/task-state.json",
+      "bytes": 925,
+      "sha256": "DD757CAB663AF133FD657B9A8FDB05C120D7901EA9026624E708DA78B32A4993"
+    }
+  ],
+  "review_artifact_count": 0,
+  "review_artifacts": null,
+  "delivery_group_artifact_count": 1,
+  "delivery_group_artifacts": [
+    {
+      "path": "artifacts/host-validation/m18/delivery-groups-UE_5.8-v0.11.0-dev3-material-interface/current-delivery-groups.v1.json",
+      "bytes": 2885,
+      "sha256": "59B5A1D662A0F07736F5A6557B898BC58163FECC2A26F65EA9C9CC27AC6CDA2D"
+    }
+  ],
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false
+}

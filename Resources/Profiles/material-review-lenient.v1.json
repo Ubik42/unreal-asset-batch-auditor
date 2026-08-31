@@ -1,0 +1,15 @@
+{
+  "schema_version": "unreal-material-profile@1.0.0",
+  "profile_id": "material-review-lenient-v1",
+  "profile_version": "1.0.0",
+  "description": "宽松材质复核规则；保留材质域、父级与纹理依赖提示。",
+  "rules": {
+    "allowed_domains": {"enabled": true, "allowed_values": ["MD_Surface", "MD_DeferredDecal", "MD_PostProcess"], "severity": "warning"},
+    "allowed_blend_modes": {"enabled": false, "allowed_values": ["BLEND_Opaque", "BLEND_Masked", "BLEND_Translucent"], "severity": "info"},
+    "two_sided": {"enabled": false, "expected": "any", "severity": "info"},
+    "instance_parent": {"enabled": true, "required": true, "severity": "warning"},
+    "parent_depth": {"enabled": true, "max_count": 4, "severity": "info"},
+    "texture_dependencies": {"enabled": true, "max_count": 16, "severity": "warning"},
+    "texture_dimension": {"enabled": true, "max_size": 8192, "severity": "warning"}
+  }
+}

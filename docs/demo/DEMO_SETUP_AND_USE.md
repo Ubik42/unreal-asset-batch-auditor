@@ -39,6 +39,21 @@ D:\3D\_tools\unreal-asset-batch-auditor\Demo\UABADemo.uproject
 
 文件夹只是相对复杂度分组。审核结论来自 Profile，不能把目录名当成质量结论。
 
+### Material Interface 快速演示（推荐作为新版开场）
+
+关闭 Demo Editor 后执行：
+
+```powershell
+.\scripts\run_material_host_validation.ps1 `
+  -EngineRoot "C:\Program Files\Epic Games\UE_5.8" `
+  -BuildLabel "UE_5.8-v0.11.0-dev3"
+```
+
+重新打开 Demo Project，在面板切到“材质血缘轨道”，选择 `/Game/UABAMaterialDemo` 并读取文件夹选择。
+“材质桌面平衡”应形成 9 个对象、5 个通过、4 个待处理和 5 条问题。依次搜索 `PostProcess`、
+`Translucent` 与 `材质实例`，即可展示 Domain、Blend、双面与实例父级链；完整素材矩阵和边界见
+[Material Interface 材质血缘审计](../MATERIAL_INTERFACE_AUDIT.md)。
+
 ### Texture2D 快速演示（推荐作为开场）
 
 若 `Textures` 尚未生成，关闭 Demo Editor 后执行：

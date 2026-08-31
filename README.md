@@ -1,19 +1,19 @@
 # Unreal Asset Batch Auditor
 
-面向 Unreal 美术团队的只读资产交付验收台。当前提供“模型交付 / 纹理交付”两条明确轨道：项目 Profile 定义预算和预期，Editor-only C++ 批量采集宿主事实，Python 负责规则编排与可追溯报告。插件不保存、重建或自动修复资产。
+面向 Unreal 美术团队的只读资产交付验收台。`main` 当前提供“模型交付 / 纹理交付 / 材质血缘”三条明确轨道：项目 Profile 定义预算和预期，Editor-only C++ 批量采集宿主事实，Python 负责规则编排与可追溯报告。插件不保存、重建或自动修复资产。
 
-> **公开版本：v0.10.0 Beta** · `main` 开发线已加入 v0.11 项目验收标准工作台 · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> **公开版本：v0.10.0 Beta** · `main` 开发线已加入 v0.11 项目标准工作台与材质血缘轨道 · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.10.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
-![资产交付验收台：Texture2D 交付轨道](docs/images/workflow/v0.10-texture-audit/02-asset-overview.png)
+![资产交付验收台：Material Interface 材质血缘轨道](docs/images/workflow/v0.11-material-interface/02-asset-overview.png)
 
-<p align="center"><sub>真实 UE 5.8.1 原生 Slate：自行合成并导入 3 张 Texture2D，展示 1 个通过对象、2 个待处理对象与 7 条 Profile 驱动证据。</sub></p>
+<p align="center"><sub>真实 UE 5.8.1 原生 Slate：9 个 Material / Material Instance，展示渲染状态、父级链、纹理负载与 5 条 Profile 驱动证据。</sub></p>
 
 ## 这个项目体现什么
 
 - **真实管线分层**：C++ 批量读取 Unreal 原生元数据，Python 负责项目规则、任务编排和报告，UI 不承载隐藏业务判断；
-- **双轨资产验收**：模型轨道覆盖几何、材质、LOD、碰撞和 Lightmap；纹理轨道覆盖尺寸、Mip、分组、压缩/色彩、VT 与流送；
+- **三轨资产验收**：模型覆盖几何、LOD、碰撞和 Lightmap；纹理覆盖尺寸、Mip、压缩色彩、VT 与流送；材质覆盖 Domain、Blend、双面、Shading、父级链和纹理负载；
 - **上下文与证据设计**：Profile、Issue、Evidence、Report 均有版本化合同，每个问题都能追到实测值、期望值和规则指针；
 - **生产可靠性**：逐批任务、批次间取消、部分失败隔离、不可变会话和修复前后回归，不把“没有抛异常”当作成功；
 - **团队交付**：一键生成中文 HTML、Excel 可读 CSV 和 SHA-256 清单，无 Unreal 环境也能参与复核；
@@ -25,7 +25,7 @@
 
 ### 1. 选择项目检查规则
 
-先选择“模型交付轨道”或“纹理交付轨道”，再从下拉框选择对应 Profile。内置模板明确标为只读；点击
+先选择“模型交付轨道”“纹理交付轨道”或“材质血缘轨道”，再从下拉框选择对应 Profile。内置模板明确标为只读；点击
 “复制为项目标准”会把合同校验后的副本写入工程 `Config/AssetAudit/Profiles`，重新发现并立即选中，
 不会覆盖插件模板。项目标准说明与当前编辑边界见[项目验收标准](docs/PROJECT_AUDIT_STANDARDS.md)。
 
@@ -38,7 +38,7 @@
 
 ### 2. 选择资源并执行批量审计
 
-在 Content Browser 中显式选择多个资产，或选择一个/多个文件夹。插件只递归发现当前轨道的 Static Mesh 或 Texture2D，
+在 Content Browser 中显式选择多个资产，或选择一个/多个文件夹。插件只递归发现当前轨道的 Static Mesh、Texture2D 或 Material Interface，
 与单独选择的对象合并、去重并稳定排序；不会默认扫描整个项目。资产总览不会隐藏通过项，同一批次内
 可以直接对比通过、需处理和采集失败对象。
 
@@ -57,7 +57,7 @@ Content Browser。切换“问题明细”后仍能看到严重度、实测值�
 ### 4. 从问题回到资产复核
 
 在“资产总览”或“问题明细”选择一行，复核条会显示当前资产与检查项。`定位资产` 只同步
-Content Browser 选择，`打开复核` 只打开对应的 Static Mesh Editor 或纹理编辑器；问题行还可复制包含资产路径、规则、
+Content Browser 选择，`打开复核` 只打开对应的 Static Mesh Editor、纹理编辑器或材质编辑器；问题行还可复制包含资产路径、规则、
 实测、阈值、Evidence ID 和中文说明的确定性摘要。报告路径已失效、对象类型与当前报告不一致或该行属于
 采集失败时，动作保持禁用并说明原因，不会误开其他资产。
 
@@ -71,8 +71,8 @@ Content Browser 选择，`打开复核` 只打开对应的 Static Mesh Editor �
 
 ![独立审阅台账：需修复、批准例外与负责人](docs/images/workflow/v0.10-review-ledger/13-review-ledger.png)
 
-以上 v0.10 面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件；模型数据来自
-24 个本机生成的项目 Demo `.uasset` 与 2 条采集失败，纹理数据来自 3 张确定性生成并真实导入的 PNG；不是网页复刻或设计稿。生命周期记录保存测试 PID、
+以上面板截图由独立 UE 5.8.1 `-RenderOffscreen` 宿主直接渲染生产 Slate 控件；模型数据来自
+24 个本机生成的项目 Demo `.uasset` 与 2 条采集失败，纹理数据来自 3 张确定性生成并真实导入的 PNG，材质数据来自复制到隔离 Demo 工程的 9 个公开 Engine 样本；不是网页复刻或设计稿。生命周期记录保存测试 PID、
 耗时、退出状态、截图、报告与交接包哈希。自动化证明面板渲染、任务状态、批次间取消和报告解析，
 不冒充鼠标点击人工测试。演示 Profile 使用模拟项目阈值，不代表行业统一标准。
 
@@ -96,6 +96,18 @@ Streaming 状态；类型不匹配的选择会被明确忽略，不会静默扩�
 ![Texture2D 资产总览](docs/images/workflow/v0.10-texture-audit/02-asset-overview.png)
 
 ![压缩与色彩空间组合证据](docs/images/workflow/v0.10-texture-audit/09-compression-color.png)
+
+### Material Interface 材质血缘轨道
+
+材质不再只是 Static Mesh 台账里的一个依赖数字。独立材质合同同时覆盖 Material 与 Material Instance，
+资产台账直接呈现材质域、混合模式、双面、Shading Model、直接父级、父级深度与纹理依赖。规则仍由
+Profile 决定；它不推测 GPU 时间、Shader permutation 或 Cook 结果，也不会改写材质图。
+
+![材质渲染状态与父级链总览](docs/images/workflow/v0.11-material-interface/02-asset-overview.png)
+
+![材质问题的实测、期望与证据说明](docs/images/workflow/v0.11-material-interface/05-issue-details.png)
+
+完整边界、演示素材和录制顺序见[材质血缘审计说明](docs/MATERIAL_INTERFACE_AUDIT.md)。
 
 ### 模型材质与纹理依赖风险
 
@@ -168,6 +180,7 @@ Evidence 与人工决定。目录问题密度只表示规则问题数 / 处理�
 
 - 版本化 JSON `Profile`、`Issue`、`Evidence`、`Report` 合同；
 - 独立版本化 Texture Profile / Report：源尺寸上限、2 次幂、Mip、Texture Group、Compression/sRGB、Virtual Texture 与 Streaming 政策；
+- 独立版本化 Material Interface Profile / Report：Domain、Blend Mode、双面、实例父级、父级深度、纹理数量与最大尺寸政策；
 - LOD0 三角形预算、LOD0 顶点预算、材质槽上限、LOD 数量下限、Nanite 预期状态；
 - 简单碰撞体数量与碰撞复杂度政策，可由 Profile 决定是否接受 `Complex As Simple`；
 - 缺失材质槽、唯一有效材质数、已加载纹理依赖数与最大纹理尺寸政策；
@@ -175,10 +188,10 @@ Evidence 与人工决定。目录问题密度只表示规则问题数 / 处理�
 - 可选资产名前缀、完整正则、允许项目根目录与禁用目录段；旧 v2 Profile 不配置时保持兼容；
 - 每条 Evidence 记录观测值、Profile 期望值及其 JSON Pointer；
 - Report 同时保存所有成功资产的采集元数据，因此通过项也可与 Editor 复核；
-- Unreal Editor-only 插件和 Static Mesh / Texture2D 两组只读 C++ 批量采集接口；
+- Unreal Editor-only 插件和 Static Mesh / Texture2D / Material Interface 三组只读 C++ 批量采集接口；
 - UE 原生中文 Slate 面板：读取 Content Browser 选择、从预置规则下拉框切换 Profile、运行审计与共享搜索；
 - 内置 Profile 与项目自有标准明确分层；支持从当前模板原子复制到工程配置、自动去重命名、重新发现并选中；
-- 项目验收标准工作台按模型/纹理规则分组编辑启停、阈值、枚举、标识和版本；字段错误就地显示，保存前提供结构化差异；
+- 项目验收标准工作台按模型/纹理/材质规则分组编辑启停、阈值、枚举、标识和版本；字段错误就地显示，保存前提供结构化差异；
 - 显式资产与文件夹可以组成同一交付批次；文件夹递归只发现当前验收轨道的资产类型，结果去重并稳定排序；
 - “交付风险谱”按几何预算、材质负载、构建就绪、命名路径和采集异常汇总真实问题，点击即可筛选明细；
 - “交付热区”按当前 Report 的 package path 形成稳定目录组，显示对象/问题/失败/审阅统计并一键下钻；
@@ -236,7 +249,7 @@ python -m venv .venv
 ## 可录制 Demo Kit
 
 仓库内置一个 UE 5.8.1 非生产演示工程和确定性生成脚本。脚本从用户本机已安装的 `/Engine`
-内容生成 24 个真实项目 `.uasset`，并建立三种复杂度分组、三套训练 Profile、两个诊断输入、
+内容生成 24 个模型 Demo，并可在隔离工程生成 9 个材质/材质实例样本；同时建立三种复杂度分组、训练 Profile、诊断输入、
 两轮真实 v3 报告与只读哈希证据。生成器先建立无三类注入故障的基线，再明确构造三个项目自有故障副本：错误命名、放入
 `Developers` 目录、移除简单碰撞并把 Lightmap 分辨率降到 8；生成器不会修改 `/Engine` 源资产。
 
@@ -246,6 +259,7 @@ python -m venv .venv
 
 - [完整安装与操作教程](docs/demo/DEMO_SETUP_AND_USE.md)
 - [24 个演示资产矩阵](docs/demo/DEMO_ASSET_MATRIX.md)
+- [9 个材质血缘样本与录制步骤](docs/MATERIAL_INTERFACE_AUDIT.md)
 - [6–8 分钟录屏分镜与讲稿](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 - [当前界面与交接报告截图清单](docs/demo/SCREENSHOT_PLAN.md)
 
@@ -255,7 +269,7 @@ Demo Profile 是为了形成清晰对比而模拟的项目数据，不代表行�
 仓库不再分发由 Unreal Engine 内容复制出的 `.uasset` 二进制；`prepare_demo.ps1` 会在本机生成它们。
 生成器不会修改 `/Engine` 原始资产。
 
-插件安装包为模型和纹理轨道各带三套演示规则。普通用户不需要填写 JSON 路径；团队规则从内置模板
+`main` 为模型、纹理和材质轨道各带三套演示规则。普通用户不需要填写 JSON 路径；团队规则从内置模板
 复制为项目标准后，直接在原生工作台编辑。`临时导入`只用于一次性排查，不进入项目标准治理。
 
 ## 安装
@@ -284,7 +298,8 @@ Demo Profile 是为了形成清晰对比而模拟的项目数据，不代表行�
 
 插件 descriptor 只声明 `Editor` 模块。C++ collector 仅接收显式 object path：模型轨道读取
 `UStaticMesh` render data、材质/已加载纹理依赖、Nanite、BodySetup 与 Lightmap；纹理轨道读取
-`UTexture2D` 的源/平台尺寸、Mip、分组、压缩、色彩、VT 与流送状态。两条轨道都不会扫描整个项目，
+`UTexture2D` 的源/平台尺寸、Mip、分组、压缩、色彩、VT 与流送状态；材质轨道读取
+`UMaterialInterface` 的有效渲染状态、实例父级链和已加载纹理依赖。三条轨道都不会扫描整个项目，
 也不会在 Python 中逐顶点或逐像素处理。
 
 Editor Python 的便捷入口默认每批 128 个显式 object path，也允许调用方注入取消和进度回调：
@@ -318,6 +333,7 @@ report = run(
 - v0.10-dev4 已通过 88 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主真实导入并采集 3 张 Texture2D，得到 1 个通过对象、2 个待处理对象与 7 条问题，并生成 13 张纹理轨道 Slate 图；
 - v0.10.0 发布包含 67 个白名单文件；ZIP SHA-256 为 `0D466D4779D32A8A563C387DC4A910BDBCA8F7C7AFFBACA82079C89F297F6A33`；全新安装、真实双轨采集、随包无人值守、从公开 v0.9 升级和两次可恢复卸载均已通过；
 - v0.11-dev2 完成项目验收标准工作台；独立 UE 5.8.1 宿主验证字段错误、差异预览、原子保存，并使用保存后的模型/纹理标准生成两份真实采集 Report；
+- v0.11-dev3 完成 Material Interface 材质血缘轨道；独立 UE 5.8.1 宿主真实采集 9 个 Material / Material Instance，得到 5 个通过、4 个待处理、5 条问题、0 个采集失败，并生成 13 张原生 Slate 状态图；
 - 不声明 Marketplace 就绪、其他 UE 版本兼容或生产规模绝对无卡顿。
 
 ## 许可证与演示素材

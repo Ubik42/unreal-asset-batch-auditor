@@ -26,7 +26,7 @@ void FUnrealAssetBatchAuditorModule::StartupModule()
         FOnSpawnTab::CreateRaw(this, &FUnrealAssetBatchAuditorModule::SpawnAuditTab))
         .SetDisplayName(NSLOCTEXT("UnrealAssetBatchAuditor", "TabTitle", "资产批量审计"))
         .SetTooltipText(NSLOCTEXT(
-            "UnrealAssetBatchAuditor", "TabTooltip", "检查 Static Mesh 预算、材质、LOD、Nanite、碰撞、Lightmap、命名与目录规范"))
+            "UnrealAssetBatchAuditor", "TabTooltip", "检查模型、纹理与材质接口的交付规则和依赖血缘"))
         .SetMenuType(ETabSpawnerMenuType::Hidden);
 
     UToolMenus::RegisterStartupCallback(
@@ -48,7 +48,7 @@ void FUnrealAssetBatchAuditorModule::RegisterMenus()
     Section.AddMenuEntry(
         TEXT("OpenUnrealAssetBatchAuditor"),
         NSLOCTEXT("UnrealAssetBatchAuditor", "MenuLabel", "资产批量审计"),
-        NSLOCTEXT("UnrealAssetBatchAuditor", "MenuTooltip", "打开只读 Static Mesh 审计工作台"),
+        NSLOCTEXT("UnrealAssetBatchAuditor", "MenuTooltip", "打开模型、纹理与材质交付体检台"),
         FSlateIcon(FAppStyle::GetAppStyleSetName(), TEXT("Icons.Check")),
         FUIAction(FExecuteAction::CreateLambda([]
         {

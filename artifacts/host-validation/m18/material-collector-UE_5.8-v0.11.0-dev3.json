@@ -1,0 +1,35 @@
+{
+  "schema_version": "unreal-material-host-validation@1.0.0",
+  "created_at": "2026-08-31T05:44:15.1284395+00:00",
+  "engine": "5.8.1-56057345+++UE5+Release-5.8",
+  "plugin_build": "UE_5.8-v0.11.0-dev3",
+  "execution": "independent hidden UnrealEditor-Cmd -ExecutePythonScript",
+  "test_pid": 34384,
+  "existing_unreal_pids_before": [
+    40580
+  ],
+  "existing_unreal_pids_after": [
+    40580,
+    44088
+  ],
+  "existing_processes_survived": true,
+  "preexisting_processes_managed_by_test": false,
+  "started_at": "2026-08-31T05:43:46.9401969+00:00",
+  "finished_at": "2026-08-31T05:44:15.1284395+00:00",
+  "duration_seconds": 28.188,
+  "timed_out": false,
+  "exit_code": 0,
+  "process_exited": true,
+  "passed": true,
+  "asset_type": "material_interface",
+  "asset_count": 9,
+  "issue_count": 5,
+  "collection_failure_count": 0,
+  "report_path": "artifacts/demo/demo-material-desktop-balanced-v1-report.json",
+  "report_sha256": "CF220068EC43A57236684FE5A6067C3F50554C1968D081C11C5849C30D9E526B",
+  "manifest_path": "artifacts/demo/demo-material-asset-manifest.json",
+  "manifest_sha256": "91098B3276633181EF62E8CF5D85B578BE03376190EC21C9BFB12FCECDB07639",
+  "generated_content_path": "artifacts/host-runtime/material-20260830-234346/Content/UABAMaterialDemo",
+  "claims_shader_or_gpu_performance": false,
+  "claims_asset_mutation_by_plugin": false
+}

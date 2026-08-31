@@ -1,11 +1,13 @@
 # 当前版本真实截图与验收清单
 
-状态：v0.10-dev4 Texture2D 双轨证据已完成。纹理轨道 13 张图位于
+状态：v0.11-dev3 Material Interface 材质血缘证据已完成。当前 13 张图位于
+`docs/images/workflow/v0.11-material-interface/`，真实宿主生命周期与哈希位于
+`artifacts/host-validation/m18/`。纹理轨道 13 张图位于
 `docs/images/workflow/v0.10-texture-audit/`，生命周期与哈希记录于
 `artifacts/host-validation/m15/panel-lifecycle-UE_5.8-v0.10.0-dev4-texture2d.json`。模型交付热区 01–17 位于
 `docs/images/workflow/v0.10-delivery-hotspots/`，哈希、测试 PID、退出状态与源报告记录于
 `artifacts/host-validation/m14/panel-lifecycle-UE_5.8-v0.10.0-dev3-delivery-hotspots.json`。旧版几何、
-材质、定位和审阅截图保留用于版本历史；README 第一屏优先使用当前纹理双轨图。
+材质依赖、定位和审阅截图保留用于版本历史；README 第一屏优先使用当前材质血缘总览。
 
 纹理轨道稳定截图为：空状态、资产总览、通过/待处理筛选、问题明细、源尺寸、2 次幂、Mip、
 压缩/色彩、流送、复核动作、运行和取消。素材必须保持 1 个通过、2 个待处理，避免把插件展示成

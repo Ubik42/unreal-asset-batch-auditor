@@ -13,6 +13,20 @@ from .delivery_groups import (
     write_delivery_group_view,
 )
 from .handoff import HANDOFF_VERSION, HandoffError, HandoffResult, export_handoff
+from .material_audit import audit_materials, build_material_report_from_collection
+from .material_collectors import (
+    MaterialFixtureCollector,
+    MaterialMetadataCollector,
+    MaterialUnrealCppCollector,
+)
+from .material_contracts import (
+    MATERIAL_FIXTURE_VERSION,
+    MATERIAL_PROFILE_VERSION,
+    MATERIAL_REPORT_VERSION,
+    MaterialAuditProfile,
+    MaterialAuditReport,
+    MaterialInterfaceMetadata,
+)
 from .panel_task import (
     TASK_STATE_VERSION,
     PanelAuditTask,
@@ -88,6 +102,9 @@ __all__ = [
     "EXIT_POLICY_FAILED",
     "EXIT_RUNTIME_ERROR",
     "HANDOFF_VERSION",
+    "MATERIAL_FIXTURE_VERSION",
+    "MATERIAL_PROFILE_VERSION",
+    "MATERIAL_REPORT_VERSION",
     "PRESET_VERSION",
     "PROFILE_EDITOR_VIEW_VERSION",
     "REVIEW_DECISIONS",
@@ -110,6 +127,12 @@ __all__ = [
     "HandoffError",
     "HandoffResult",
     "Issue",
+    "MaterialAuditProfile",
+    "MaterialAuditReport",
+    "MaterialFixtureCollector",
+    "MaterialInterfaceMetadata",
+    "MaterialMetadataCollector",
+    "MaterialUnrealCppCollector",
     "MetadataCollector",
     "PanelAuditTask",
     "PresetError",
@@ -132,8 +155,10 @@ __all__ = [
     "TextureUnrealCppCollector",
     "UnrealCppCollector",
     "audit_assets",
+    "audit_materials",
     "audit_textures",
     "build_delivery_group_view",
+    "build_material_report_from_collection",
     "build_profile_editor_view",
     "build_report_from_collection",
     "build_texture_report_from_collection",

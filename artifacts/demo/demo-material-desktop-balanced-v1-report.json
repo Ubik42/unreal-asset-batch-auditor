@@ -1,0 +1,285 @@
+{
+  "schema_version": "unreal-material-audit@1.0.0",
+  "report_id": "material-report-ba9f3369729b6fbc",
+  "created_at": "2026-08-31T05:44:10.865275+00:00",
+  "profile_id": "material-desktop-balanced-v1",
+  "profile_version": "1.0.0",
+  "profile_schema_version": "unreal-material-profile@1.0.0",
+  "asset_type": "material_interface",
+  "collection_mode": "unreal_editor",
+  "real_unreal_validation": true,
+  "host_engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "asset_count": 9,
+  "issue_count": 5,
+  "collection_failure_count": 0,
+  "requested_asset_count": 9,
+  "processed_asset_count": 9,
+  "cancelled_asset_count": 0,
+  "completed_batch_count": 3,
+  "batch_size": 3,
+  "assets": [
+    {
+      "asset_path": "/Game/UABAMaterialDemo/01_Approved/MI_UABA_BasicSurface.MI_UABA_BasicSurface",
+      "asset_name": "MI_UABA_BasicSurface",
+      "material_kind": "material_instance",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Opaque",
+      "two_sided": false,
+      "shading_models": [
+        "MSM_DefaultLit"
+      ],
+      "parent_path": "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial",
+      "base_material_path": "/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial",
+      "parent_depth": 1,
+      "texture_paths": [],
+      "texture_dependency_count": 0,
+      "max_texture_dimension": 0
+    },
+    {
+      "asset_path": "/Game/UABAMaterialDemo/01_Approved/M_UABA_BasicSurface.M_UABA_BasicSurface",
+      "asset_name": "M_UABA_BasicSurface",
+      "material_kind": "material",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Opaque",
+      "two_sided": false,
+      "shading_models": [
+        "MSM_DefaultLit"
+      ],
+      "parent_path": null,
+      "base_material_path": "/Game/UABAMaterialDemo/01_Approved/M_UABA_BasicSurface.M_UABA_BasicSurface",
+      "parent_depth": 0,
+      "texture_paths": [],
+      "texture_dependency_count": 0,
+      "max_texture_dimension": 0
+    },
+    {
+      "asset_path": "/Game/UABAMaterialDemo/01_Approved/M_UABA_SimpleOpaque.M_UABA_SimpleOpaque",
+      "asset_name": "M_UABA_SimpleOpaque",
+      "material_kind": "material",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Opaque",
+      "two_sided": false,
+      "shading_models": [
+        "MSM_DefaultLit"
+      ],
+      "parent_path": null,
+      "base_material_path": "/Game/UABAMaterialDemo/01_Approved/M_UABA_SimpleOpaque.M_UABA_SimpleOpaque",
+      "parent_depth": 0,
+      "texture_paths": [],
+      "texture_dependency_count": 0,
+      "max_texture_dimension": 0
+    },
+    {
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_PostProcess.M_UABA_PostProcess",
+      "asset_name": "M_UABA_PostProcess",
+      "material_kind": "material",
+      "material_domain": "MD_PostProcess",
+      "blend_mode": "BLEND_Opaque",
+      "two_sided": false,
+      "shading_models": [
+        "MSM_Unlit"
+      ],
+      "parent_path": null,
+      "base_material_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_PostProcess.M_UABA_PostProcess",
+      "parent_depth": 0,
+      "texture_paths": [
+        "/Engine/EngineDebugMaterials/VolumeToRender.VolumeToRender"
+      ],
+      "texture_dependency_count": 1,
+      "max_texture_dimension": 10
+    },
+    {
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_Translucent.M_UABA_Translucent",
+      "asset_name": "M_UABA_Translucent",
+      "material_kind": "material",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Translucent",
+      "two_sided": false,
+      "shading_models": [
+        "MSM_DefaultLit"
+      ],
+      "parent_path": null,
+      "base_material_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_Translucent.M_UABA_Translucent",
+      "parent_depth": 0,
+      "texture_paths": [],
+      "texture_dependency_count": 0,
+      "max_texture_dimension": 0
+    },
+    {
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_TwoSidedAdditive.M_UABA_TwoSidedAdditive",
+      "asset_name": "M_UABA_TwoSidedAdditive",
+      "material_kind": "material",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Additive",
+      "two_sided": true,
+      "shading_models": [
+        "MSM_Unlit"
+      ],
+      "parent_path": null,
+      "base_material_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_TwoSidedAdditive.M_UABA_TwoSidedAdditive",
+      "parent_depth": 0,
+      "texture_paths": [
+        "/Engine/EngineVolumetrics/Fogsheet/Materials/T_EV_FogSheet_Falloff_01.T_EV_FogSheet_Falloff_01"
+      ],
+      "texture_dependency_count": 1,
+      "max_texture_dimension": 32
+    },
+    {
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_UnlitTranslucent.M_UABA_UnlitTranslucent",
+      "asset_name": "M_UABA_UnlitTranslucent",
+      "material_kind": "material",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Translucent",
+      "two_sided": false,
+      "shading_models": [
+        "MSM_Unlit"
+      ],
+      "parent_path": null,
+      "base_material_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_UnlitTranslucent.M_UABA_UnlitTranslucent",
+      "parent_depth": 0,
+      "texture_paths": [],
+      "texture_dependency_count": 0,
+      "max_texture_dimension": 0
+    },
+    {
+      "asset_path": "/Game/UABAMaterialDemo/03_ParentChain/MI_UABA_ShapeInstance.MI_UABA_ShapeInstance",
+      "asset_name": "MI_UABA_ShapeInstance",
+      "material_kind": "material_instance",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Opaque",
+      "two_sided": false,
+      "shading_models": [
+        "MSM_DefaultLit"
+      ],
+      "parent_path": "/Engine/EditorShapes/Materials/M_ShapeMaster.M_ShapeMaster",
+      "base_material_path": "/Engine/EditorShapes/Materials/M_ShapeMaster.M_ShapeMaster",
+      "parent_depth": 1,
+      "texture_paths": [
+        "/Engine/EditorShapes/Textures/T_ShapeDiffuse.T_ShapeDiffuse",
+        "/Engine/EditorShapes/Textures/T_ShapeNormal.T_ShapeNormal"
+      ],
+      "texture_dependency_count": 2,
+      "max_texture_dimension": 32
+    },
+    {
+      "asset_path": "/Game/UABAMaterialDemo/03_ParentChain/M_UABA_ShapeMaster.M_UABA_ShapeMaster",
+      "asset_name": "M_UABA_ShapeMaster",
+      "material_kind": "material",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Opaque",
+      "two_sided": false,
+      "shading_models": [
+        "MSM_DefaultLit"
+      ],
+      "parent_path": null,
+      "base_material_path": "/Game/UABAMaterialDemo/03_ParentChain/M_UABA_ShapeMaster.M_UABA_ShapeMaster",
+      "parent_depth": 0,
+      "texture_paths": [
+        "/Engine/EditorShapes/Textures/T_ShapeDiffuse.T_ShapeDiffuse",
+        "/Engine/EditorShapes/Textures/T_ShapeNormal.T_ShapeNormal"
+      ],
+      "texture_dependency_count": 2,
+      "max_texture_dimension": 32
+    }
+  ],
+  "issues": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-293563ed47f64b8d",
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_PostProcess.M_UABA_PostProcess",
+      "rule_id": "material.allowed_domain",
+      "severity": "error",
+      "message": "Material domain 'MD_PostProcess' is outside profile allowlist ['MD_Surface'].",
+      "evidence_id": "ev-5910e21d9bc2ec2e"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-bdea9a2a71426900",
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_Translucent.M_UABA_Translucent",
+      "rule_id": "material.allowed_blend_mode",
+      "severity": "warning",
+      "message": "Blend mode 'BLEND_Translucent' is outside profile allowlist ['BLEND_Opaque', 'BLEND_Masked'].",
+      "evidence_id": "ev-df3a8e3744eb4b15"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-20fb21bc85836a78",
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_TwoSidedAdditive.M_UABA_TwoSidedAdditive",
+      "rule_id": "material.allowed_blend_mode",
+      "severity": "warning",
+      "message": "Blend mode 'BLEND_Additive' is outside profile allowlist ['BLEND_Opaque', 'BLEND_Masked'].",
+      "evidence_id": "ev-f6d574c48c18f9d2"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-c0e7da004b8827e9",
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_TwoSidedAdditive.M_UABA_TwoSidedAdditive",
+      "rule_id": "material.two_sided",
+      "severity": "warning",
+      "message": "Two Sided is True; profile expects disabled.",
+      "evidence_id": "ev-522d7e74b0d00587"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-a037cad37c7660a3",
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_UnlitTranslucent.M_UABA_UnlitTranslucent",
+      "rule_id": "material.allowed_blend_mode",
+      "severity": "warning",
+      "message": "Blend mode 'BLEND_Translucent' is outside profile allowlist ['BLEND_Opaque', 'BLEND_Masked'].",
+      "evidence_id": "ev-ed91272328ffc165"
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-5910e21d9bc2ec2e",
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_PostProcess.M_UABA_PostProcess",
+      "metric": "material_domain",
+      "observed": "MD_PostProcess",
+      "expected": "MD_Surface",
+      "profile_pointer": "/rules/allowed_domains/allowed_values",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-df3a8e3744eb4b15",
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_Translucent.M_UABA_Translucent",
+      "metric": "blend_mode",
+      "observed": "BLEND_Translucent",
+      "expected": "BLEND_Opaque | BLEND_Masked",
+      "profile_pointer": "/rules/allowed_blend_modes/allowed_values",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-f6d574c48c18f9d2",
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_TwoSidedAdditive.M_UABA_TwoSidedAdditive",
+      "metric": "blend_mode",
+      "observed": "BLEND_Additive",
+      "expected": "BLEND_Opaque | BLEND_Masked",
+      "profile_pointer": "/rules/allowed_blend_modes/allowed_values",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-522d7e74b0d00587",
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_TwoSidedAdditive.M_UABA_TwoSidedAdditive",
+      "metric": "two_sided",
+      "observed": true,
+      "expected": false,
+      "profile_pointer": "/rules/two_sided/expected",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-ed91272328ffc165",
+      "asset_path": "/Game/UABAMaterialDemo/02_RenderState/M_UABA_UnlitTranslucent.M_UABA_UnlitTranslucent",
+      "metric": "blend_mode",
+      "observed": "BLEND_Translucent",
+      "expected": "BLEND_Opaque | BLEND_Masked",
+      "profile_pointer": "/rules/allowed_blend_modes/allowed_values",
+      "collector": "unreal_editor"
+    }
+  ],
+  "collection_failures": []
+}

@@ -86,6 +86,9 @@ def test_native_panel_exposes_complete_asset_ledger_and_issue_detail_views() -> 
     assert 'TEXT("三角形")' in source
     assert 'TEXT("材质槽")' in source
     assert 'TEXT("纹理/最大")' in source
+    assert 'TEXT("材质血缘轨道")' in source
+    assert 'TEXT("直接父级")' in source
+    assert 'Item->MaterialKind.Contains(SearchText' in source
     assert 'TEXT("交付风险谱")' in source
     assert 'TEXT("回归对比")' in source
     assert 'TEXT("回归基线（同一 Profile）")' in source

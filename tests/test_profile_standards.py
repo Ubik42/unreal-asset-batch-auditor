@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
     [
         ("desktop-balanced.v3.json", "static_mesh"),
         ("texture-desktop-balanced.v1.json", "texture2d"),
+        ("material-desktop-balanced.v1.json", "material_interface"),
     ],
 )
 def test_validate_supported_profile_tracks(name: str, asset_type: str) -> None:
@@ -99,6 +100,7 @@ def test_atomic_save_rejects_invalid_profile(tmp_path: Path) -> None:
     [
         ("desktop-balanced.v3.json", 14, "rules.triangle_budget.max_lod0"),
         ("texture-desktop-balanced.v1.json", 7, "rules.compression_color_space.allowed_combinations"),
+        ("material-desktop-balanced.v1.json", 7, "rules.parent_depth.max_count"),
     ],
 )
 def test_editor_view_describes_supported_fields(
@@ -210,6 +212,31 @@ def test_editor_save_is_confined_to_project_profile_root(tmp_path: Path) -> None
             save=True,
             project_profile_root=root,
         )
+
+
+def test_material_editor_previews_render_state_and_parent_policy(tmp_path: Path) -> None:
+    source = clone_as_project_profile(
+        ROOT / "Resources" / "Profiles" / "material-desktop-balanced.v1.json",
+        tmp_path,
+    )
+
+    result = evaluate_profile_edit(
+        source,
+        {
+            "profile_version": "1.1.0",
+            "rules.allowed_blend_modes.allowed_values": "BLEND_Opaque",
+            "rules.parent_depth.max_count": "3",
+            "rules.two_sided.expected": "enabled",
+        },
+    )
+
+    assert result["status"] == "ready"
+    assert [item["path"] for item in result["changes"]] == [
+        "profile_version",
+        "rules.allowed_blend_modes.allowed_values",
+        "rules.parent_depth.max_count",
+        "rules.two_sided.expected",
+    ]
 
 
 def test_demo_project_standards_are_supported_and_explicitly_simulated() -> None:

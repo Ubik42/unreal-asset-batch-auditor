@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Unreal 资产审计交接报告</title>
+<style>
+:root{--bg:#0a0f12;--panel:#11191e;--line:#26343d;--text:#e8eef1;--muted:#91a2ab;--cyan:#35c6d4;--green:#58d69a;--amber:#efb84c;--red:#ff6f6f;--steel:#182229}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 "Microsoft YaHei UI","Noto Sans CJK SC",sans-serif}
+.shell{max-width:1440px;margin:auto;padding:34px} .hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;margin-bottom:22px}
+h1{font-size:32px;margin:0 0 6px} h2{font-size:20px;margin:32px 0 12px} h3{font-size:18px;margin:3px 0} .sub,.meta,.note{color:var(--muted)}
+.badge{border:1px solid var(--cyan);color:var(--cyan);padding:7px 12px} .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.metric{background:var(--panel);border-top:2px solid var(--cyan);padding:14px} .metric strong{display:block;font-size:25px;margin-top:4px}
+.note{background:#0e1b20;border-left:3px solid var(--cyan);padding:12px 14px;margin:18px 0}
+.section-head{display:flex;justify-content:space-between;gap:18px;align-items:end} .section-head p{max-width:760px;margin:0;color:var(--muted)}
+.table-wrap{overflow:auto;border:1px solid var(--line)} table{width:100%;table-layout:auto;border-collapse:collapse;min-width:1100px}
+th{position:sticky;top:0;background:#172229;text-align:left;color:#b7c6ce} th,td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+td{overflow-wrap:anywhere} a{color:var(--text);text-decoration-color:var(--cyan);text-underline-offset:4px} code{font-family:"Cascadia Mono",Consolas,monospace;color:#a8dce1;font-size:12px}
+tr:hover td{background:#101a20} .level{font-weight:700} .level.error{color:var(--red)} .level.warning{color:var(--amber)} .level.info{color:var(--cyan)}
+.rank{font:700 13px "Cascadia Mono",Consolas,monospace;color:var(--cyan)} .risk{display:inline-block;min-width:68px;border-left:3px solid;padding:2px 8px;background:var(--steel)}
+.risk.blocked{border-color:var(--red);color:var(--red)} .risk.fix{border-color:#ff8b66;color:#ff9c7d} .risk.dense{border-color:var(--amber);color:var(--amber)} .risk.review{border-color:var(--cyan);color:var(--cyan)} .risk.clean{border-color:var(--green);color:var(--green)}
+.group-section{scroll-margin-top:16px;margin-top:30px;padding-top:10px;border-top:1px solid var(--line)} .group-heading{display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:12px} .eyebrow{font:700 12px "Cascadia Mono",Consolas,monospace;color:var(--cyan)} .back{white-space:nowrap;color:var(--cyan)}
+.detail-table th:nth-child(2),.detail-table td:nth-child(2){min-width:260px} .detail-table th:last-child,.detail-table td:last-child{min-width:260px}
+.empty{text-align:center;color:var(--green);padding:36px} footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+@media(max-width:900px){.shell{padding:18px}.hero{display:block}.badge{display:inline-block;margin-top:12px}.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body><main class="shell">
+<section class="hero"><div><h1>Unreal 资产审计交接报告</h1><div class="sub">Profile 驱动 · 只读证据链 · 可离线查阅</div></div><div class="badge">已完成</div></section>
+<div class="meta">报告 report-ead7b262974bf3ab · Profile host-material-evidence-v3 / 3.0.0 · 2026-08-31T05:45:01.147530+00:00</div>
+<section class="grid">
+<div class="metric">请求资产<strong>5</strong></div>
+<div class="metric">已处理<strong>5</strong></div>
+<div class="metric">成功采集<strong>5</strong></div>
+<div class="metric">规则问题<strong>9</strong></div>
+<div class="metric">采集失败<strong>0</strong></div>
+<div class="metric">取消未处理<strong>0</strong></div>
+</section>
+<div class="note"><strong>真实 Unreal 宿主采集</strong><br>资产事实由报告记录的 Unreal Editor 宿主采集；导出过程只读取报告，不重新扫描或修改资产。<br>宿主版本：5.8.1-56057345+++UE5+Release-5.8</div>
+<div class="note"><strong>人工审阅</strong><br>未复核 9 · 需修复 0 · 批准例外 0。审阅决定来自独立台账，不改变规则事实。</div>
+<section id="delivery-hotspots"><div class="section-head"><div><h2>交付目录热区</h2><p>先按采集失败、需修复、问题/对象、问题数和目录路径定位交付风险，再进入对应目录复核 Evidence。问题/对象是规则问题数除以处理对象数，不是质量评分或运行时性能指标。</p></div><div class="meta">2 个目录组</div></div>
+<div class="table-wrap"><table><thead><tr><th>排名</th><th>交付目录组</th><th>体检刻度</th><th>对象</th><th>通过</th><th>问题</th><th>问题/对象</th><th>失败</th><th>未复核 / 需修复 / 例外</th></tr></thead><tbody><tr><td class='rank'>#01</td><td><a href='#delivery-group-1'>/Engine/BasicShapes</a><div class='sub'>每个对象 2.00 条规则问题</div></td><td><span class='risk dense'>高密度</span></td><td>4</td><td>0</td><td>8</td><td>2.00</td><td>0</td><td>8 / 0 / 0</td></tr>
+<tr><td class='rank'>#02</td><td><a href='#delivery-group-2'>/Engine/Functions/Engine_MaterialFunctions02</a><div class='sub'>1 条规则问题</div></td><td><span class='risk review'>待复核</span></td><td>1</td><td>0</td><td>1</td><td>1.00</td><td>0</td><td>1 / 0 / 0</td></tr></tbody></table></div></section>
+<h2>目录证据台</h2>
+<section class='group-section' id='delivery-group-1'><div class='group-heading'><div><span class='eyebrow'>热区 #01</span><h3>/Engine/BasicShapes</h3><div class='sub'>每个对象 2.00 条规则问题 · 未复核 8 · 需修复 0 · 批准例外 0</div></div><a class='back' href='#delivery-hotspots'>返回热区</a></div><div class='table-wrap'><table class='detail-table'><thead><tr><th>级别</th><th>资产</th><th>检查项</th><th>实测</th><th>期望</th><th>Evidence</th><th>审阅决定</th><th>证据说明</th></tr></thead><tbody><tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Cone.Cone</td><td>纹理依赖</td><td>2</td><td>1</td><td><code>ev-62e7edaa256520bf</code></td><td><strong>未复核</strong><br><span class='sub'></span><br><span class='sub'></span></td><td>纹理依赖为 2 个，超过 Profile 上限 1。</td></tr>
+<tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Cone.Cone</td><td>纹理尺寸</td><td>512</td><td>256</td><td><code>ev-8f4ca431950e66c7</code></td><td><strong>未复核</strong><br><span class='sub'></span><br><span class='sub'></span></td><td>最大纹理边长为 512，超过 Profile 上限 256。</td></tr>
+<tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Cube.Cube</td><td>纹理依赖</td><td>2</td><td>1</td><td><code>ev-3a985eeb86d2a49d</code></td><td><strong>未复核</strong><br><span class='sub'></span><br><span class='sub'></span></td><td>纹理依赖为 2 个，超过 Profile 上限 1。</td></tr>
+<tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Cube.Cube</td><td>纹理尺寸</td><td>512</td><td>256</td><td><code>ev-21936e2ce0069c7a</code></td><td><strong>未复核</strong><br><span class='sub'></span><br><span class='sub'></span></td><td>最大纹理边长为 512，超过 Profile 上限 256。</td></tr>
+<tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Cylinder.Cylinder</td><td>纹理依赖</td><td>2</td><td>1</td><td><code>ev-c98a9eeeffe24f4d</code></td><td><strong>未复核</strong><br><span class='sub'></span><br><span class='sub'></span></td><td>纹理依赖为 2 个，超过 Profile 上限 1。</td></tr>
+<tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Cylinder.Cylinder</td><td>纹理尺寸</td><td>512</td><td>256</td><td><code>ev-e21490fcb650260a</code></td><td><strong>未复核</strong><br><span class='sub'></span><br><span class='sub'></span></td><td>最大纹理边长为 512，超过 Profile 上限 256。</td></tr>
+<tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Sphere.Sphere</td><td>纹理依赖</td><td>2</td><td>1</td><td><code>ev-fb987c7bac738cf5</code></td><td><strong>未复核</strong><br><span class='sub'></span><br><span class='sub'></span></td><td>纹理依赖为 2 个，超过 Profile 上限 1。</td></tr>
+<tr><td><span class='level warning'>警告</span></td><td>/Engine/BasicShapes/Sphere.Sphere</td><td>纹理尺寸</td><td>512</td><td>256</td><td><code>ev-35a4596001a5b1fd</code></td><td><strong>未复核</strong><br><span class='sub'></span><br><span class='sub'></span></td><td>最大纹理边长为 512，超过 Profile 上限 256。</td></tr></tbody></table></div></section>
+<section class='group-section' id='delivery-group-2'><div class='group-heading'><div><span class='eyebrow'>热区 #02</span><h3>/Engine/Functions/Engine_MaterialFunctions02</h3><div class='sub'>1 条规则问题 · 未复核 1 · 需修复 0 · 批准例外 0</div></div><a class='back' href='#delivery-hotspots'>返回热区</a></div><div class='table-wrap'><table class='detail-table'><thead><tr><th>级别</th><th>资产</th><th>检查项</th><th>实测</th><th>期望</th><th>Evidence</th><th>审阅决定</th><th>证据说明</th></tr></thead><tbody><tr><td><span class='level warning'>警告</span></td><td>/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/TextureBasedWPO/DemoBoxMesh.DemoBoxMesh</td><td>纹理依赖</td><td>2</td><td>1</td><td><code>ev-1f872d358e2545ca</code></td><td><strong>未复核</strong><br><span class='sub'></span><br><span class='sub'></span></td><td>纹理依赖为 2 个，超过 Profile 上限 1。</td></tr></tbody></table></div></section>
+<footer>此文件由 Unreal Asset Batch Auditor 从版本化 JSON Report 与独立 Review Ledger 确定性生成，不重新扫描或修改资产。审计问题明细 CSV 保留 Profile 指针和 Evidence ID；交付目录热区 CSV 供制作人、TA 与美术负责人筛选交接。</footer>
+</main></body></html>

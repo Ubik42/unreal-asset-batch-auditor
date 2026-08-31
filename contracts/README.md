@@ -28,6 +28,17 @@ Virtual Texture 与 Streaming 政策；成功资产保存源/平台尺寸、Mip 
 Evidence 与 collection failure 子合同。平台尺寸和 Mip 来自当前 Unreal Editor 平台数据；它们不等于
 最终 Cook 体积、运行时驻留、显存、采样成本或 GPU 性能。
 
+## Material Interface v1
+
+`material-profile.v1` / `material-report.v1` 把 `Material` 与 `Material Instance` 作为第三类独立交付对象。
+Profile 配置允许的 Material Domain、Blend Mode、Two Sided 状态、实例父级要求、父级深度、纹理依赖数
+和最大纹理边长；Report 保存材质类型、有效渲染状态、Shading Model、直接父级、基础材质、完整父级深度
+与去重纹理路径。
+
+这些字段来自当前 Unreal Editor 中已加载的 `UMaterialInterface`，用于内容组织和交付约束，不代表 Shader
+permutation、PSO、Cook 体积、运行时 GPU 时间或平台性能。父级循环、非材质对象和基础材质缺失进入独立
+collection failure，不阻断同批其他材质。
+
 每条 Evidence 都记录观测值、期望值和提供阈值的 Profile JSON Pointer。`assets` 保存全部成功资产的
 元数据，所以通过项也能在 Editor 中逐项复核。执行计数覆盖请求、处理、取消、完成批次及实际批大小，
 解析器会检查计数自洽。

@@ -12,7 +12,8 @@ param(
     [int]$TimeoutSeconds = 120,
     [string]$EvidenceMilestone = "m9",
     [string]$EvidenceLabelSuffix = "",
-    [ValidateSet("v2", "v3-material", "review", "hotspot", "texture")]
+    [string]$MaterialContentPath = "",
+    [ValidateSet("v2", "v3-material", "review", "hotspot", "texture", "material-interface")]
     [string]$EvidenceMode = "v2",
     [switch]$PanelOnly
 )
@@ -57,6 +58,17 @@ if ($EvidenceMode -in @("hotspot", "texture")) {
     New-Item -ItemType Directory -Path $runtimeContent -Force | Out-Null
     Copy-Item -LiteralPath $demoContent -Destination (Join-Path $runtimeContent "UABADemo") -Recurse
 }
+elseif ($EvidenceMode -eq "material-interface") {
+    if (-not $MaterialContentPath) {
+        $MaterialContentPath = Join-Path $repoRoot "Demo\Content\UABAMaterialDemo"
+    }
+    if (-not (Test-Path -LiteralPath $MaterialContentPath)) {
+        throw "Material panel evidence requires generated material content: $MaterialContentPath"
+    }
+    $runtimeContent = Join-Path $runtime "Content"
+    New-Item -ItemType Directory -Path $runtimeContent -Force | Out-Null
+    Copy-Item -LiteralPath $MaterialContentPath -Destination (Join-Path $runtimeContent "UABAMaterialDemo") -Recurse
+}
 $runtimeSessionRoot = Join-Path $runtime "Saved\UnrealAssetBatchAuditor\Sessions"
 New-Item -ItemType Directory -Path (Split-Path -Parent $runtimeSessionRoot) -Force | Out-Null
 Copy-Item -LiteralPath $SessionRootPath -Destination $runtimeSessionRoot -Recurse
@@ -93,12 +105,9 @@ $timedOut = -not $process.HasExited
 if ($timedOut) {
     Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
 } else {
-    $ownedExitDeadline = [DateTimeOffset]::UtcNow.AddSeconds(10)
-    while ((Get-Process -Id $process.Id -ErrorAction SilentlyContinue) -and
-        [DateTimeOffset]::UtcNow -lt $ownedExitDeadline) {
-        Start-Sleep -Milliseconds 100
-    }
+    $process.WaitForExit()
 }
+Start-Sleep -Milliseconds 750
 $finishedAt = [DateTimeOffset]::UtcNow
 $logPath = Join-Path $runtime "Saved\Logs\UnrealAssetBatchAuditorHost.log"
 $log = if (Test-Path -LiteralPath $logPath) { Get-Content -LiteralPath $logPath -Raw } else { "" }

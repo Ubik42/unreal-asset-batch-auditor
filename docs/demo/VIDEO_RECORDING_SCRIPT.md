@@ -3,7 +3,19 @@
 建议成片 8–10 分钟，录制 2560×1440 或 1920×1080。先把“资产批量审计”面板停靠在
 Content Browser 上方，让资产选择与审计结果同时入镜。
 
-## 推荐新版开场：Texture2D 双轨（约 70 秒）
+## 推荐新版开场：材质血缘（约 80 秒）
+
+1. 把“验收轨道”切到“材质血缘轨道”，选中 `/Game/UABAMaterialDemo`；
+2. 选择“材质桌面平衡”，指出 Surface、Opaque/Masked、父级深度与纹理上限都来自项目 Profile；
+3. 运行后展示 9 个对象、5 个通过、4 个待处理与 5 条可追溯问题；
+4. 搜索 `PostProcess`、`Translucent`、`材质实例`，展示 Domain、Blend、双面和父级链；
+5. 进入问题明细，使用定位、打开材质编辑器和复制 Evidence 完成复核闭环。
+
+建议讲解：
+
+> 材质不能只作为模型上的一个槽位数字来检查。这里把 Material 和 Material Instance 作为独立交付对象，读取有效渲染状态、父级链和纹理负载，再由项目 Profile 判定。它不猜 GPU 性能，也不会自动改材质。
+
+## 备选开场：Texture2D 轨道（约 70 秒）
 
 1. 在面板把“验收轨道”从模型切到纹理，强调它不是同一张表换标题，而是独立 Profile、采集字段和 Report；
 2. 选中 `/Game/UABADemo/Textures`，读取 3 个对象并选择“纹理移动端严格”；
@@ -13,7 +25,7 @@ Content Browser 上方，让资产选择与审计结果同时入镜。
 
 建议讲解：
 
-> 这是同一套交付验收方法的两条资产轨道。C++ 只采集 Unreal 事实，项目 Profile 决定什么算问题，Python 生成 Evidence 和 Report。这里没有 AI 猜测，也不自动修改资产。
+> 这是同一套交付验收方法的三条资产轨道。C++ 只采集 Unreal 事实，项目 Profile 决定什么算问题，Python 生成 Evidence 和 Report。这里没有 AI 猜测，也不自动修改资产。
 
 ## 0:00–0:35 开场：问题与结果
 

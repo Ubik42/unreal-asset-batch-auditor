@@ -58,6 +58,13 @@ struct FAuditPanelAsset
     FString CollisionState;
     FString LightmapUvState;
     FString LightmapResolution;
+    FString MaterialKind;
+    FString MaterialDomain;
+    FString BlendMode;
+    FString TwoSidedState;
+    FString ShadingModelState;
+    FString ParentState;
+    FString ParentDepth;
     int32 IssueCount = 0;
 };
 
@@ -238,6 +245,7 @@ private:
     TOptional<float> GetTaskProgressFraction() const;
     EVisibility GetAssetViewVisibility() const;
     EVisibility GetTextureAssetViewVisibility() const;
+    EVisibility GetMaterialAssetViewVisibility() const;
     EVisibility GetIssueViewVisibility() const;
     EVisibility GetComparisonViewVisibility() const;
     EVisibility GetDeliveryGroupViewVisibility() const;
@@ -266,6 +274,7 @@ private:
     TArray<FAssetPtr> FilteredAssets;
     TSharedPtr<SListView<FAssetPtr>> AssetList;
     TSharedPtr<SListView<FAssetPtr>> TextureAssetList;
+    TSharedPtr<SListView<FAssetPtr>> MaterialAssetList;
     FAssetPtr SelectedReviewAsset;
     FIssuePtr SelectedReviewIssue;
     TArray<FComparisonPtr> AllComparisons;

@@ -1,0 +1,15 @@
+{
+  "schema_version": "unreal-material-profile@1.0.0",
+  "profile_id": "material-desktop-balanced-v1",
+  "profile_version": "1.0.0",
+  "description": "桌面环境材质交付演示规则；数值仅为演示 Profile，不代表行业统一标准。",
+  "rules": {
+    "allowed_domains": {"enabled": true, "allowed_values": ["MD_Surface"], "severity": "error"},
+    "allowed_blend_modes": {"enabled": true, "allowed_values": ["BLEND_Opaque", "BLEND_Masked"], "severity": "warning"},
+    "two_sided": {"enabled": true, "expected": "disabled", "severity": "warning"},
+    "instance_parent": {"enabled": true, "required": true, "severity": "error"},
+    "parent_depth": {"enabled": true, "max_count": 2, "severity": "warning"},
+    "texture_dependencies": {"enabled": true, "max_count": 8, "severity": "warning"},
+    "texture_dimension": {"enabled": true, "max_size": 4096, "severity": "error"}
+  }
+}

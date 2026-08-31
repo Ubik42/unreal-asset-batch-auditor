@@ -1,0 +1,65 @@
+{
+  "schema_version": "unreal-material-fixture@1.0.0",
+  "assets": [
+    {
+      "asset_path": "/Game/Materials/M_Prop_Master.M_Prop_Master",
+      "asset_name": "M_Prop_Master",
+      "material_kind": "material",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Opaque",
+      "two_sided": false,
+      "shading_models": ["MSM_DefaultLit"],
+      "parent_path": null,
+      "base_material_path": "/Game/Materials/M_Prop_Master.M_Prop_Master",
+      "parent_depth": 0,
+      "texture_paths": ["/Game/Textures/T_Prop_BC.T_Prop_BC", "/Game/Textures/T_Prop_N.T_Prop_N", "/Game/Textures/T_Prop_ORM.T_Prop_ORM"],
+      "texture_dependency_count": 3,
+      "max_texture_dimension": 2048
+    },
+    {
+      "asset_path": "/Game/Materials/MI_Prop_Blue.MI_Prop_Blue",
+      "asset_name": "MI_Prop_Blue",
+      "material_kind": "material_instance",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Opaque",
+      "two_sided": false,
+      "shading_models": ["MSM_DefaultLit"],
+      "parent_path": "/Game/Materials/M_Prop_Master.M_Prop_Master",
+      "base_material_path": "/Game/Materials/M_Prop_Master.M_Prop_Master",
+      "parent_depth": 1,
+      "texture_paths": ["/Game/Textures/T_Prop_BC.T_Prop_BC", "/Game/Textures/T_Prop_N.T_Prop_N"],
+      "texture_dependency_count": 2,
+      "max_texture_dimension": 2048
+    },
+    {
+      "asset_path": "/Game/Materials/MI_Deep_Translucent.MI_Deep_Translucent",
+      "asset_name": "MI_Deep_Translucent",
+      "material_kind": "material_instance",
+      "material_domain": "MD_Surface",
+      "blend_mode": "BLEND_Translucent",
+      "two_sided": true,
+      "shading_models": ["MSM_DefaultLit"],
+      "parent_path": "/Game/Materials/MI_Level3.MI_Level3",
+      "base_material_path": "/Game/Materials/M_Prop_Master.M_Prop_Master",
+      "parent_depth": 4,
+      "texture_paths": ["/Game/Textures/T_01.T_01", "/Game/Textures/T_02.T_02", "/Game/Textures/T_03.T_03", "/Game/Textures/T_04.T_04", "/Game/Textures/T_05.T_05", "/Game/Textures/T_06.T_06", "/Game/Textures/T_07.T_07", "/Game/Textures/T_08.T_08", "/Game/Textures/T_09.T_09", "/Game/Textures/T_10.T_10"],
+      "texture_dependency_count": 10,
+      "max_texture_dimension": 8192
+    },
+    {
+      "asset_path": "/Game/Materials/M_Post_Process.M_Post_Process",
+      "asset_name": "M_Post_Process",
+      "material_kind": "material",
+      "material_domain": "MD_PostProcess",
+      "blend_mode": "BLEND_Opaque",
+      "two_sided": false,
+      "shading_models": ["MSM_Unlit"],
+      "parent_path": null,
+      "base_material_path": "/Game/Materials/M_Post_Process.M_Post_Process",
+      "parent_depth": 0,
+      "texture_paths": [],
+      "texture_dependency_count": 0,
+      "max_texture_dimension": 0
+    }
+  ]
+}

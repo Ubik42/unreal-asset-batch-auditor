@@ -1,0 +1,18 @@
+{
+  "schema_version": "unreal-audit-comparison@1.0.0",
+  "status": "incomplete_current",
+  "current_session": {
+    "session_id": "session-4b4ae910f82fbbb5",
+    "created_at": "2026-08-31T05:45:01.183361+00:00",
+    "report_id": "report-4cdf1836e2bd3807",
+    "profile_id": "host-material-evidence-v3",
+    "profile_version": "3.0.0",
+    "report_path": "Reports/20260831054501183361-report-4cdf1836e2bd3807-4b4ae910.json",
+    "report_sha256": "4b4ae910f82fbbb529801dac3ee33151656b01830826c7a6c99f9c42a7374c75",
+    "asset_count": 2,
+    "issue_count": 4,
+    "collection_failure_count": 0,
+    "cancelled_asset_count": 18
+  },
+  "message": "当前审计已取消并保留部分结果，不参与完整回归比较。"
+}

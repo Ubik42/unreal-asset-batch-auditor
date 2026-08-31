@@ -1,0 +1,5 @@
+﻿类型,级别,级别代码,资产,检查项,规则 ID,指标,实测,期望,Profile 指针,说明,原始说明,证据 ID,审阅决定,负责人,审阅备注
+规则问题,警告,warning,/Engine/BasicShapes/Cone.Cone,纹理依赖,static_mesh.texture_dependencies,texture_dependency_count,2,1,/rules/texture_dependencies/max_count,纹理依赖为 2 个，超过 Profile 上限 1。,Material-reported texture dependencies 2 exceed profile limit 1.,ev-62e7edaa256520bf,未复核,,
+规则问题,警告,warning,/Engine/BasicShapes/Cone.Cone,纹理尺寸,static_mesh.texture_dimension,max_texture_dimension,512,256,/rules/texture_dimension/max_size,最大纹理边长为 512，超过 Profile 上限 256。,Maximum texture dimension 512 exceeds profile limit 256.,ev-8f4ca431950e66c7,未复核,,
+规则问题,警告,warning,/Engine/BasicShapes/Cube.Cube,纹理依赖,static_mesh.texture_dependencies,texture_dependency_count,2,1,/rules/texture_dependencies/max_count,纹理依赖为 2 个，超过 Profile 上限 1。,Material-reported texture dependencies 2 exceed profile limit 1.,ev-3a985eeb86d2a49d,未复核,,
+规则问题,警告,warning,/Engine/BasicShapes/Cube.Cube,纹理尺寸,static_mesh.texture_dimension,max_texture_dimension,512,256,/rules/texture_dimension/max_size,最大纹理边长为 512，超过 Profile 上限 256。,Maximum texture dimension 512 exceeds profile limit 256.,ev-21936e2ce0069c7a,未复核,,

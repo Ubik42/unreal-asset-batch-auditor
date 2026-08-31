@@ -17,6 +17,9 @@
 #include "JsonObjectConverter.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/Texture2D.h"
+#include "Materials/Material.h"
+#include "Materials/MaterialInstanceConstant.h"
+#include "Materials/MaterialInterface.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Modules/ModuleManager.h"
@@ -47,6 +50,26 @@ const FLinearColor GreenAccent(0.20f, 0.75f, 0.45f, 1.0f);
 const FLinearColor AmberAccent(0.95f, 0.62f, 0.12f, 1.0f);
 const FLinearColor RedAccent(0.95f, 0.25f, 0.22f, 1.0f);
 const FLinearColor GraphiteAccent(0.48f, 0.54f, 0.58f, 1.0f);
+
+bool IsMaterialAssetClass(const FTopLevelAssetPath& ClassPath)
+{
+    return ClassPath == UMaterial::StaticClass()->GetClassPathName()
+        || ClassPath == UMaterialInstanceConstant::StaticClass()->GetClassPathName();
+}
+
+FString CurrentTrackTechnicalLabel(const FString& AssetType)
+{
+    if (AssetType == TEXT("texture2d")) return TEXT("Texture2D");
+    if (AssetType == TEXT("material_interface")) return TEXT("Material Interface");
+    return TEXT("Static Mesh");
+}
+
+FString CurrentTrackChineseLabel(const FString& AssetType)
+{
+    if (AssetType == TEXT("texture2d")) return TEXT("纹理");
+    if (AssetType == TEXT("material_interface")) return TEXT("材质");
+    return TEXT("模型");
+}
 
 bool RuleBelongsToRiskCategory(const FString& RuleId, const FString& Category)
 {
@@ -102,6 +125,11 @@ FText RuleLabel(const FString& RuleId)
     if (RuleId.Contains(TEXT("compression_color_space"))) return FText::FromString(TEXT("压缩 / 色彩空间"));
     if (RuleId.Contains(TEXT("virtual_texture"))) return FText::FromString(TEXT("Virtual Texture"));
     if (RuleId.Contains(TEXT("texture2d.streaming"))) return FText::FromString(TEXT("纹理流送"));
+    if (RuleId.Contains(TEXT("allowed_domain"))) return FText::FromString(TEXT("材质域"));
+    if (RuleId.Contains(TEXT("allowed_blend_mode"))) return FText::FromString(TEXT("混合模式"));
+    if (RuleId.Contains(TEXT("two_sided"))) return FText::FromString(TEXT("双面渲染"));
+    if (RuleId.Contains(TEXT("instance_parent"))) return FText::FromString(TEXT("实例父级"));
+    if (RuleId.Contains(TEXT("parent_depth"))) return FText::FromString(TEXT("父级深度"));
     if (RuleId.Contains(TEXT("lod_count"))) return FText::FromString(TEXT("LOD 数量"));
     if (RuleId.Contains(TEXT("nanite_state"))) return FText::FromString(TEXT("Nanite 状态"));
     if (RuleId.Contains(TEXT("simple_collision"))) return FText::FromString(TEXT("简单碰撞"));
@@ -143,6 +171,16 @@ FString LocalizedIssueMessage(const FString& RuleId, const FString& Observed, co
         return FString::Printf(TEXT("Virtual Texture 状态为 %s，Profile 期望为 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("texture2d.streaming")))
         return FString::Printf(TEXT("纹理可流送状态为 %s，Profile 期望为 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("allowed_domain")))
+        return FString::Printf(TEXT("材质域为 %s，Profile 允许 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("allowed_blend_mode")))
+        return FString::Printf(TEXT("混合模式为 %s，Profile 允许 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("two_sided")))
+        return FString::Printf(TEXT("双面状态为 %s，Profile 期望为 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("instance_parent")))
+        return FString::Printf(TEXT("实例父级状态为 %s，Profile 期望为 %s。"), *Observed, *Expected);
+    if (RuleId.Contains(TEXT("parent_depth")))
+        return FString::Printf(TEXT("父级深度为 %s，超过 Profile 上限 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("lod_count")))
         return FString::Printf(TEXT("LOD 数量为 %s，低于 Profile 下限 %s。"), *Observed, *Expected);
     if (RuleId.Contains(TEXT("nanite_state")))
@@ -396,6 +434,57 @@ private:
     SUnrealAssetAuditPanel::FAssetPtr Item;
 };
 
+class SAuditMaterialRow final : public SMultiColumnTableRow<SUnrealAssetAuditPanel::FAssetPtr>
+{
+public:
+    SLATE_BEGIN_ARGS(SAuditMaterialRow) {}
+        SLATE_ARGUMENT(SUnrealAssetAuditPanel::FAssetPtr, Item)
+    SLATE_END_ARGS()
+
+    void Construct(const FArguments& InArgs, const TSharedRef<STableViewBase>& OwnerTable)
+    {
+        Item = InArgs._Item;
+        SMultiColumnTableRow::Construct(
+            FSuperRowType::FArguments().Padding(FMargin(4.0f, 3.0f)), OwnerTable);
+    }
+
+    virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& ColumnName) override
+    {
+        if (ColumnName == TEXT("Status"))
+            return SNew(STextBlock).Text(AssetStatusLabel(Item->Status))
+                .ColorAndOpacity(AssetStatusColor(Item->Status))
+                .Font(FAppStyle::GetFontStyle(TEXT("SmallFontBold")));
+        if (ColumnName == TEXT("Asset"))
+            return SNew(SVerticalBox)
+                + SVerticalBox::Slot().AutoHeight()
+                [SNew(STextBlock).Text(FText::FromString(Item->AssetName))
+                    .ToolTipText(FText::FromString(Item->AssetPath))]
+                + SVerticalBox::Slot().AutoHeight()
+                [SNew(STextBlock).Text(FText::FromString(Item->MaterialKind))
+                    .ColorAndOpacity(FSlateColor::UseSubduedForeground())
+                    .Font(FAppStyle::GetFontStyle(TEXT("SmallFont")))];
+        if (ColumnName == TEXT("Domain")) return SNew(STextBlock).Text(FText::FromString(Item->MaterialDomain));
+        if (ColumnName == TEXT("Blend")) return SNew(STextBlock).Text(FText::FromString(Item->BlendMode));
+        if (ColumnName == TEXT("TwoSided")) return SNew(STextBlock).Text(FText::FromString(Item->TwoSidedState));
+        if (ColumnName == TEXT("Shading"))
+            return SNew(STextBlock).Text(FText::FromString(Item->ShadingModelState))
+                .ToolTipText(FText::FromString(Item->ShadingModelState));
+        if (ColumnName == TEXT("Parent"))
+            return SNew(STextBlock).Text(FText::FromString(Item->ParentState))
+                .ToolTipText(FText::FromString(Item->ParentState));
+        if (ColumnName == TEXT("Depth")) return SNew(STextBlock).Text(FText::FromString(Item->ParentDepth));
+        if (ColumnName == TEXT("Textures"))
+            return SNew(STextBlock).Text(FText::FromString(Item->TextureDependencyState))
+                .ToolTipText(FText::FromString(TEXT("唯一纹理依赖数 / 最大纹理边长；不是 GPU 或 Cook 成本")));
+        return SNew(STextBlock)
+            .Text(Item->IssueCount > 0 ? FText::AsNumber(Item->IssueCount) : FText::FromString(TEXT("—")))
+            .ColorAndOpacity(Item->IssueCount > 0 ? FSlateColor(AmberAccent) : FSlateColor::UseSubduedForeground());
+    }
+
+private:
+    SUnrealAssetAuditPanel::FAssetPtr Item;
+};
+
 class SAuditComparisonRow final
     : public SMultiColumnTableRow<SUnrealAssetAuditPanel::FComparisonPtr>
 {
@@ -507,7 +596,10 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
         MakeShared<FAuditAssetTypeOption>(FAuditAssetTypeOption{
             TEXT("static_mesh"), TEXT("模型交付轨道"), TEXT("Static Mesh · 几何、材质、碰撞、LOD 与构建数据")}),
         MakeShared<FAuditAssetTypeOption>(FAuditAssetTypeOption{
-            TEXT("texture2d"), TEXT("纹理交付轨道"), TEXT("Texture2D · 尺寸、Mip、分组、压缩、色彩空间与流送")})
+            TEXT("texture2d"), TEXT("纹理交付轨道"), TEXT("Texture2D · 尺寸、Mip、分组、压缩、色彩空间与流送")}),
+        MakeShared<FAuditAssetTypeOption>(FAuditAssetTypeOption{
+            TEXT("material_interface"), TEXT("材质血缘轨道"),
+            TEXT("Material / Instance · 渲染状态、父级链与纹理负载")})
     };
     SelectedAssetType = AssetTypeOptions[0];
     ProjectProfileRoot = FPaths::Combine(FPaths::ProjectConfigDir(), TEXT("AssetAudit/Profiles"));
@@ -1139,6 +1231,30 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                         ]
                         + SOverlay::Slot()
                         [
+                            SAssignNew(MaterialAssetList, SListView<FAssetPtr>)
+                            .Visibility(this, &SUnrealAssetAuditPanel::GetMaterialAssetViewVisibility)
+                            .ListItemsSource(&FilteredAssets)
+                            .SelectionMode(ESelectionMode::Single)
+                            .OnGenerateRow(this, &SUnrealAssetAuditPanel::GenerateAssetRow)
+                            .OnSelectionChanged(this, &SUnrealAssetAuditPanel::HandleAssetSelectionChanged)
+                            .OnMouseButtonDoubleClick(this, &SUnrealAssetAuditPanel::HandleAssetDoubleClick)
+                            .HeaderRow
+                            (
+                                SNew(SHeaderRow)
+                                + SHeaderRow::Column(TEXT("Status")).DefaultLabel(FText::FromString(TEXT("状态"))).FixedWidth(72)
+                                + SHeaderRow::Column(TEXT("Asset")).DefaultLabel(FText::FromString(TEXT("材质接口"))).FillWidth(0.24f)
+                                + SHeaderRow::Column(TEXT("Domain")).DefaultLabel(FText::FromString(TEXT("材质域"))).FixedWidth(105)
+                                + SHeaderRow::Column(TEXT("Blend")).DefaultLabel(FText::FromString(TEXT("混合模式"))).FixedWidth(112)
+                                + SHeaderRow::Column(TEXT("TwoSided")).DefaultLabel(FText::FromString(TEXT("双面"))).FixedWidth(56)
+                                + SHeaderRow::Column(TEXT("Shading")).DefaultLabel(FText::FromString(TEXT("Shading"))).FillWidth(0.16f)
+                                + SHeaderRow::Column(TEXT("Parent")).DefaultLabel(FText::FromString(TEXT("直接父级"))).FillWidth(0.24f)
+                                + SHeaderRow::Column(TEXT("Depth")).DefaultLabel(FText::FromString(TEXT("深度"))).FixedWidth(52)
+                                + SHeaderRow::Column(TEXT("Textures")).DefaultLabel(FText::FromString(TEXT("纹理/最大"))).FixedWidth(86)
+                                + SHeaderRow::Column(TEXT("Issues")).DefaultLabel(FText::FromString(TEXT("问题"))).FixedWidth(58)
+                            )
+                        ]
+                        + SOverlay::Slot()
+                        [
                             SAssignNew(IssueList, SListView<FIssuePtr>)
                             .Visibility(this, &SUnrealAssetAuditPanel::GetIssueViewVisibility)
                             .ListItemsSource(&FilteredIssues)
@@ -1346,7 +1462,9 @@ void SUnrealAssetAuditPanel::RebuildSelectionFromInternalFolders(
         {
             const bool bMatchesTrack = CurrentAssetType == TEXT("texture2d")
                 ? Asset.AssetClassPath == UTexture2D::StaticClass()->GetClassPathName()
-                : Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName();
+                : (CurrentAssetType == TEXT("material_interface")
+                    ? IsMaterialAssetClass(Asset.AssetClassPath)
+                    : Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName());
             if (bMatchesTrack)
             {
                 FolderAssetPaths.Add(Asset.GetSoftObjectPath().ToString());
@@ -1372,7 +1490,9 @@ FReply SUnrealAssetAuditPanel::RefreshSelection()
     {
         const bool bMatchesTrack = CurrentAssetType == TEXT("texture2d")
             ? Asset.AssetClassPath == UTexture2D::StaticClass()->GetClassPathName()
-            : Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName();
+            : (CurrentAssetType == TEXT("material_interface")
+                ? IsMaterialAssetClass(Asset.AssetClassPath)
+                : Asset.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName());
         if (bMatchesTrack)
         {
             UniqueAssetPaths.Add(Asset.GetSoftObjectPath().ToString());
@@ -1401,7 +1521,7 @@ FReply SUnrealAssetAuditPanel::RefreshSelection()
     SelectedAssetPaths = UniqueAssetPaths.Array();
     SelectedAssetPaths.Sort();
     SelectedFolderPaths.Sort();
-    const FString TrackLabel = CurrentAssetType == TEXT("texture2d") ? TEXT("Texture2D") : TEXT("Static Mesh");
+    const FString TrackLabel = CurrentTrackTechnicalLabel(CurrentAssetType);
     StatusMessage = SelectedAssetPaths.IsEmpty()
         ? FString::Printf(TEXT("当前选择没有 %s；未扩大到其他资产类型"), *TrackLabel)
         : FString::Printf(
@@ -1786,10 +1906,11 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         Item->RuleId = TEXT("collection.failure");
         Item->Metric = TEXT("collector");
         Item->Observed = Failure->GetStringField(TEXT("code"));
-        Item->Expected = CurrentAssetType == TEXT("texture2d") ? TEXT("Texture2D") : TEXT("Static Mesh");
-        Item->Message = CurrentAssetType == TEXT("texture2d")
-            ? TEXT("资产无法作为 Texture2D 读取；本项已隔离，其余纹理继续审计。")
-            : TEXT("资产无法作为 Static Mesh 读取；本项已隔离，其余模型继续审计。");
+        Item->Expected = CurrentTrackTechnicalLabel(CurrentAssetType);
+        Item->Message = FString::Printf(
+            TEXT("资产无法作为%s读取；本项已隔离，其余%s继续审计。"),
+            *CurrentTrackTechnicalLabel(CurrentAssetType),
+            *CurrentTrackChineseLabel(CurrentAssetType));
         AllIssues.Add(Item);
 
         FAssetPtr FailedAsset = MakeShared<FAuditPanelAsset>();
@@ -1806,6 +1927,13 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
         FailedAsset->CollisionState = TEXT("—");
         FailedAsset->LightmapUvState = TEXT("—");
         FailedAsset->LightmapResolution = TEXT("—");
+        FailedAsset->MaterialKind = TEXT("—");
+        FailedAsset->MaterialDomain = TEXT("—");
+        FailedAsset->BlendMode = TEXT("—");
+        FailedAsset->TwoSidedState = TEXT("—");
+        FailedAsset->ShadingModelState = TEXT("—");
+        FailedAsset->ParentState = TEXT("—");
+        FailedAsset->ParentDepth = TEXT("—");
         FailedAsset->IssueCount = 1;
         AllAssets.Add(FailedAsset);
     }
@@ -1835,6 +1963,41 @@ bool SUnrealAssetAuditPanel::LoadReport(const FString& Path, FString& OutError)
             Item->LightmapUvState = Asset->GetBoolField(TEXT("never_stream"))
                 ? TEXT("常驻") : TEXT("可流送");
             Item->LightmapResolution = Asset->GetStringField(TEXT("mip_gen_settings"));
+            AllAssets.Add(Item);
+            continue;
+        }
+        if (CurrentAssetType == TEXT("material_interface"))
+        {
+            const FString Kind = Asset->GetStringField(TEXT("material_kind"));
+            Item->MaterialKind = Kind == TEXT("material_instance") ? TEXT("材质实例") : TEXT("基础材质");
+            Item->MaterialDomain = Asset->GetStringField(TEXT("material_domain"));
+            Item->MaterialDomain.RemoveFromStart(TEXT("MD_"));
+            Item->BlendMode = Asset->GetStringField(TEXT("blend_mode"));
+            Item->BlendMode.RemoveFromStart(TEXT("BLEND_"));
+            Item->TwoSidedState = Asset->GetBoolField(TEXT("two_sided")) ? TEXT("启用") : TEXT("关闭");
+            TArray<FString> ShadingLabels;
+            for (const TSharedPtr<FJsonValue>& Shading : Asset->GetArrayField(TEXT("shading_models")))
+            {
+                ShadingLabels.Add(Shading->AsString());
+            }
+            Item->ShadingModelState = FString::Join(ShadingLabels, TEXT(" + "));
+            Item->ShadingModelState.ReplaceInline(TEXT("MSM_"), TEXT(""));
+            FString ParentPath;
+            if (Asset->TryGetStringField(TEXT("parent_path"), ParentPath) && !ParentPath.IsEmpty())
+            {
+                Item->ParentState = FPaths::GetBaseFilename(ParentPath);
+            }
+            else
+            {
+                Item->ParentState = Kind == TEXT("material_instance") ? TEXT("缺少父级") : TEXT("根材质");
+            }
+            Item->ParentDepth = FText::AsNumber(Asset->GetIntegerField(TEXT("parent_depth"))).ToString();
+            const int32 TextureCount = Asset->GetIntegerField(TEXT("texture_dependency_count"));
+            const int32 MaxSize = Asset->GetIntegerField(TEXT("max_texture_dimension"));
+            const FString SizeLabel = MaxSize >= 1024 && MaxSize % 1024 == 0
+                ? FString::Printf(TEXT("%dK"), MaxSize / 1024)
+                : FText::AsNumber(MaxSize).ToString();
+            Item->TextureDependencyState = FString::Printf(TEXT("%d/%s"), TextureCount, *SizeLabel);
             AllAssets.Add(Item);
             continue;
         }
@@ -2506,6 +2669,12 @@ void SUnrealAssetAuditPanel::RebuildFilteredAssets()
         if (bMatchesGroup && (SearchText.IsEmpty()
             || Item->AssetPath.Contains(SearchText, ESearchCase::IgnoreCase)
             || Item->AssetName.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->MaterialKind.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->MaterialDomain.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->BlendMode.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->ShadingModelState.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->ParentState.Contains(SearchText, ESearchCase::IgnoreCase)
+            || Item->TextureDependencyState.Contains(SearchText, ESearchCase::IgnoreCase)
             || StatusText.Contains(SearchText, ESearchCase::IgnoreCase)))
         {
             FilteredAssets.Add(Item);
@@ -2513,6 +2682,7 @@ void SUnrealAssetAuditPanel::RebuildFilteredAssets()
     }
     if (AssetList.IsValid()) AssetList->RequestListRefresh();
     if (TextureAssetList.IsValid()) TextureAssetList->RequestListRefresh();
+    if (MaterialAssetList.IsValid()) MaterialAssetList->RequestListRefresh();
 }
 
 void SUnrealAssetAuditPanel::RebuildFilteredDeliveryGroups()
@@ -2561,9 +2731,11 @@ TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateIssueRow(
 TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateAssetRow(
     FAssetPtr Item, const TSharedRef<STableViewBase>& OwnerTable)
 {
-    return CurrentAssetType == TEXT("texture2d")
-        ? StaticCastSharedRef<ITableRow>(SNew(SAuditTextureRow, OwnerTable).Item(Item))
-        : StaticCastSharedRef<ITableRow>(SNew(SAuditAssetRow, OwnerTable).Item(Item));
+    if (CurrentAssetType == TEXT("texture2d"))
+        return StaticCastSharedRef<ITableRow>(SNew(SAuditTextureRow, OwnerTable).Item(Item));
+    if (CurrentAssetType == TEXT("material_interface"))
+        return StaticCastSharedRef<ITableRow>(SNew(SAuditMaterialRow, OwnerTable).Item(Item));
+    return StaticCastSharedRef<ITableRow>(SNew(SAuditAssetRow, OwnerTable).Item(Item));
 }
 
 TSharedRef<ITableRow> SUnrealAssetAuditPanel::GenerateComparisonRow(
@@ -2658,14 +2830,17 @@ bool SUnrealAssetAuditPanel::TryResolveReviewAsset(FAssetData& OutAssetData, FSt
         OutError = TEXT("当前工程找不到该资产；它可能已被移动、删除或来自另一工程");
         return false;
     }
-    const FTopLevelAssetPath ExpectedClass = CurrentAssetType == TEXT("texture2d")
-        ? UTexture2D::StaticClass()->GetClassPathName()
-        : UStaticMesh::StaticClass()->GetClassPathName();
-    if (OutAssetData.AssetClassPath != ExpectedClass)
+    const bool bMatchesTrack = CurrentAssetType == TEXT("texture2d")
+        ? OutAssetData.AssetClassPath == UTexture2D::StaticClass()->GetClassPathName()
+        : (CurrentAssetType == TEXT("material_interface")
+            ? IsMaterialAssetClass(OutAssetData.AssetClassPath)
+            : OutAssetData.AssetClassPath == UStaticMesh::StaticClass()->GetClassPathName());
+    if (!bMatchesTrack)
     {
-        OutError = CurrentAssetType == TEXT("texture2d")
-            ? TEXT("该对象不是 Texture2D，无法进入当前纹理复核轨道")
-            : TEXT("该对象不是 Static Mesh，无法进入当前模型复核轨道");
+        OutError = FString::Printf(
+            TEXT("该对象不是 %s，无法进入当前%s复核轨道"),
+            *CurrentTrackTechnicalLabel(CurrentAssetType),
+            *CurrentTrackChineseLabel(CurrentAssetType));
         return false;
     }
     OutError.Reset();
@@ -2705,7 +2880,9 @@ FText SUnrealAssetAuditPanel::GetReviewContextText() const
     return FText::FromString(
         CurrentAssetType == TEXT("texture2d")
             ? TEXT("选择结果行后，可定位纹理、打开纹理编辑器或复制审计证据")
-            : TEXT("选择结果行后，可定位资源、打开 Static Mesh 编辑器或复制审计证据"));
+            : (CurrentAssetType == TEXT("material_interface")
+                ? TEXT("选择结果行后，可定位材质、打开材质编辑器或复制审计证据")
+                : TEXT("选择结果行后，可定位资源、打开 Static Mesh 编辑器或复制审计证据")));
 }
 
 FText SUnrealAssetAuditPanel::GetReviewActionTooltip() const
@@ -2716,7 +2893,9 @@ FText SUnrealAssetAuditPanel::GetReviewActionTooltip() const
         TryResolveReviewAsset(AssetData, Error)
             ? (CurrentAssetType == TEXT("texture2d")
                 ? TEXT("在 Content Browser 定位，或打开纹理编辑器复核")
-                : TEXT("在 Content Browser 定位，或打开 Static Mesh 编辑器复核"))
+                : (CurrentAssetType == TEXT("material_interface")
+                    ? TEXT("在 Content Browser 定位，或打开材质编辑器复核父级与参数")
+                    : TEXT("在 Content Browser 定位，或打开 Static Mesh 编辑器复核")))
             : Error);
 }
 
@@ -2771,7 +2950,7 @@ FReply SUnrealAssetAuditPanel::OpenReviewAsset()
     }
     StatusMessage = FString::Printf(
         TEXT("已打开%s复核：%s"),
-        CurrentAssetType == TEXT("texture2d") ? TEXT("纹理") : TEXT("模型"),
+        *CurrentTrackChineseLabel(CurrentAssetType),
         *AssetData.AssetName.ToString());
     return FReply::Handled();
 }
@@ -3022,7 +3201,7 @@ FReply SUnrealAssetAuditPanel::OpenReportFile()
 
 FText SUnrealAssetAuditPanel::GetSelectionText() const
 {
-    const FString TypeLabel = CurrentAssetType == TEXT("texture2d") ? TEXT("Texture2D") : TEXT("Static Mesh");
+    const FString TypeLabel = CurrentTrackTechnicalLabel(CurrentAssetType);
     if (SelectedAssetPaths.IsEmpty())
     {
         return FText::FromString(FString::Printf(
@@ -3107,6 +3286,23 @@ void SUnrealAssetAuditPanel::RebuildProfileOptions()
                 FPaths::Combine(ProfilesRoot, TEXT("texture-review-lenient.v1.json"))})
         };
     }
+    else if (CurrentAssetType == TEXT("material_interface"))
+    {
+        ProfileOptions = {
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("材质桌面平衡（推荐演示）"),
+                TEXT("Surface · Opaque/Masked · 单面 · 父级 ≤ 2 · 纹理 ≤ 8/4K"),
+                FPaths::Combine(ProfilesRoot, TEXT("material-desktop-balanced.v1.json"))}),
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("材质移动端严格"),
+                TEXT("Surface/Opaque · 单面 · 父级 ≤ 1 · 纹理 ≤ 4/2K"),
+                FPaths::Combine(ProfilesRoot, TEXT("material-mobile-strict.v1.json"))}),
+            MakeShared<FAuditProfileOption>(FAuditProfileOption{
+                TEXT("材质宽松复核"),
+                TEXT("允许特殊 Domain · 父级 ≤ 4 · 纹理 ≤ 16/8K"),
+                FPaths::Combine(ProfilesRoot, TEXT("material-review-lenient.v1.json"))})
+        };
+    }
     else
     {
         ProfileOptions = {
@@ -3147,7 +3343,9 @@ void SUnrealAssetAuditPanel::RebuildProfileOptions()
         Root->TryGetStringField(TEXT("profile_version"), Version);
         const bool bMatchesTrack = CurrentAssetType == TEXT("texture2d")
             ? Schema == TEXT("unreal-texture-profile@1.0.0")
-            : Schema == TEXT("unreal-static-mesh-profile@3.0.0");
+            : (CurrentAssetType == TEXT("material_interface")
+                ? Schema == TEXT("unreal-material-profile@1.0.0")
+                : Schema == TEXT("unreal-static-mesh-profile@3.0.0"));
         if (!bMatchesTrack || ProfileId.IsEmpty()) continue;
         FString Description;
         Root->TryGetStringField(TEXT("description"), Description);
@@ -3382,13 +3580,19 @@ FText SUnrealAssetAuditPanel::GetReviewOrphanText() const
 
 EVisibility SUnrealAssetAuditPanel::GetAssetViewVisibility() const
 {
-    return ResultViewMode == 0 && CurrentAssetType != TEXT("texture2d")
+    return ResultViewMode == 0 && CurrentAssetType == TEXT("static_mesh")
         ? EVisibility::Visible : EVisibility::Collapsed;
 }
 
 EVisibility SUnrealAssetAuditPanel::GetTextureAssetViewVisibility() const
 {
     return ResultViewMode == 0 && CurrentAssetType == TEXT("texture2d")
+        ? EVisibility::Visible : EVisibility::Collapsed;
+}
+
+EVisibility SUnrealAssetAuditPanel::GetMaterialAssetViewVisibility() const
+{
+    return ResultViewMode == 0 && CurrentAssetType == TEXT("material_interface")
         ? EVisibility::Visible : EVisibility::Collapsed;
 }
 

@@ -265,3 +265,16 @@ Editor 宿主采集。本轮不证明 Cook 后尺寸、运行时 residency、显
 | 独立宿主生命周期 | 通过；独立隐藏 UE 进程生成 6 张截图和 2 份真实 Report，本轮 PID 退出 | `artifacts/host-validation/m17/profile-editor-UE_5.8-v0.11.0-dev2.json` |
 
 当前验证不等于人工鼠标操作、任意 JSON Schema 编辑、多人配置治理或跨 UE 版本兼容。
+
+## 2026-08-30 v0.11-dev3 Material Interface 材质血缘轨道
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| Python 合同与规则 | 通过；Material Profile / Report、七组规则、部分失败和面板任务路由进入回归 | `tests/test_material_audit.py` |
+| Development Editor BuildPlugin | 通过；UE 5.8 Win64 完成 UHT、C++ 编译、链接和打包 | 本机忽略目录 `artifacts/host-build/UE_5.8-v0.11.0-dev3` |
+| 真实材质采集 | 通过；独立宿主采集 9 个 Material / Material Instance，5 个通过、4 个待处理、5 条问题、0 个失败 | `artifacts/demo/demo-material-desktop-balanced-v1-report.json` |
+| 父级与渲染状态 | 通过；报告包含有效 Domain、Blend、双面、Shading、直接父级、深度与纹理负载 | 同上及 `artifacts/demo/demo-material-asset-manifest.json` |
+| 原生 Slate | 通过；材质专用规则、列、筛选和复核状态生成 13 张截图 | `docs/images/workflow/v0.11-material-interface/` |
+| 独立面板宿主 | 通过；自动化只管理自己创建的 PID，测试结束后无归属进程残留 | `artifacts/host-validation/m18/panel-lifecycle-UE_5.8-v0.11.0-dev3-material-interface.json` |
+
+本轮不证明人工鼠标操作、运行时 GPU 时间、Shader permutation、PSO、Cook 体积、跨版本兼容或生产规模性能。

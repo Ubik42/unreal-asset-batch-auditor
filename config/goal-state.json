@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 28,
+  "stateRevision": 29,
   "status": "active",
-  "currentMilestone": "M18",
+  "currentMilestone": "M19",
   "milestones": [
     { "id": "M0", "title": "Scope and repository baseline", "status": "completed", "dependsOn": [] },
     { "id": "M1", "title": "Read-only Static Mesh audit MVP", "status": "completed", "dependsOn": ["M0"] },
@@ -23,25 +23,27 @@
     { "id": "M15", "title": "Texture2D delivery audit", "status": "completed", "dependsOn": ["M14"] },
     { "id": "M16", "title": "v0.10 dual-track installable portfolio release", "status": "completed", "dependsOn": ["M15"] },
     { "id": "M17", "title": "Project audit standard editor", "status": "completed", "dependsOn": ["M16"] },
-    { "id": "M18", "title": "Material Interface delivery audit", "status": "in_progress", "dependsOn": ["M17"] }
+    { "id": "M18", "title": "Material Interface delivery audit", "status": "completed", "dependsOn": ["M17"] },
+    { "id": "M19", "title": "Mixed delivery package inspection", "status": "in_progress", "dependsOn": ["M18"] }
   ],
   "nextSlice": {
-    "id": "M18-S1",
-    "milestoneId": "M18",
-    "title": "材质接口交付审计 MVP",
+    "id": "M19-S1",
+    "milestoneId": "M19",
+    "title": "三轨交付包总检 MVP",
     "scope": [
-      "新增独立 Material Interface Profile、fixture、Report 与 Schema，不把材质问题塞回 Static Mesh 合同",
-      "C++ 只读采集 Material 与 Material Instance 的资产类型、Domain、Blend Mode、Two Sided、Shading Model、父级路径/深度和已加载纹理依赖",
-      "首批 Profile 规则覆盖允许 Domain/Blend Mode、Two Sided 预期、实例父级要求、父级深度、纹理依赖数量与最大尺寸",
-      "Python 负责分批编排、规则判定、Issue/Evidence 和失败隔离，阈值不得写死在 C++ 或 Slate",
-      "原生 Slate 增加材质交付轨道、对应规则下拉、资产台账列、问题定位、审阅和项目标准编辑入口",
-      "准备可公开复现的材质/实例演示场景、中文教程、关键截图和真实 UE 5.8.1 宿主证据"
+      "新增版本化交付包 Recipe，显式映射模型、纹理、材质三条轨道的项目 Profile，不复制或合并现有规则合同",
+      "对用户显式选择的资产和文件夹进行稳定分类、去重与范围统计，未知类型进入明确的忽略清单，不自动扩展依赖图",
+      "Python 顺序编排三条既有审计任务，分别保留原始 Report、失败隔离、取消与 Evidence 语义，再生成轻量总检摘要",
+      "总检摘要按轨道记录请求、处理、通过、待处理、问题、采集失败和阻断状态，并给出可追溯的高风险目录入口",
+      "原生 Slate 增加非聊天式的交付包总检模式：三条验收泳道、覆盖率与阻断概览，可下钻回既有资产台账和问题明细",
+      "准备模型、纹理、材质混合的可录制交付批次、中文教程、关键截图和真实 UE 5.8.1 宿主证据"
     ],
     "nonGoals": [
-      "不声称采集运行时 GPU 时间、最终 Cook 体积、Shader permutation 总量或平台 PSO 成本",
-      "不修改材质节点、父级、参数、纹理或任何 Unreal 资产",
-      "不引入 AI 材质建议、自动优化、云服务或账号系统",
-      "不在本切片完成跨平台 Shader 编译或大规模 Shader 分析",
+      "不把三条 Profile、Issue、Evidence 或资产元数据压成一个失去类型边界的万能合同",
+      "不扫描整个项目，不自动追踪依赖闭包，也不把被依赖对象偷偷加入用户范围",
+      "不修改模型、纹理、材质或任何 Unreal 资产，不提供自动修复和自动优化",
+      "不引入 AI 建议、聊天界面、云服务或账号系统",
+      "不声明 GPU、Shader、Cook、显存或生产规模性能结论",
       "不启动新的正式安装发布矩阵"
     ],
     "allowedPaths": [
@@ -57,17 +59,19 @@
       "scripts",
       "Resources",
       "contracts",
+      "Demo",
+      "artifacts/demo",
       "README.md",
       "AGENTS.md"
     ],
-    "evidenceCeiling": "本切片最多证明 UE 5.8.1 Editor 中 Material / Material Instance 的只读元数据可被 Profile 驱动地采集、判定和展示；不等同于运行时 GPU/Shader 性能、Cook 结果、自动优化或跨版本兼容。",
+    "evidenceCeiling": "本切片最多证明 UE 5.8.1 Editor 中一次显式选择可稳定分流到模型、纹理、材质三条只读审计轨道并形成可下钻总检摘要；不等同于全项目依赖分析、运行时性能、Cook 结果、自动优化或跨版本兼容。",
     "realHostRequired": true,
     "acceptanceCriteria": [
-      "Material Profile / fixture / Report 版本化合同和 JSON Schema 通过正常、非法与部分失败样例",
-      "C++ collector 只接受显式 Material Interface object path，非材质对象和加载失败进入独立采集失败",
-      "全部规则阈值、允许值与严重度来自 Profile，每条问题保留实测、期望和 Profile Pointer",
-      "材质轨道在 Slate 中与模型/纹理字段明确分离，并复用定位、审阅、回归和项目标准工作台",
-      "真实 Material 与 Material Instance 宿主 Report 记录父级、渲染状态和纹理依赖，扫描前后资产不变",
+      "交付包 Recipe 与总检摘要具备版本化合同、Schema、稳定排序和正常/非法/部分失败测试",
+      "同一显式选择中的 Static Mesh、Texture2D、Material Interface 被准确分类去重，未知类型可见且不会中断其他轨道",
+      "三条原始 Report 保持各自合同和 Evidence，取消或单轨失败时总检摘要仍合法且不会伪装成全部完成",
+      "Slate 三条验收泳道展示范围覆盖、通过/问题/失败和阻断状态，并可下钻回对应轨道的现有视图",
+      "真实混合 Demo 批次生成三份宿主 Report 与一份总检摘要，源资产保持只读",
       "UE 5.8 BuildPlugin、独立宿主、演示素材、当前截图、README 与教程同步通过"
     ],
     "validationCommands": [
@@ -75,7 +79,7 @@
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0028.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0029.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -143,6 +147,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "M17 完成模型/纹理项目 Profile 的复制、原生字段工作台、合同校验、中文错误、差异预览、原子保存与重新发现；102 项测试、UE 5.8 BuildPlugin、6 张截图及保存后双轨真实审计通过。"
+    },
+    {
+      "id": "m18s1-material-interface-host",
+      "status": "completed",
+      "blocking": false,
+      "reason": "M18 完成独立 Material Interface 合同、七组 Profile 规则、只读 C++ 采集和材质血缘 Slate；110 项测试、UE 5.8 BuildPlugin、真实 9 个材质接口、5 条问题与 13 张截图通过。"
     }
   ]
 }

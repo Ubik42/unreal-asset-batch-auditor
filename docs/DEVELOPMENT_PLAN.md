@@ -249,7 +249,16 @@ ZIP SHA-256：`0D466D4779D32A8A563C387DC4A910BDBCA8F7C7AFFBACA82079C89F297F6A33`
 
 | 里程碑 | 方向 | 边界 |
 | --- | --- | --- |
-| M18-S1 | 材质接口交付审计 MVP | 独立审计 Material / Material Instance 的渲染状态、父级关系与纹理依赖；Profile 驱动，只读资产 |
+| M19-S1 | 三轨交付包总检 MVP | 一次显式选择按模型、纹理、材质分类，分别运行既有合同并汇总交付健康度；不合并事实合同，不自动扩依赖 |
+
+### M18-S1 材质接口交付审计（已完成）
+
+- 已完成：独立 Material Interface Profile、fixture、Report 和 JSON Schema，七组规则全部由 Profile 驱动；
+- 已完成：Editor-only C++ 只读采集 Material / Material Instance 的有效 Domain、Blend、双面、Shading、父级链与纹理负载；
+- 已完成：原生“材质血缘轨道”、材质专用台账、项目标准编辑、问题定位、审阅、回归和团队交接；
+- 已完成：隔离 Demo 工程生成 9 个公开 Engine 材质样本，真实宿主得到 5 个通过、4 个待处理、5 条问题、0 个采集失败；
+- 已完成：110 项 Python 回归、Ruff、UE 5.8 BuildPlugin、独立宿主与 13 张当前 Slate 图；
+- 边界：不声明 GPU、Shader permutation、PSO、Cook 或跨版本性能，不修改任何材质资产。
 
 ### M17-S1 项目验收标准编辑器（已完成）
 

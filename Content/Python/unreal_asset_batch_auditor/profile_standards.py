@@ -10,9 +10,10 @@ from pathlib import Path
 from typing import Any, Literal
 
 from .contracts import PROFILE_VERSION_V3, AuditProfile, ContractError
+from .material_contracts import MATERIAL_PROFILE_VERSION, MaterialAuditProfile
 from .texture_contracts import TEXTURE_PROFILE_VERSION, TextureAuditProfile
 
-AssetType = Literal["static_mesh", "texture2d"]
+AssetType = Literal["static_mesh", "texture2d", "material_interface"]
 PROFILE_EDITOR_VIEW_VERSION = "unreal-profile-editor-view@1.0.0"
 
 
@@ -101,6 +102,11 @@ _RULE_LABELS = {
     "compression_color_space": "压缩与色彩空间",
     "virtual_texture": "Virtual Texture",
     "streaming": "纹理流送",
+    "allowed_domains": "材质域",
+    "allowed_blend_modes": "混合模式",
+    "two_sided": "双面渲染",
+    "instance_parent": "实例父级",
+    "parent_depth": "父级深度",
 }
 
 
@@ -110,6 +116,8 @@ def asset_type_for(raw: dict[str, Any]) -> AssetType:
         return "static_mesh"
     if schema == TEXTURE_PROFILE_VERSION:
         return "texture2d"
+    if schema == MATERIAL_PROFILE_VERSION:
+        return "material_interface"
     raise ContractError(f"unsupported profile schema_version: {schema!r}")
 
 
@@ -119,8 +127,10 @@ def validate_profile(raw: dict[str, Any]) -> ProfileValidation:
         kind = asset_type_for(raw)
         if kind == "static_mesh":
             AuditProfile.from_dict(raw)
-        else:
+        elif kind == "texture2d":
             TextureAuditProfile.from_dict(raw)
+        else:
+            MaterialAuditProfile.from_dict(raw)
         return ProfileValidation(True, kind, {})
     except (ContractError, KeyError, TypeError, ValueError) as exc:
         message = str(exc)
@@ -154,7 +164,11 @@ def build_profile_editor_view(source_path: str | Path) -> dict[str, Any]:
     return {
         "schema_version": PROFILE_EDITOR_VIEW_VERSION,
         "asset_type": validation.asset_type,
-        "asset_type_label": "模型交付" if validation.asset_type == "static_mesh" else "纹理交付",
+        "asset_type_label": {
+            "static_mesh": "模型交付",
+            "texture2d": "纹理交付",
+            "material_interface": "材质交付",
+        }[validation.asset_type],
         "source_path": str(Path(source_path)),
         "profile_id": source["profile_id"],
         "profile_version": source["profile_version"],

@@ -109,11 +109,15 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
 
     Panel->SetFolderSelectionForEvidence({EvidenceMode == TEXT("hotspot")
         ? TEXT("/Game/UABADemo")
-        : (EvidenceMode == TEXT("texture") ? TEXT("/Game/UABADemo/Textures") : TEXT("/Engine/BasicShapes"))});
+        : (EvidenceMode == TEXT("texture")
+            ? TEXT("/Game/UABADemo/Textures")
+            : (EvidenceMode == TEXT("material-interface")
+                ? TEXT("/Game/UABAMaterialDemo") : TEXT("/Engine/BasicShapes")))});
     TestTrue(
         TEXT("Recursive folder scope discovers real assets for the active audit track"),
         Panel->GetEvidenceSelectedAssetCount() >= (EvidenceMode == TEXT("texture") ? 3 : 4));
     const FString EvidenceRiskCategory = EvidenceMode == TEXT("v3-material")
+        || EvidenceMode == TEXT("material-interface")
         ? TEXT("materials")
         : (EvidenceMode == TEXT("review") ? TEXT("structure") : TEXT("geometry"));
     Panel->SetRiskCategoryForEvidence(EvidenceRiskCategory);
@@ -208,6 +212,19 @@ bool FUnrealAssetBatchAuditorPanelEvidenceTest::RunTest(const FString& Parameter
         Capture(TEXT("09-compression-color.png"));
         Panel->SetEvidenceView(false, TEXT("流送"));
         Capture(TEXT("10-streaming-policy.png"));
+    }
+    else if (EvidenceMode == TEXT("material-interface"))
+    {
+        Panel->SetEvidenceView(false, TEXT("材质域"));
+        Capture(TEXT("06-material-domain.png"));
+        Panel->SetEvidenceView(false, TEXT("混合模式"));
+        Capture(TEXT("07-blend-mode.png"));
+        Panel->SetEvidenceView(false, TEXT("双面"));
+        Capture(TEXT("08-two-sided.png"));
+        Panel->SetEvidenceView(true, TEXT("材质实例"));
+        Capture(TEXT("09-parent-lineage.png"));
+        Panel->SetEvidenceView(true, TEXT("需处理"));
+        Capture(TEXT("10-materials-needing-work.png"));
     }
     else
     {
