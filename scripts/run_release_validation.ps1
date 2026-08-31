@@ -2,7 +2,9 @@ param(
     [string]$EngineRoot = "C:\Program Files\Epic Games\UE_5.8",
     [Parameter(Mandatory = $true)]
     [string]$ArchivePath,
-    [string]$ReleaseLabel = "v0.9.0-ue5.8.1-win64",
+    [Parameter(Mandatory = $true)]
+    [string]$PreviousArchivePath,
+    [string]$ReleaseLabel = "v0.10.0-ue5.8.1-win64",
     [int]$TimeoutSeconds = 120
 )
 
@@ -10,6 +12,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $editorCmd = Join-Path $EngineRoot "Engine\Binaries\Win64\UnrealEditor-Cmd.exe"
 $archive = (Resolve-Path -LiteralPath $ArchivePath).Path
+$previousArchive = (Resolve-Path -LiteralPath $PreviousArchivePath).Path
 $checksumPath = "$archive.sha256"
 if (-not (Test-Path -LiteralPath $editorCmd -PathType Leaf)) {
     throw "UnrealEditor-Cmd.exe 不存在：$editorCmd"
@@ -26,10 +29,12 @@ if ($actualArchiveHash -ne $expectedArchiveHash) {
 $runId = Get-Date -Format "yyyyMMdd-HHmmss"
 $runtime = Join-Path $repoRoot "artifacts\host-runtime\release-$runId"
 $releaseRoot = Join-Path $runtime "Release"
+$previousReleaseRoot = Join-Path $runtime "PreviousRelease"
 $projectRoot = Join-Path $runtime "FreshProject"
 $projectFile = Join-Path $projectRoot "UABAReleaseValidation.uproject"
-New-Item -ItemType Directory -Path $releaseRoot, $projectRoot -Force | Out-Null
+New-Item -ItemType Directory -Path $releaseRoot, $previousReleaseRoot, $projectRoot -Force | Out-Null
 Expand-Archive -LiteralPath $archive -DestinationPath $releaseRoot
+Expand-Archive -LiteralPath $previousArchive -DestinationPath $previousReleaseRoot
 $projectJson = [ordered]@{
     FileVersion = 3
     EngineAssociation = "5.8"
@@ -39,8 +44,9 @@ $projectJson = [ordered]@{
 $projectJson | Set-Content -LiteralPath $projectFile -Encoding utf8
 
 $installer = Join-Path $releaseRoot "install-plugin.ps1"
+$previousInstaller = Join-Path $previousReleaseRoot "install-plugin.ps1"
 $releaseManifestPath = Join-Path $releaseRoot "RELEASE-MANIFEST.json"
-foreach ($required in @($installer, $releaseManifestPath, (Join-Path $releaseRoot "UnrealAssetBatchAuditor\UnrealAssetBatchAuditor.uplugin"))) {
+foreach ($required in @($installer, $previousInstaller, $releaseManifestPath, (Join-Path $releaseRoot "UnrealAssetBatchAuditor\UnrealAssetBatchAuditor.uplugin"))) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
         throw "发布包缺少必要文件：$required"
     }
@@ -184,19 +190,55 @@ if (-not $enabledAfterInstall) { throw "安装脚本未在 .uproject 中启用�
 $installSmoke = Invoke-ReleaseSmoke "install"
 $unattendedSmoke = Invoke-UnattendedReleaseSmoke
 
+$reportPath = Join-Path $projectRoot "Saved\UnrealAssetBatchAuditor\ReleaseInstallEvidence\latest-report.json"
+$textureReportPath = Join-Path $projectRoot "Saved\UnrealAssetBatchAuditor\ReleaseInstallEvidence\latest-texture-report.json"
+foreach ($requiredReport in @($reportPath, $textureReportPath)) {
+    if (-not (Test-Path -LiteralPath $requiredReport -PathType Leaf)) {
+        throw "全新安装宿主缺少双轨 Report：$requiredReport"
+    }
+}
+$freshReport = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
+$freshTextureReport = Get-Content -LiteralPath $textureReportPath -Raw | ConvertFrom-Json
+if (-not $freshReport.real_unreal_validation -or @($freshReport.assets).Count -ne 1 -or
+    -not $freshTextureReport.real_unreal_validation -or $freshTextureReport.asset_type -ne 'texture2d' -or
+    @($freshTextureReport.assets).Count -ne 1 -or @($freshTextureReport.collection_failures).Count -ne 0) {
+    throw "全新安装双轨 Report 不符合真实单资产采集合同"
+}
+$freshStaticRuntime = Join-Path $runtime "fresh-static-mesh-report.json"
+$freshTextureRuntime = Join-Path $runtime "fresh-texture-report.json"
+Copy-Item -LiteralPath $reportPath -Destination $freshStaticRuntime -Force
+Copy-Item -LiteralPath $textureReportPath -Destination $freshTextureRuntime -Force
+
+& $installer -Action Uninstall -ProjectPath $projectFile -ConfirmUninstall
+$freshUninstallBackups = @(Get-ChildItem -LiteralPath (Join-Path $projectRoot "PluginBackups") -Directory |
+    Where-Object { $_.Name -like "*-uninstalled-*" })
+if ((Test-Path -LiteralPath $installedRoot) -or $freshUninstallBackups.Count -lt 1) {
+    throw "全新安装后的可恢复卸载验证失败"
+}
+
+& $previousInstaller -Action Install -ProjectPath $projectFile
+$previousDescriptor = Get-Content -LiteralPath $installedDescriptor -Raw | ConvertFrom-Json
+if ($previousDescriptor.VersionName -ne '0.9.0') {
+    throw "升级基线必须是公开 v0.9.0，实际为 $($previousDescriptor.VersionName)"
+}
+
 & $installer -Action Upgrade -ProjectPath $projectFile
 $upgradeBackups = @(Get-ChildItem -LiteralPath (Join-Path $projectRoot "PluginBackups") -Directory |
-    Where-Object { $_.Name -like "UnrealAssetBatchAuditor-*" })
+    Where-Object { $_.Name -like "UnrealAssetBatchAuditor-0.9.0-*" })
 if ($upgradeBackups.Count -lt 1) { throw "升级没有留下旧插件备份" }
 $upgradeSmoke = Invoke-ReleaseSmoke "upgrade"
 
-$reportPath = Join-Path $projectRoot "Saved\UnrealAssetBatchAuditor\ReleaseInstallEvidence\latest-report.json"
-if (-not (Test-Path -LiteralPath $reportPath -PathType Leaf)) {
-    throw "发布安装宿主没有生成最小真实 Report"
+foreach ($requiredReport in @($reportPath, $textureReportPath)) {
+    if (-not (Test-Path -LiteralPath $requiredReport -PathType Leaf)) {
+        throw "v0.9 升级后缺少双轨 Report：$requiredReport"
+    }
 }
 $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
-if (-not $report.real_unreal_validation -or @($report.assets).Count -ne 1) {
-    throw "发布安装 Report 不是单资产真实 Unreal 采集"
+$textureReport = Get-Content -LiteralPath $textureReportPath -Raw | ConvertFrom-Json
+if (-not $report.real_unreal_validation -or @($report.assets).Count -ne 1 -or
+    -not $textureReport.real_unreal_validation -or $textureReport.asset_type -ne 'texture2d' -or
+    @($textureReport.assets).Count -ne 1 -or @($textureReport.collection_failures).Count -ne 0) {
+    throw "v0.9 升级后的双轨 Report 不符合真实单资产采集合同"
 }
 
 & $installer -Action Uninstall -ProjectPath $projectFile -ConfirmUninstall
@@ -226,14 +268,20 @@ if ($residualCreated.Count -gt 0 -or $residualOwned.Count -gt 0) {
     throw "发布验证留下了本轮全新项目对应的 Unreal 进程"
 }
 
-$evidenceRoot = Join-Path $repoRoot "artifacts\host-validation\m7"
+$evidenceRoot = Join-Path $repoRoot "artifacts\host-validation\m16"
 New-Item -ItemType Directory -Path $evidenceRoot -Force | Out-Null
-$committedReport = Join-Path $evidenceRoot "$ReleaseLabel-report.json"
+$committedFreshStaticReport = Join-Path $evidenceRoot "$ReleaseLabel-fresh-static-mesh-report.json"
+$committedFreshTextureReport = Join-Path $evidenceRoot "$ReleaseLabel-fresh-texture-report.json"
+$committedUpgradeStaticReport = Join-Path $evidenceRoot "$ReleaseLabel-upgrade-static-mesh-report.json"
+$committedUpgradeTextureReport = Join-Path $evidenceRoot "$ReleaseLabel-upgrade-texture-report.json"
 $installLogEvidence = Join-Path $evidenceRoot "$ReleaseLabel-install-log.txt"
 $upgradeLogEvidence = Join-Path $evidenceRoot "$ReleaseLabel-upgrade-log.txt"
 $unattendedSummaryEvidence = Join-Path $evidenceRoot "$ReleaseLabel-unattended-summary.json"
 $unattendedReportEvidence = Join-Path $evidenceRoot "$ReleaseLabel-unattended-report.json"
-Copy-Item -LiteralPath $reportPath -Destination $committedReport -Force
+Copy-Item -LiteralPath $freshStaticRuntime -Destination $committedFreshStaticReport -Force
+Copy-Item -LiteralPath $freshTextureRuntime -Destination $committedFreshTextureReport -Force
+Copy-Item -LiteralPath $reportPath -Destination $committedUpgradeStaticReport -Force
+Copy-Item -LiteralPath $textureReportPath -Destination $committedUpgradeTextureReport -Force
 Copy-Item -LiteralPath (Join-Path $runtime "install-log.txt") -Destination $installLogEvidence -Force
 Copy-Item -LiteralPath (Join-Path $runtime "upgrade-log.txt") -Destination $upgradeLogEvidence -Force
 Copy-Item -LiteralPath $unattendedSmoke.runtime_summary_path -Destination $unattendedSummaryEvidence -Force
@@ -263,10 +311,22 @@ $evidence = [ordered]@{
         project_descriptor_enabled = $enabledAfterInstall
         plugin_is_reparse_point = $false
         smoke = $installSmoke
+        static_mesh_report_path = [IO.Path]::GetRelativePath($repoRoot, $committedFreshStaticReport).Replace('\', '/')
+        static_mesh_report_sha256 = (Get-FileHash -LiteralPath $committedFreshStaticReport -Algorithm SHA256).Hash
+        texture_report_path = [IO.Path]::GetRelativePath($repoRoot, $committedFreshTextureReport).Replace('\', '/')
+        texture_report_sha256 = (Get-FileHash -LiteralPath $committedFreshTextureReport -Algorithm SHA256).Hash
+        recoverable_uninstall_passed = $freshUninstallBackups.Count -ge 1
     }
     upgrade = [ordered]@{
+        previous_archive_path = [IO.Path]::GetRelativePath($repoRoot, $previousArchive).Replace('\', '/')
+        previous_archive_sha256 = (Get-FileHash -LiteralPath $previousArchive -Algorithm SHA256).Hash
+        previous_plugin_version = [string]$previousDescriptor.VersionName
         backup_created = $upgradeBackups.Count -ge 1
         smoke = $upgradeSmoke
+        static_mesh_report_path = [IO.Path]::GetRelativePath($repoRoot, $committedUpgradeStaticReport).Replace('\', '/')
+        static_mesh_report_sha256 = (Get-FileHash -LiteralPath $committedUpgradeStaticReport -Algorithm SHA256).Hash
+        texture_report_path = [IO.Path]::GetRelativePath($repoRoot, $committedUpgradeTextureReport).Replace('\', '/')
+        texture_report_sha256 = (Get-FileHash -LiteralPath $committedUpgradeTextureReport -Algorithm SHA256).Hash
     }
     unattended = [ordered]@{
         wrapper_exit_code = $unattendedSmoke.exit_code
@@ -286,8 +346,8 @@ $evidence = [ordered]@{
         recoverable_backup_created = $uninstallBackups.Count -ge 1
         project_descriptor_entry_removed = $disabledAfterUninstall
     }
-    report_path = [IO.Path]::GetRelativePath($repoRoot, $committedReport).Replace('\', '/')
-    report_sha256 = (Get-FileHash -LiteralPath $committedReport -Algorithm SHA256).Hash
+    report_path = [IO.Path]::GetRelativePath($repoRoot, $committedUpgradeStaticReport).Replace('\', '/')
+    report_sha256 = (Get-FileHash -LiteralPath $committedUpgradeStaticReport -Algorithm SHA256).Hash
     existing_unreal_pids_before = $existing
     created_unreal_pids = @($createdPids | Sort-Object)
     existing_unreal_pids_after = $after

@@ -23,8 +23,8 @@ def _write(path: Path, content: str | bytes = "fixture") -> None:
 def _fake_build_plugin(root: Path) -> Path:
     descriptor = {
         "FileVersion": 3,
-        "Version": 11,
-        "VersionName": "0.9.0",
+        "Version": 16,
+        "VersionName": "0.10.0",
         "FriendlyName": "Unreal 资产批量审计",
         "EngineVersion": "5.8.0",
         "Installed": True,
@@ -41,11 +41,15 @@ def _fake_build_plugin(root: Path) -> Path:
     _write(root / "Binaries/Win64/debug.pdb", b"pdb")
     _write(root / "Content/Python/init_unreal.py", "READY = True\n")
     _write(root / "Content/Python/unreal_asset_batch_auditor/audit.py", "VALUE = 1\n")
+    _write(root / "Content/Python/unreal_asset_batch_auditor/texture_audit.py", "VALUE = 2\n")
     _write(root / "Content/Python/__pycache__/audit.pyc", b"cache")
     _write(root / "Resources/Profiles/desktop-balanced.v2.json", "{}")
+    _write(root / "Resources/Profiles/texture-desktop-balanced.v1.json", "{}")
     _write(root / "Resources/ProjectPresets/engine-basic-shapes-ci.v1.json", "{}")
     _write(root / "contracts/project-preset.v1.schema.json", "{}")
     _write(root / "contracts/unattended-run.v1.schema.json", "{}")
+    _write(root / "contracts/texture-profile.v1.schema.json", "{}")
+    _write(root / "contracts/texture-report.v1.schema.json", "{}")
     _write(root / "Source/UnrealAssetBatchAuditor/Module.Build.cs", "class Module {}\n")
     _write(root / "Source/UnrealAssetBatchAuditor/Public/Module.h", "#pragma once\n")
     _write(root / "Source/UnrealAssetBatchAuditor/Private/Module.cpp", "// source\n")
@@ -83,11 +87,14 @@ def test_release_is_deterministic_and_uses_a_strict_allowlist(tmp_path: Path) ->
         assert "install-plugin.ps1" in names
         assert "run-unattended-audit.ps1" in names
         assert "README_安装说明.md" in names
-        assert "版本说明_v0.9.0.md" in names
+        assert "版本说明_v0.10.0.md" in names
         assert "RELEASE-MANIFEST.json" in names
         assert "SHA256SUMS.txt" in names
         assert "UnrealAssetBatchAuditor/Resources/ProjectPresets/engine-basic-shapes-ci.v1.json" in names
         assert "UnrealAssetBatchAuditor/contracts/project-preset.v1.schema.json" in names
+        assert "UnrealAssetBatchAuditor/Resources/Profiles/texture-desktop-balanced.v1.json" in names
+        assert "UnrealAssetBatchAuditor/contracts/texture-profile.v1.schema.json" in names
+        assert "UnrealAssetBatchAuditor/contracts/texture-report.v1.schema.json" in names
         assert not any("Intermediate" in name for name in names)
         assert not any("__pycache__" in name or name.endswith((".pyc", ".pdb")) for name in names)
         assert not any("/Private/Tests/" in name for name in names)

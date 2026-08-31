@@ -59,7 +59,7 @@ descriptor 修改前的副本位于 `PluginBackups/ProjectDescriptors/`。恢复
 发布页同时提供 ZIP 的 `.sha256`。下载后执行：
 
 ```powershell
-Get-FileHash .\UnrealAssetBatchAuditor-0.9.0-UE5.8-Win64.zip -Algorithm SHA256
+Get-FileHash .\UnrealAssetBatchAuditor-0.10.0-UE5.8-Win64.zip -Algorithm SHA256
 ```
 
 结果应与 `.sha256` 文件一致。ZIP 内的 `SHA256SUMS.txt` 用于逐文件复核，`RELEASE-MANIFEST.json`
@@ -67,14 +67,16 @@ Get-FileHash .\UnrealAssetBatchAuditor-0.9.0-UE5.8-Win64.zip -Algorithm SHA256
 
 ## 首次成功路径
 
-1. 在 Content Browser 选择若干 Static Mesh；
+1. 在 Content Browser 选择若干 Static Mesh 或 Texture2D；
 2. 打开 `工具 > 资产批量审计`；
-3. 选择“桌面平衡（推荐演示）”，点击“读取当前选择”；
-4. 设置批大小，执行“开始只读审计”；
-5. 查看资产总览中的材质/纹理依赖、交付风险谱、问题证据与回归页；
-6. 点击“导出团队包”，在项目 `Saved/UnrealAssetBatchAuditor/Handoffs/` 查看 HTML 和 CSV。
+3. 先选择“模型交付轨道”或“纹理交付轨道”，再选择对应的内置 Profile；
+4. 点击“读取资产 / 文件夹选择”，确认范围只包含当前轨道资产；
+5. 设置批大小，执行“开始只读审计”；
+6. 查看资产总览、交付风险谱、问题 Evidence 与回归页；
+7. 选择问题后可定位资产、打开对应编辑器、复制证据或记录人工决定；
+8. 点击“导出团队包”，在项目 `Saved/UnrealAssetBatchAuditor/Handoffs/` 查看 HTML 和 CSV。
 
-插件只读取元数据，不保存资产、不自动修改 Nanite，也不删除项目内容。单个 C++ 批次仍是同步边界；
+插件只读取元数据，不保存资产，不自动修改 Nanite、纹理尺寸、Mip、压缩或 VT，也不删除项目内容。单个 C++ 批次仍是同步边界；
 “批次间取消”会等待当前批次完成后保留部分 Report。
 
 ## 无人值守门禁

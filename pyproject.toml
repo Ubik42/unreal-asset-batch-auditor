@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "unreal-asset-batch-auditor"
-version = "0.10.0.dev4"
+version = "0.10.0"
 description = "Profile-driven Unreal Static Mesh and Texture2D delivery auditing with explicit scope."
 readme = "README.md"
 requires-python = ">=3.11"

@@ -44,10 +44,17 @@ bool FUnrealAssetBatchAuditorReleaseInstallSmokeTest::RunTest(const FString& Par
 
     const FString ProfilePath = FPaths::Combine(
         ActualRoot, TEXT("Resources/Profiles/desktop-balanced.v3.json"));
+    const FString TextureProfilePath = FPaths::Combine(
+        ActualRoot, TEXT("Resources/Profiles/texture-review-lenient.v1.json"));
     TestTrue(TEXT("Packaged Profile exists"), FPaths::FileExists(ProfilePath));
+    TestTrue(TEXT("Packaged Texture Profile exists"), FPaths::FileExists(TextureProfilePath));
     TestTrue(
         TEXT("Packaged Python entry exists"),
         FPaths::FileExists(FPaths::Combine(ActualRoot, TEXT("Content/Python/run_asset_audit.py"))));
+    TestTrue(
+        TEXT("Packaged Texture orchestrator exists"),
+        FPaths::FileExists(FPaths::Combine(
+            ActualRoot, TEXT("Content/Python/unreal_asset_batch_auditor/texture_audit.py"))));
 
     const FName TabName = FUnrealAssetBatchAuditorModule::GetAuditTabName();
     TestTrue(TEXT("Chinese audit panel tab spawner is registered"), FGlobalTabmanager::Get()->HasTabSpawner(TabName));
@@ -58,7 +65,9 @@ bool FUnrealAssetBatchAuditorReleaseInstallSmokeTest::RunTest(const FString& Par
         FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/ReleaseInstallEvidence"));
     IFileManager::Get().MakeDirectory(*OutputRoot, true);
     const FString ReportPath = FPaths::Combine(OutputRoot, TEXT("latest-report.json"));
+    const FString TextureReportPath = FPaths::Combine(OutputRoot, TEXT("latest-texture-report.json"));
     IFileManager::Get().Delete(*ReportPath, false, true, true);
+    IFileManager::Get().Delete(*TextureReportPath, false, true, true);
 
     IPythonScriptPlugin* Python = IPythonScriptPlugin::Get();
     if (!TestNotNull(TEXT("Python Script Plugin is available"), Python)) return false;
@@ -69,8 +78,12 @@ bool FUnrealAssetBatchAuditorReleaseInstallSmokeTest::RunTest(const FString& Par
     }
     FString SafeProfile = ProfilePath.Replace(TEXT("\\"), TEXT("/"));
     FString SafeReport = ReportPath.Replace(TEXT("\\"), TEXT("/"));
+    FString SafeTextureProfile = TextureProfilePath.Replace(TEXT("\\"), TEXT("/"));
+    FString SafeTextureReport = TextureReportPath.Replace(TEXT("\\"), TEXT("/"));
     SafeProfile.ReplaceInline(TEXT("'"), TEXT("\\'"));
     SafeReport.ReplaceInline(TEXT("'"), TEXT("\\'"));
+    SafeTextureProfile.ReplaceInline(TEXT("'"), TEXT("\\'"));
+    SafeTextureReport.ReplaceInline(TEXT("'"), TEXT("\\'"));
     const FString Command = FString::Printf(
         TEXT("from run_asset_audit import run; run(r'%s', ['/Engine/BasicShapes/Cube.Cube'], r'%s', batch_size=1)"),
         *SafeProfile,
@@ -91,6 +104,36 @@ bool FUnrealAssetBatchAuditorReleaseInstallSmokeTest::RunTest(const FString& Par
     if (!TestTrue(TEXT("Fresh install writes a parseable Report"), bLoaded && Report.IsValid())) return false;
     TestTrue(TEXT("Report records real Unreal collection"), Report->GetBoolField(TEXT("real_unreal_validation")));
     TestEqual(TEXT("One real Static Mesh was audited"), Report->GetArrayField(TEXT("assets")).Num(), 1);
+
+    const FString TextureCommand = FString::Printf(
+        TEXT("from pathlib import Path; from unreal_asset_batch_auditor import TextureAuditProfile, TextureUnrealCppCollector, audit_textures; p=TextureAuditProfile.load(Path(r'%s')); r=audit_textures(profile=p, collector=TextureUnrealCppCollector(), asset_paths=['/Engine/EngineResources/DefaultTexture.DefaultTexture'], batch_size=1); r.write(Path(r'%s'))"),
+        *SafeTextureProfile,
+        *SafeTextureReport);
+    if (!TestTrue(
+            TEXT("Packaged Texture orchestrator completes a real audit"),
+            Python->ExecPythonCommand(*TextureCommand)))
+    {
+        return false;
+    }
+
+    FString TextureReportJson;
+    TSharedPtr<FJsonObject> TextureReport;
+    const bool bTextureLoaded = FFileHelper::LoadFileToString(TextureReportJson, *TextureReportPath);
+    if (bTextureLoaded)
+    {
+        const TSharedRef<TJsonReader<>> TextureReader = TJsonReaderFactory<>::Create(TextureReportJson);
+        FJsonSerializer::Deserialize(TextureReader, TextureReport);
+    }
+    if (!TestTrue(
+            TEXT("Fresh install writes a parseable Texture Report"),
+            bTextureLoaded && TextureReport.IsValid()))
+    {
+        return false;
+    }
+    TestEqual(TEXT("Texture Report records its asset type"), TextureReport->GetStringField(TEXT("asset_type")), TEXT("texture2d"));
+    TestTrue(TEXT("Texture Report records real Unreal collection"), TextureReport->GetBoolField(TEXT("real_unreal_validation")));
+    TestEqual(TEXT("One real Texture2D was audited"), TextureReport->GetArrayField(TEXT("assets")).Num(), 1);
+    TestEqual(TEXT("Texture2D collection has no failures"), TextureReport->GetArrayField(TEXT("collection_failures")).Num(), 0);
 
     if (Tab.IsValid()) Tab->RequestCloseTab();
     return true;

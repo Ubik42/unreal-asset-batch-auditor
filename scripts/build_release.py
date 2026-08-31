@@ -100,9 +100,10 @@ def collect_release_entries(
         },
     }
 
+    release_notes_name = f"版本说明_v{version}.md"
     support_files = {
         "README_安装说明.md": repo_root / "docs" / "RELEASE_INSTALL.md",
-        "版本说明_v0.9.0.md": repo_root / "docs" / "releases" / "v0.9.0.md",
+        release_notes_name: repo_root / "docs" / "releases" / f"v{version}.md",
         "install-plugin.ps1": repo_root / "scripts" / "release" / "install-plugin.ps1",
         "run-unattended-audit.ps1": repo_root / "scripts" / "run_unattended_audit.ps1",
         "LICENSE.txt": repo_root / "LICENSE",

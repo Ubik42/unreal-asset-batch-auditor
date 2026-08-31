@@ -2,7 +2,7 @@
 
 面向 Unreal 美术团队的只读资产交付验收台。当前提供“模型交付 / 纹理交付”两条明确轨道：项目 Profile 定义预算和预期，Editor-only C++ 批量采集宿主事实，Python 负责规则编排与可追溯报告。插件不保存、重建或自动修复资产。
 
-> **当前源码：v0.10.0-dev4 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> **当前源码：v0.10.0 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.9.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
