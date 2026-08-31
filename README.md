@@ -2,7 +2,7 @@
 
 面向 Unreal 美术团队的只读资产交付验收台。当前提供“模型交付 / 纹理交付”两条明确轨道：项目 Profile 定义预算和预期，Editor-only C++ 批量采集宿主事实，Python 负责规则编排与可追溯报告。插件不保存、重建或自动修复资产。
 
-> **当前源码与公开版本：v0.10.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> **公开版本：v0.10.0 Beta** · `main` 开发线已加入 v0.11 项目验收标准工作台 · Windows 11 / Unreal Engine 5.8.1 已验证<br>
 > [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.10.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
@@ -28,6 +28,11 @@
 先选择“模型交付轨道”或“纹理交付轨道”，再从下拉框选择对应 Profile。内置模板明确标为只读；点击
 “复制为项目标准”会把合同校验后的副本写入工程 `Config/AssetAudit/Profiles`，重新发现并立即选中，
 不会覆盖插件模板。项目标准说明与当前编辑边界见[项目验收标准](docs/PROJECT_AUDIT_STANDARDS.md)。
+
+复制后点击“打开标准工作台”，可按规则分组修改启停、阈值、严重度、标准 ID 和版本。右侧“保存前差异”
+列出保存值与当前值；字段通过合同校验且预览仍有效时，保存按钮才会启用。
+
+![项目验收标准工作台：模型规则差异预览](docs/images/workflow/v0.11-profile-standards/03-model-difference-preview.png)
 
 ![选择项目检查规则与空状态](docs/images/workflow/v0.8/01-empty-state.png)
 
@@ -173,6 +178,7 @@ Evidence 与人工决定。目录问题密度只表示规则问题数 / 处理�
 - Unreal Editor-only 插件和 Static Mesh / Texture2D 两组只读 C++ 批量采集接口；
 - UE 原生中文 Slate 面板：读取 Content Browser 选择、从预置规则下拉框切换 Profile、运行审计与共享搜索；
 - 内置 Profile 与项目自有标准明确分层；支持从当前模板原子复制到工程配置、自动去重命名、重新发现并选中；
+- 项目验收标准工作台按模型/纹理规则分组编辑启停、阈值、枚举、标识和版本；字段错误就地显示，保存前提供结构化差异；
 - 显式资产与文件夹可以组成同一交付批次；文件夹递归只发现当前验收轨道的资产类型，结果去重并稳定排序；
 - “交付风险谱”按几何预算、材质负载、构建就绪、命名路径和采集异常汇总真实问题，点击即可筛选明细；
 - “交付热区”按当前 Report 的 package path 形成稳定目录组，显示对象/问题/失败/审阅统计并一键下钻；
@@ -249,8 +255,8 @@ Demo Profile 是为了形成清晰对比而模拟的项目数据，不代表行�
 仓库不再分发由 Unreal Engine 内容复制出的 `.uasset` 二进制；`prepare_demo.ps1` 会在本机生成它们。
 生成器不会修改 `/Engine` 原始资产。
 
-插件安装包自带三套可直接选择的演示规则：`桌面平衡（推荐演示）`、`移动端严格`、`宽松复核`。
-普通用户不需要填写 JSON 路径；“导入自定义规则”只用于项目接入自己的 Profile。
+插件安装包为模型和纹理轨道各带三套演示规则。普通用户不需要填写 JSON 路径；团队规则从内置模板
+复制为项目标准后，直接在原生工作台编辑。`临时导入`只用于一次性排查，不进入项目标准治理。
 
 ## 安装
 
@@ -311,7 +317,7 @@ report = run(
 - v0.10-dev3 已通过 83 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主使用 24 个 Demo Static Mesh 与 2 个采集失败验证 6 个交付目录组、Heavy 组下钻和清除恢复，并生成 17 张生产 Slate 图；
 - v0.10-dev4 已通过 88 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主真实导入并采集 3 张 Texture2D，得到 1 个通过对象、2 个待处理对象与 7 条问题，并生成 13 张纹理轨道 Slate 图；
 - v0.10.0 发布包含 67 个白名单文件；ZIP SHA-256 为 `0D466D4779D32A8A563C387DC4A910BDBCA8F7C7AFFBACA82079C89F297F6A33`；全新安装、真实双轨采集、随包无人值守、从公开 v0.9 升级和两次可恢复卸载均已通过；
-- 下一切片建设项目验收标准编辑器，让 TA 能在 Unreal 内克隆、调整、校验和比较项目 Profile；不引入泛 AI 对话或资产自动修复；
+- v0.11-dev2 完成项目验收标准工作台；独立 UE 5.8.1 宿主验证字段错误、差异预览、原子保存，并使用保存后的模型/纹理标准生成两份真实采集 Report；
 - 不声明 Marketplace 就绪、其他 UE 版本兼容或生产规模绝对无卡顿。
 
 ## 许可证与演示素材

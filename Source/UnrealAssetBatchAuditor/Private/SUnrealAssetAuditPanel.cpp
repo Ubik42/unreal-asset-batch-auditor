@@ -1,4 +1,5 @@
 #include "SUnrealAssetAuditPanel.h"
+#include "SProfileStandardEditor.h"
 
 #include "AssetRegistry/AssetData.h"
 #include "AssetRegistry/AssetRegistryModule.h"
@@ -639,19 +640,31 @@ void SUnrealAssetAuditPanel::Construct(const FArguments& InArgs)
                                 .ToolTipText(FText::FromString(TEXT("内置模板保持只读；副本保存在工程 Config/AssetAudit/Profiles")))
                                 .OnClicked(this, &SUnrealAssetAuditPanel::CloneSelectedProfile)
                             ]
-                            + SHorizontalBox::Slot().AutoWidth().Padding(4, 0, 0, 0)
+                            + SHorizontalBox::Slot().FillWidth(1).Padding(4, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .Text(FText::FromString(TEXT("打开标准工作台")))
+                                .IsEnabled(this, &SUnrealAssetAuditPanel::CanEditSelectedProfile)
+                                .ToolTipText(FText::FromString(TEXT("编辑项目自有标准；内置模板需要先复制")))
+                                .OnClicked(this, &SUnrealAssetAuditPanel::OpenProfileEditor)
+                            ]
+                        ]
+                        + SVerticalBox::Slot().AutoHeight().Padding(0, 5, 0, 0)
+                        [
+                            SNew(SHorizontalBox)
+                            + SHorizontalBox::Slot().FillWidth(1).Padding(0, 0, 4, 0)
                             [
                                 SNew(SButton)
                                 .Text(FText::FromString(TEXT("项目标准目录")))
                                 .OnClicked(this, &SUnrealAssetAuditPanel::OpenProjectProfileFolder)
                             ]
-                        ]
-                        + SVerticalBox::Slot().AutoHeight().Padding(0, 5, 0, 0)
-                        [
-                            SNew(SButton)
-                            .Text(FText::FromString(TEXT("临时导入外部规则…")))
-                            .ToolTipText(FText::FromString(TEXT("仅用于本次编辑器会话；项目规则请复制到项目标准目录")))
-                            .OnClicked(this, &SUnrealAssetAuditPanel::BrowseProfile)
+                            + SHorizontalBox::Slot().FillWidth(1).Padding(4, 0, 0, 0)
+                            [
+                                SNew(SButton)
+                                .Text(FText::FromString(TEXT("临时导入…")))
+                                .ToolTipText(FText::FromString(TEXT("仅用于本次编辑器会话；项目规则请复制到项目标准目录")))
+                                .OnClicked(this, &SUnrealAssetAuditPanel::BrowseProfile)
+                            ]
                         ]
                         + SVerticalBox::Slot().AutoHeight().Padding(0, 18, 0, 4)
                         [
@@ -1464,6 +1477,35 @@ FReply SUnrealAssetAuditPanel::CloneSelectedProfile()
     }
     StatusMessage = FString::Printf(
         TEXT("项目标准已创建并选中：%s"), *FPaths::GetCleanFilename(CreatedPath));
+    return FReply::Handled();
+}
+
+FReply SUnrealAssetAuditPanel::OpenProfileEditor()
+{
+    if (!CanEditSelectedProfile())
+    {
+        StatusMessage = TEXT("内置模板保持只读；请先复制为项目标准");
+        return FReply::Handled();
+    }
+    const FString EditorId = FGuid::NewGuid().ToString(EGuidFormats::Digits);
+    const FString EditorRoot = FPaths::Combine(
+        FPaths::ProjectSavedDir(), TEXT("UnrealAssetBatchAuditor/ProfileEditor"));
+    const TSharedRef<SWindow> Window = SNew(SWindow)
+        .Title(FText::FromString(TEXT("项目验收标准工作台")))
+        .ClientSize(FVector2D(1180, 820))
+        .SizingRule(ESizingRule::UserSized)
+        .SupportsMaximize(true)
+        .SupportsMinimize(false)
+        [
+            SNew(SProfileStandardEditor)
+            .SourcePath(SelectedProfile->Path)
+            .ProjectProfileRoot(ProjectProfileRoot)
+            .RequestPath(FPaths::Combine(EditorRoot, FString::Printf(TEXT("%s-request.json"), *EditorId)))
+            .ResultPath(FPaths::Combine(EditorRoot, FString::Printf(TEXT("%s-result.json"), *EditorId)))
+            .OnSaved(FSimpleDelegate::CreateSP(this, &SUnrealAssetAuditPanel::HandleProfileEditorSaved))
+        ];
+    FSlateApplication::Get().AddWindow(Window);
+    StatusMessage = FString::Printf(TEXT("已打开项目标准工作台：%s"), *SelectedProfile->Label);
     return FReply::Handled();
 }
 
@@ -3010,6 +3052,29 @@ bool SUnrealAssetAuditPanel::CanRunAudit() const
 {
     return !bAuditRunning && !SelectedAssetPaths.IsEmpty() && SelectedProfile.IsValid()
         && !SelectedProfile->Path.IsEmpty();
+}
+
+bool SUnrealAssetAuditPanel::CanEditSelectedProfile() const
+{
+    return !bAuditRunning && SelectedProfile.IsValid() && SelectedProfile->bCustom
+        && !SelectedProfile->Path.IsEmpty() && FPaths::IsSamePath(
+            FPaths::GetPath(SelectedProfile->Path), ProjectProfileRoot);
+}
+
+void SUnrealAssetAuditPanel::HandleProfileEditorSaved()
+{
+    const FString SavedPath = SelectedProfile.IsValid() ? SelectedProfile->Path : FString();
+    RebuildProfileOptions();
+    for (const FProfilePtr& Option : ProfileOptions)
+    {
+        if (Option.IsValid() && FPaths::IsSamePath(Option->Path, SavedPath))
+        {
+            SelectedProfile = Option;
+            if (ProfileComboBox.IsValid()) ProfileComboBox->SetSelectedItem(Option);
+            break;
+        }
+    }
+    StatusMessage = TEXT("项目标准已保存并重新载入，可直接开始审计");
 }
 
 bool SUnrealAssetAuditPanel::CanRunComparison() const

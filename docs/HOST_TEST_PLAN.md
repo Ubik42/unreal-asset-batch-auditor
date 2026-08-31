@@ -254,12 +254,14 @@ Editor 宿主采集。本轮不证明 Cook 后尺寸、运行时 residency、显
 正式 ZIP SHA-256：`0D466D4779D32A8A563C387DC4A910BDBCA8F7C7AFFBACA82079C89F297F6A33`。
 本矩阵不声明 Marketplace、跨 UE 版本、人工鼠标交互或生产规模性能。
 
-## 2026-08-30 v0.11-dev1 项目验收标准底座
+## 2026-08-30 v0.11-dev2 项目验收标准工作台
 
 | 门禁 | 结果 | 证据 |
 | --- | --- | --- |
-| Python 项目标准语义层 | 通过；模型 v3 / 纹理 v1 校验、中文字段错误、稳定差异、原子保存与不覆盖复制进入 94 项回归 | `tests/test_profile_standards.py` |
-| Development Editor BuildPlugin | 通过；UE 5.8 Win64 完成 UHT、C++ 编译、链接和打包 | 本机忽略目录 `artifacts/host-build/UE_5.8-v0.11.0-dev1` |
-| 独立宿主与当前截图 | 待字段编辑与差异视图完成后一次性验证 | 不把本轮 BuildPlugin 宣称成交互完成 |
+| Python 项目标准语义层 | 通过；模型 v3 / 纹理 v1 字段描述、中文错误、稳定差异、原子保存与目录边界进入回归 | `tests/test_profile_standards.py` |
+| Development Editor BuildPlugin | 通过；UE 5.8 Win64 完成 UHT、C++ 编译、链接和打包 | 本机忽略目录 `artifacts/host-build/UE_5.8-v0.11.0-dev2` |
+| 原生字段工作台 | 通过；模型 14 组、纹理 7 组规则可编辑，非法版本/阈值禁用保存，差异预览后才能原子保存 | `docs/images/workflow/v0.11-profile-standards/` |
+| 保存后真实审计 | 通过；项目模型标准驱动 Cube、项目纹理标准驱动 DefaultTexture，Report 记录编辑后的 Profile ID/Version | `artifacts/host-validation/m17/profile-editor-reports-UE_5.8-v0.11.0-dev2/` |
+| 独立宿主生命周期 | 通过；独立隐藏 UE 进程生成 6 张截图和 2 份真实 Report，本轮 PID 退出 | `artifacts/host-validation/m17/profile-editor-UE_5.8-v0.11.0-dev2.json` |
 
-当前只证明“内置只读、项目复制、重新发现”的底座，不声明已经完成原生字段编辑器。
+当前验证不等于人工鼠标操作、任意 JSON Schema 编辑、多人配置治理或跨 UE 版本兼容。

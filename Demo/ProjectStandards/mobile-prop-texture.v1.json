@@ -1,0 +1,23 @@
+{
+  "schema_version": "unreal-texture-profile@1.0.0",
+  "profile_id": "project-mobile-prop-texture",
+  "profile_version": "1.0.0",
+  "description": "自行模拟的移动端道具纹理交付标准：2K 上限、完整 Mip、禁用 VT 并要求流送。",
+  "rules": {
+    "source_dimension": {"enabled": true, "max_size": 2048, "severity": "error"},
+    "power_of_two": {"enabled": true, "required": true, "severity": "warning"},
+    "mip_count": {"enabled": true, "min_count": 2, "severity": "error"},
+    "texture_group": {"enabled": true, "allowed_values": ["TEXTUREGROUP_World", "TEXTUREGROUP_WorldNormalMap", "TEXTUREGROUP_WorldSpecular"], "severity": "warning"},
+    "compression_color_space": {
+      "enabled": true,
+      "allowed_combinations": [
+        {"compression": "TC_Default", "srgb": true},
+        {"compression": "TC_Normalmap", "srgb": false},
+        {"compression": "TC_Masks", "srgb": false}
+      ],
+      "severity": "error"
+    },
+    "virtual_texture": {"enabled": true, "expected": "disabled", "severity": "error"},
+    "streaming": {"enabled": true, "expected": "enabled", "severity": "error"}
+  }
+}

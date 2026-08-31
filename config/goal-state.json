@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 27,
+  "stateRevision": 28,
   "status": "active",
-  "currentMilestone": "M17",
+  "currentMilestone": "M18",
   "milestones": [
     { "id": "M0", "title": "Scope and repository baseline", "status": "completed", "dependsOn": [] },
     { "id": "M1", "title": "Read-only Static Mesh audit MVP", "status": "completed", "dependsOn": ["M0"] },
@@ -22,26 +22,27 @@
     { "id": "M14", "title": "Delivery hotspot and asset-group overview", "status": "completed", "dependsOn": ["M13"] },
     { "id": "M15", "title": "Texture2D delivery audit", "status": "completed", "dependsOn": ["M14"] },
     { "id": "M16", "title": "v0.10 dual-track installable portfolio release", "status": "completed", "dependsOn": ["M15"] },
-    { "id": "M17", "title": "Project audit standard editor", "status": "in_progress", "dependsOn": ["M16"] }
+    { "id": "M17", "title": "Project audit standard editor", "status": "completed", "dependsOn": ["M16"] },
+    { "id": "M18", "title": "Material Interface delivery audit", "status": "in_progress", "dependsOn": ["M17"] }
   ],
   "nextSlice": {
-    "id": "M17-S1",
-    "milestoneId": "M17",
-    "title": "项目验收标准编辑器 MVP",
+    "id": "M18-S1",
+    "milestoneId": "M18",
+    "title": "材质接口交付审计 MVP",
     "scope": [
-      "在原生 Slate 中增加项目验收标准工作区，明确区分内置只读模板与项目自有 Profile",
-      "支持当前模型 v3 与纹理 v1 Profile 的克隆、规则启停、阈值、严重度、标识和版本编辑",
-      "所有编辑结果由 Python 合同层校验，错误以字段级中文状态返回，不在 Slate 重写规则语义",
-      "保存前展示相对来源 Profile 的结构化差异，保存到项目 Config/AssetAudit/Profiles 且不覆盖内置模板",
-      "保存后的项目 Profile 可重新发现、加载并直接进入对应资产轨道审计",
-      "提供模型与纹理各一套真实项目标准示例、中文教程和可录制截图"
+      "新增独立 Material Interface Profile、fixture、Report 与 Schema，不把材质问题塞回 Static Mesh 合同",
+      "C++ 只读采集 Material 与 Material Instance 的资产类型、Domain、Blend Mode、Two Sided、Shading Model、父级路径/深度和已加载纹理依赖",
+      "首批 Profile 规则覆盖允许 Domain/Blend Mode、Two Sided 预期、实例父级要求、父级深度、纹理依赖数量与最大尺寸",
+      "Python 负责分批编排、规则判定、Issue/Evidence 和失败隔离，阈值不得写死在 C++ 或 Slate",
+      "原生 Slate 增加材质交付轨道、对应规则下拉、资产台账列、问题定位、审阅和项目标准编辑入口",
+      "准备可公开复现的材质/实例演示场景、中文教程、关键截图和真实 UE 5.8.1 宿主证据"
     ],
     "nonGoals": [
-      "不提供任意 JSON Schema 编辑器或未知 Profile 版本的可视化改写",
-      "不修改、保存、重命名、移动或自动修复 Unreal 资产",
-      "不引入 AI 生成规则、云同步、账号权限或多人并发编辑",
-      "不修改项目预设、CI 阻断语义或发布安装矩阵",
-      "不新增第三种资产轨道"
+      "不声称采集运行时 GPU 时间、最终 Cook 体积、Shader permutation 总量或平台 PSO 成本",
+      "不修改材质节点、父级、参数、纹理或任何 Unreal 资产",
+      "不引入 AI 材质建议、自动优化、云服务或账号系统",
+      "不在本切片完成跨平台 Shader 编译或大规模 Shader 分析",
+      "不启动新的正式安装发布矩阵"
     ],
     "allowedPaths": [
       "Content/Python",
@@ -59,22 +60,22 @@
       "README.md",
       "AGENTS.md"
     ],
-    "evidenceCeiling": "本切片最多证明 UE 5.8.1 中模型 v3 与纹理 v1 Profile 可以通过原生 UI 克隆、编辑、校验、比较、保存和重新用于审计；不等同于任意 Schema 编辑、多人配置治理、资产修复或跨版本兼容。",
+    "evidenceCeiling": "本切片最多证明 UE 5.8.1 Editor 中 Material / Material Instance 的只读元数据可被 Profile 驱动地采集、判定和展示；不等同于运行时 GPU/Shader 性能、Cook 结果、自动优化或跨版本兼容。",
     "realHostRequired": true,
     "acceptanceCriteria": [
-      "内置模板保持只读，项目 Profile 使用独立目录、稳定文件名与原子写入",
-      "模型 v3 与纹理 v1 的可编辑字段、默认值、枚举和组合约束与现有合同一致",
-      "无效阈值、标识、版本、枚举和压缩/色彩组合不能保存，并显示可定位的中文错误",
-      "差异视图稳定显示新增、修改、禁用和未改变规则，不把顺序变化误报成政策变化",
-      "保存后重新发现并选择项目 Profile，实际审计 Report 记录该 profile_id 与 profile_version",
-      "UE 5.8 BuildPlugin、独立宿主、模型/纹理示例、当前 Slate 截图、README 与教程同步通过"
+      "Material Profile / fixture / Report 版本化合同和 JSON Schema 通过正常、非法与部分失败样例",
+      "C++ collector 只接受显式 Material Interface object path，非材质对象和加载失败进入独立采集失败",
+      "全部规则阈值、允许值与严重度来自 Profile，每条问题保留实测、期望和 Profile Pointer",
+      "材质轨道在 Slate 中与模型/纹理字段明确分离，并复用定位、审阅、回归和项目标准工作台",
+      "真实 Material 与 Material Instance 宿主 Report 记录父级、渲染状态和纹理依赖，扫描前后资产不变",
+      "UE 5.8 BuildPlugin、独立宿主、演示素材、当前截图、README 与教程同步通过"
     ],
     "validationCommands": [
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0027.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0028.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -139,9 +140,9 @@
     },
     {
       "id": "m17s1-project-standard-foundation",
-      "status": "in_progress",
+      "status": "completed",
       "blocking": false,
-      "reason": "M17 第一阶段已完成模型/纹理 Profile 的项目自有复制、合同校验、中文字段错误、稳定差异、原子保存、Slate 归属展示与重新发现；字段化编辑、差异面板和宿主截图仍待完成。"
+      "reason": "M17 完成模型/纹理项目 Profile 的复制、原生字段工作台、合同校验、中文错误、差异预览、原子保存与重新发现；102 项测试、UE 5.8 BuildPlugin、6 张截图及保存后双轨真实审计通过。"
     }
   ]
 }

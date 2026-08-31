@@ -10,8 +10,10 @@ from unreal_asset_batch_auditor import (
     SessionStore,
     UnrealCppCollector,
     audit_assets,
+    build_profile_editor_view,
     clone_as_project_profile,
     compare_reports,
+    evaluate_profile_edit,
     export_handoff,
     update_review,
     write_delivery_group_view,
@@ -150,6 +152,37 @@ def clone_project_profile_from_request_file(request_path: str) -> dict:
         requested_version=str(request.get("requested_version", "1.0.0")),
     )
     result = {"status": "ready", "profile_path": str(destination)}
+    result_path = Path(str(request["result_path"]))
+    result_path.parent.mkdir(parents=True, exist_ok=True)
+    temp = result_path.with_suffix(result_path.suffix + ".tmp")
+    temp.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    temp.replace(result_path)
+    return result
+
+
+def profile_editor_from_request_file(request_path: str) -> dict:
+    """Describe, preview, or save one project-owned Profile for the native Slate editor."""
+
+    request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+    action = str(request.get("action", "describe"))
+    if action == "describe":
+        result = build_profile_editor_view(str(request["source_path"]))
+    elif action in {"preview", "save"}:
+        values = request.get("values", {})
+        if not isinstance(values, dict):
+            raise ValueError("编辑值必须是 JSON 对象")
+        result = evaluate_profile_edit(
+            str(request["source_path"]),
+            values,
+            save=action == "save",
+            project_profile_root=(
+                str(request["project_profile_root"])
+                if request.get("project_profile_root")
+                else None
+            ),
+        )
+    else:
+        raise ValueError(f"不支持的项目标准编辑动作：{action}")
     result_path = Path(str(request["result_path"]))
     result_path.parent.mkdir(parents=True, exist_ok=True)
     temp = result_path.with_suffix(result_path.suffix + ".tmp")

@@ -5,8 +5,10 @@ from pathlib import Path
 
 import pytest
 from unreal_asset_batch_auditor import (
+    build_profile_editor_view,
     clone_as_project_profile,
     diff_profiles,
+    evaluate_profile_edit,
     save_project_profile,
     validate_profile,
 )
@@ -90,3 +92,131 @@ def test_atomic_save_rejects_invalid_profile(tmp_path: Path) -> None:
         save_project_profile(invalid, destination)
 
     assert destination.read_text(encoding="utf-8") == "keep"
+
+
+@pytest.mark.parametrize(
+    "name,rule_count,required_path",
+    [
+        ("desktop-balanced.v3.json", 14, "rules.triangle_budget.max_lod0"),
+        ("texture-desktop-balanced.v1.json", 7, "rules.compression_color_space.allowed_combinations"),
+    ],
+)
+def test_editor_view_describes_supported_fields(
+    name: str, rule_count: int, required_path: str
+) -> None:
+    view = build_profile_editor_view(ROOT / "Resources" / "Profiles" / name)
+    paths = {
+        field["path"]
+        for rule in view["rules"]
+        for field in rule["fields"]
+    }
+
+    assert view["schema_version"] == "unreal-profile-editor-view@1.0.0"
+    assert len(view["rules"]) == rule_count
+    assert required_path in paths
+    assert {field["path"] for field in view["identity_fields"]} == {
+        "profile_id",
+        "profile_version",
+        "description",
+    }
+
+
+def test_editor_preview_returns_stable_changes_without_writing(tmp_path: Path) -> None:
+    source = clone_as_project_profile(
+        ROOT / "Resources" / "Profiles" / "desktop-balanced.v3.json", tmp_path
+    )
+    original = source.read_bytes()
+
+    result = evaluate_profile_edit(
+        source,
+        {
+            "profile_version": "1.1.0",
+            "rules.triangle_budget.max_lod0": "3200",
+            "rules.nanite.enabled": False,
+            "rules.nanite.severity": "info",
+        },
+    )
+
+    assert result["status"] == "ready"
+    assert [change["path"] for change in result["changes"]] == [
+        "profile_version",
+        "rules.nanite.enabled",
+        "rules.nanite.severity",
+        "rules.triangle_budget.max_lod0",
+    ]
+    assert source.read_bytes() == original
+
+
+def test_editor_rejects_field_values_with_localized_errors(tmp_path: Path) -> None:
+    source = clone_as_project_profile(
+        ROOT / "Resources" / "Profiles" / "texture-desktop-balanced.v1.json", tmp_path
+    )
+
+    result = evaluate_profile_edit(
+        source,
+        {
+            "profile_id": "INVALID ID",
+            "profile_version": "next",
+            "rules.source_dimension.max_size": "4K",
+            "rules.streaming.expected": "sometimes",
+            "rules.compression_color_space.allowed_combinations": "broken",
+        },
+    )
+
+    assert result["status"] == "invalid"
+    assert "3–64" in result["errors"]["profile_id"]
+    assert "x.y.z" in result["errors"]["profile_version"]
+    assert "必须填写整数" in result["errors"]["rules.source_dimension.max_size"]
+    assert "请选择有效选项" in result["errors"]["rules.streaming.expected"]
+    assert "应写成" in result["errors"][
+        "rules.compression_color_space.allowed_combinations"
+    ]
+
+
+def test_editor_save_is_confined_to_project_profile_root(tmp_path: Path) -> None:
+    root = tmp_path / "Config" / "AssetAudit" / "Profiles"
+    source = clone_as_project_profile(
+        ROOT / "Resources" / "Profiles" / "texture-desktop-balanced.v1.json", root
+    )
+
+    result = evaluate_profile_edit(
+        source,
+        {
+            "profile_id": "project-texture-standard",
+            "profile_version": "2.0.0",
+            "rules.source_dimension.max_size": "2048",
+            "rules.streaming.enabled": False,
+            "rules.streaming.expected": "disabled",
+        },
+        save=True,
+        project_profile_root=root,
+    )
+
+    saved = json.loads(source.read_text(encoding="utf-8"))
+    assert result["status"] == "saved"
+    assert result["change_count"] == 5
+    assert saved["profile_id"] == "project-texture-standard"
+    assert saved["rules"]["source_dimension"]["max_size"] == 2048
+    assert saved["rules"]["streaming"] == {
+        "enabled": False,
+        "expected": "disabled",
+        "severity": "warning",
+    }
+
+    with pytest.raises(ContractError, match="内置模板保持只读"):
+        evaluate_profile_edit(
+            ROOT / "Resources" / "Profiles" / "texture-desktop-balanced.v1.json",
+            {"profile_version": "2.0.0"},
+            save=True,
+            project_profile_root=root,
+        )
+
+
+def test_demo_project_standards_are_supported_and_explicitly_simulated() -> None:
+    model = ROOT / "Demo" / "ProjectStandards" / "environment-prop-pc.v3.json"
+    texture = ROOT / "Demo" / "ProjectStandards" / "mobile-prop-texture.v1.json"
+
+    assert validate_profile(json.loads(model.read_text(encoding="utf-8"))).asset_type == "static_mesh"
+    assert validate_profile(json.loads(texture.read_text(encoding="utf-8"))).asset_type == "texture2d"
+    assert "自行模拟" in model.read_text(encoding="utf-8")
+    assert "自行模拟" in texture.read_text(encoding="utf-8")

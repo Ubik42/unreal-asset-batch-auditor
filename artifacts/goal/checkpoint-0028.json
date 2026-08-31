@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0028",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 28,
+  "completedSlice": "M17-S1",
+  "summary": "项目验收标准编辑器完成：模型和纹理 Profile 可在原生 Slate 中克隆、字段化编辑、校验、预览差异、原子保存并重新用于真实审计。",
+  "evidence": [
+    "内置模板保持只读，项目副本保存到 Config/AssetAudit/Profiles 并在对应轨道重新发现",
+    "模型 14 组与纹理 7 组规则按字段编辑启停、阈值、严重度、枚举、标识、版本和说明",
+    "非法整数、下限、枚举、Profile ID、语义版本和压缩色彩组合返回字段级中文错误并禁用保存",
+    "结构化差异稳定显示保存值和当前值，JSON 对象键顺序变化不产生假差异",
+    "102 项 Python 回归与 Ruff 通过",
+    "UE 5.8 UE_5.8-v0.11.0-dev2 BuildPlugin 完成 UHT、C++ 编译、链接和打包",
+    "独立 UE 5.8.1 宿主生成 6 张原生 Slate 截图，验证非法状态、模型/纹理差异预览和原子保存",
+    "保存后的项目模型与纹理 Profile 分别驱动真实 Cube 与 DefaultTexture 采集，Report 记录编辑后的 Profile ID/Version",
+    "两份自行模拟项目标准、中文教程、README 和录屏步骤已同步"
+  ],
+  "nextSlice": "M18-S1",
+  "knownLimits": [
+    "项目标准工作台只支持当前模型 v3 与纹理 v1，不是任意 JSON Schema 编辑器",
+    "宿主自动化不冒充人工鼠标交互",
+    "项目标准只写工程配置，不修改任何 Unreal 资产",
+    "当前公开安装包仍为 v0.10.0；v0.11 能力位于 main 开发线",
+    "只验证 Windows 11、Win64 与 UE 5.8.1"
+  ]
+}

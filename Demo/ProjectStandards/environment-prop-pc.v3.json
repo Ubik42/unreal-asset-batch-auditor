@@ -1,0 +1,22 @@
+{
+  "schema_version": "unreal-static-mesh-profile@3.0.0",
+  "profile_id": "project-environment-prop-pc",
+  "profile_version": "1.0.0",
+  "description": "自行模拟的 PC 环境道具交付标准：用于作品演示，不代表行业统一阈值。",
+  "rules": {
+    "triangle_budget": {"enabled": true, "max_lod0": 50000, "severity": "error"},
+    "vertex_budget": {"enabled": true, "max_lod0": 35000, "severity": "error"},
+    "material_slots": {"enabled": true, "max_count": 4, "severity": "warning"},
+    "lod_count": {"enabled": true, "min_count": 2, "severity": "warning"},
+    "nanite": {"enabled": true, "expected": "any", "severity": "info"},
+    "simple_collision": {"enabled": true, "min_primitive_count": 1, "allow_complex_as_simple": false, "severity": "error"},
+    "lightmap_uv": {"enabled": true, "required": true, "min_uv_channel_count": 2, "severity": "warning"},
+    "lightmap_resolution": {"enabled": true, "min_resolution": 64, "severity": "warning"},
+    "object_name": {"enabled": true, "required_prefixes": ["SM_"], "pattern": "^SM_[A-Za-z0-9_]+$", "severity": "warning"},
+    "package_path": {"enabled": true, "allowed_roots": ["/Game/Art/Environment"], "forbidden_segments": ["Developers", "Temp", "Test"], "severity": "error"},
+    "missing_materials": {"enabled": true, "max_missing_slots": 0, "severity": "error"},
+    "unique_materials": {"enabled": true, "max_count": 4, "severity": "warning"},
+    "texture_dependencies": {"enabled": true, "max_count": 12, "severity": "warning"},
+    "texture_dimension": {"enabled": true, "max_size": 4096, "severity": "warning"}
+  }
+}

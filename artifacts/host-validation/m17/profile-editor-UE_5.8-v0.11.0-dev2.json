@@ -1,0 +1,72 @@
+{
+  "schema_version": "unreal-profile-editor-host-evidence@1.0.0",
+  "created_at": "2026-08-31T04:59:01.1285173+00:00",
+  "engine": "UE 5.8.1",
+  "plugin_build": "UE_5.8-v0.11.0-dev2",
+  "execution": "independent hidden UnrealEditor-Cmd -RenderOffscreen",
+  "test_pid": 6908,
+  "existing_unreal_pids_before": [],
+  "existing_unreal_pids_after": [
+    34116
+  ],
+  "preexisting_processes_managed_by_test": false,
+  "started_at": "2026-08-31T04:58:27.4504439+00:00",
+  "finished_at": "2026-08-31T04:59:01.1285173+00:00",
+  "duration_seconds": 33.678,
+  "timed_out": false,
+  "exit_code": 0,
+  "automation_passed": true,
+  "screenshot_count": 6,
+  "screenshots": [
+    {
+      "path": "docs/images/workflow/v0.11-profile-standards/01-model-standard-loaded.png",
+      "bytes": 93994,
+      "sha256": "D7CBD550C227BC56BA0EFB6FFC92FFFFFA7D16F4CCFFA1C09463DBFE11AE46C1"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-profile-standards/02-model-invalid-fields.png",
+      "bytes": 100351,
+      "sha256": "71BDD749E4CDF67A53145DED1E8593807384DA557D742A752D19E0A7B2FCB4D3"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-profile-standards/03-model-difference-preview.png",
+      "bytes": 104714,
+      "sha256": "92A0FDFF7BE9C4E9030853F3B30740A897D058794CB3FD40603EFF338DE96D61"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-profile-standards/04-model-standard-saved.png",
+      "bytes": 104289,
+      "sha256": "3862EA39F5CC4E8E4AC34FD3E2637586D7AE00FF63F88931EF1B3B4263E2E9C5"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-profile-standards/05-texture-difference-preview.png",
+      "bytes": 102238,
+      "sha256": "610A725C0061F7CF23444EF5EE774782419D2F26739C4D451B2D191E82D43DC9"
+    },
+    {
+      "path": "docs/images/workflow/v0.11-profile-standards/06-texture-standard-saved.png",
+      "bytes": 102044,
+      "sha256": "55229D1D22B0123D847A0AF5C9DE0EB50B9DA377E08CCB5890C3AAB03FCBFF63"
+    }
+  ],
+  "report_count": 2,
+  "reports": [
+    {
+      "path": "artifacts/host-validation/m17/profile-editor-reports-UE_5.8-v0.11.0-dev2/model-project-standard-report.json",
+      "bytes": 3350,
+      "sha256": "6BC2C6A51C2428E183EE0EC3B431B107BD7860C8E9EA0AE8529ECE253988A330"
+    },
+    {
+      "path": "artifacts/host-validation/m17/profile-editor-reports-UE_5.8-v0.11.0-dev2/texture-project-standard-report.json",
+      "bytes": 1267,
+      "sha256": "C395ED7ED6783E3A4A9BC527622F734F535BDF23C22792FB40206984A552F837"
+    }
+  ],
+  "validates": [
+    "native Slate model and texture Profile editor construction",
+    "field-localized invalid state",
+    "structured difference preview",
+    "project-owned atomic save"
+  ],
+  "claims_manual_mouse_interaction": false
+}

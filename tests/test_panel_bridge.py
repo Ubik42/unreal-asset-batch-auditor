@@ -95,6 +95,7 @@ def test_native_panel_exposes_complete_asset_ledger_and_issue_detail_views() -> 
     assert "current-task-state.json" in source
     assert "start_panel_task" in source
     assert 'TEXT("复制为项目标准")' in source
+    assert 'TEXT("打开标准工作台")' in source
     assert 'TEXT("项目标准目录")' in source
     assert 'TEXT("内置只读")' in source
     assert "Config/AssetAudit/Profiles" in (
@@ -128,6 +129,50 @@ def test_panel_bridge_clones_profile_and_writes_result(tmp_path: Path) -> None:
     assert profile_path.name == "portfolio-texture-standard.v1.json"
     assert json.loads(profile_path.read_text(encoding="utf-8"))["profile_version"] == "1.2.0"
     assert json.loads(result_path.read_text(encoding="utf-8")) == result
+
+
+def test_panel_bridge_previews_and_saves_project_standard(tmp_path: Path) -> None:
+    project_root = tmp_path / "Config" / "AssetAudit" / "Profiles"
+    project_root.mkdir(parents=True)
+    source = project_root / "project-model.v3.json"
+    source.write_text(
+        (ROOT / "Demo" / "ProjectStandards" / "environment-prop-pc.v3.json").read_text(
+            encoding="utf-8"
+        ),
+        encoding="utf-8",
+    )
+    request = tmp_path / "request.json"
+    result_path = tmp_path / "result.json"
+
+    request.write_text(
+        json.dumps(
+            {
+                "action": "preview",
+                "source_path": str(source),
+                "project_profile_root": str(project_root),
+                "result_path": str(result_path),
+                "values": {
+                    "profile_version": "1.1.0",
+                    "rules.triangle_budget.max_lod0": "42000",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    preview = run_asset_audit.profile_editor_from_request_file(str(request))
+    assert preview["status"] == "ready"
+    assert [item["path"] for item in preview["changes"]] == [
+        "profile_version",
+        "rules.triangle_budget.max_lod0",
+    ]
+    saved_request = json.loads(request.read_text(encoding="utf-8"))
+    saved_request["action"] = "save"
+    request.write_text(json.dumps(saved_request), encoding="utf-8")
+
+    saved = run_asset_audit.profile_editor_from_request_file(str(request))
+
+    assert saved["status"] == "saved"
+    assert json.loads(source.read_text(encoding="utf-8"))["profile_version"] == "1.1.0"
 
 
 def test_panel_comparison_request_writes_versioned_result(tmp_path: Path) -> None:

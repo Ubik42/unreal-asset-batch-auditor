@@ -147,6 +147,7 @@ private:
     FReply RefreshSelection();
     FReply BrowseProfile();
     FReply CloneSelectedProfile();
+    FReply OpenProfileEditor();
     FReply OpenProjectProfileFolder();
     FReply RunAudit();
     FReply CancelAudit();
@@ -244,6 +245,7 @@ private:
     EVisibility GetIdleActionVisibility() const;
     EVisibility GetRunningActionVisibility() const;
     bool CanRunAudit() const;
+    bool CanEditSelectedProfile() const;
     bool CanCancelAudit() const;
     bool CanRunComparison() const;
     bool CanLocateReviewAsset() const;
@@ -253,6 +255,7 @@ private:
     bool TryResolveReviewAsset(FAssetData& OutAssetData, FString& OutError) const;
     FString GetReviewAssetPath() const;
     FString BuildReviewEvidenceSummary() const;
+    void HandleProfileEditorSaved();
 
     TArray<FString> SelectedAssetPaths;
     TArray<FString> SelectedFolderPaths;

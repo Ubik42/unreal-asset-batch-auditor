@@ -9,7 +9,9 @@
 2. 选择一个内置模板，展开项会标明“内置只读”；
 3. 点击“复制为项目标准”；
 4. 插件通过 Python 合同层校验源文件，以原子写入方式创建项目副本，并立即选中新标准；
-5. 下拉框以青色“项目标准”标识项目自有规则；之后的审计直接记录该标准的 `profile_id` 与
+5. 点击“打开标准工作台”，按规则分组调整启停、阈值、严重度、标准 ID、版本和说明；
+6. 点击“预览差异”，右侧核对保存值与当前值；字段无误且预览仍有效时才能保存；
+7. 保存后项目标准重新进入当前轨道下拉框，后续 Report 记录该标准的 `profile_id` 与
    `profile_version`。
 
 连续复制同一模板不会覆盖已有文件，而会生成稳定的 `-2`、`-3` 后缀。点击“项目标准目录”可直接
@@ -24,8 +26,26 @@
 - 结构化差异按稳定字段路径比较，不会因 JSON 对象键顺序变化产生假差异；
 - 本功能只写项目配置，不修改任何 `.uasset`、内置模板或历史 Report。
 
-## 当前开发状态
+![模型项目标准的三项待保存变化](images/workflow/v0.11-profile-standards/03-model-difference-preview.png)
 
-M17 第一阶段已经完成项目标准语义层、只读/项目归属展示、复制、重新发现与选择。下一阶段会在原生
-Slate 中加入字段化编辑卡片、保存前差异清单和字段就地错误提示；在这之前，规则内容仍需在项目目录
-中编辑 JSON。这个限制会明确保留，不能把当前版本描述成已经完成完整可视化编辑器。
+字段问题直接出现在对应输入下方，右侧差异区保持空白，保存按钮禁用：
+
+![非法版本和三角形阈值被字段级拦截](images/workflow/v0.11-profile-standards/02-model-invalid-fields.png)
+
+纹理工作台使用独立的纹理 Profile v1 字段，包括尺寸、Mip、Texture Group、Compression/sRGB、
+Virtual Texture 和流送：
+
+![纹理项目标准差异预览](images/workflow/v0.11-profile-standards/05-texture-difference-preview.png)
+
+## 可复制样例
+
+- [PC 环境道具标准](../Demo/ProjectStandards/environment-prop-pc.v3.json)：几何、材质、碰撞、Lightmap、命名和目录；
+- [移动端道具纹理标准](../Demo/ProjectStandards/mobile-prop-texture.v1.json)：2K、Mip、Texture Group、色彩空间、VT 和流送。
+
+两份文件均为自行模拟的项目数据，不包含公司资产，也不代表行业统一阈值。
+
+## 宿主验证范围
+
+独立 UE 5.8.1 宿主验证了模型和纹理工作台构建、非法字段、差异预览、原子保存，并让保存后的两份
+项目 Profile 分别驱动真实 Engine Static Mesh 与 Texture2D 采集。自动化没有模拟人工鼠标录制，
+也不证明任意 Profile Schema、多人配置治理或跨版本兼容。
