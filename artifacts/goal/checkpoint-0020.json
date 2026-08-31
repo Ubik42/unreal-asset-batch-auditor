@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0020",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 20,
+  "completedSlice": "M11-S1",
+  "summary": "v0.9.0 Beta 已形成可下载的作品级闭环：确定性 Win64 插件包包含材质/纹理审计、项目预设和无人值守入口，并在全新 UE 5.8.1 项目完成安装、真实采集、升级和可恢复卸载。",
+  "evidence": [
+    "发布白名单包含 55 个文件：运行时 C++/Python、v3 Profile、项目预设、Schema、安装器、无人值守包装脚本、许可证和中文说明",
+    "同一输入内部连续两次生成相同 ZIP，payload tree SHA-256 为 97ca17a4ad8ae758b4e353720f26abcf48b88736e06cd24d58574ec7cf78cd36",
+    "ZIP SHA-256 为 1D555A6A525A0C22436E8B3CFF6F0A1F70D7ACD0B6F7447E9E3CB9ACC7865BCC",
+    "全新临时项目独立安装后生产 Tab 打开，C++ 真实采集 Cube 并写出 v3 Report",
+    "随包无人值守预设真实审计 6 个 Engine BasicShapes，12 条非阻断告警、0 采集失败、退出码 0",
+    "升级后第二次真实宿主烟雾通过，卸载移除启用项并保留可恢复插件与 descriptor 备份",
+    "完整验证记录位于 artifacts/host-validation/m7/v0.9.0-ue5.8.1-win64-validation.json",
+    "GitHub v0.9.0 Beta 已发布，ZIP、SHA-256 和 manifest 三个资产均 uploaded，GitHub digest 与本地一致",
+    "发布地址 https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.9.0"
+  ],
+  "nextSlice": "M12-S1",
+  "knownLimits": [
+    "只验证 Windows 11、Win64 与 UE 5.8.1",
+    "不是 Marketplace 包，不声明其他 UE 版本兼容",
+    "示例 Profile 与项目预设是模拟项目数据",
+    "自动化宿主证据不冒充人工鼠标录屏或生产规模性能"
+  ]
+}
