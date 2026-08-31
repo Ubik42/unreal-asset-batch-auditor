@@ -1,0 +1,98 @@
+{
+  "schema_version": "unreal-audit-release-validation@1.0.0",
+  "created_at": "2026-08-31T04:26:33.8176668+00:00",
+  "release_label": "v0.10.0-ue5.8.1-win64",
+  "plugin_version": "0.10.0",
+  "tested_engine_version": "5.8.1",
+  "platform": "Win64",
+  "archive_path": "dist/UnrealAssetBatchAuditor-0.10.0-UE5.8-Win64.zip",
+  "archive_bytes": 683911,
+  "archive_sha256": "0D466D4779D32A8A563C387DC4A910BDBCA8F7C7AFFBACA82079C89F297F6A33",
+  "payload_tree_sha256": "01ad089f97cc23f03acab6ad3c13a165f335501ac2df1f46385360832de76838",
+  "payload_file_count": 67,
+  "source_revision": "bef98116b36dcc0290034a5e371c33bbca41b35f",
+  "fresh_project_created": true,
+  "install": {
+    "independent_copy": true,
+    "project_descriptor_enabled": true,
+    "plugin_is_reparse_point": false,
+    "smoke": {
+      "phase": "install",
+      "pid": 18800,
+      "started_at": "2026-08-31T04:25:16.8656672+00:00",
+      "finished_at": "2026-08-31T04:25:43.8822181+00:00",
+      "duration_seconds": 27.017,
+      "timed_out": false,
+      "exit_code": 0,
+      "automation_test": "UnrealAssetBatchAuditor.ReleaseInstallSmoke",
+      "automation_passed": true,
+      "log_path": "artifacts/host-runtime/release-20260830-222516/FreshProject/Saved/Logs/UABAReleaseValidation.log",
+      "log_excerpt_path": "artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-install-log.txt",
+      "log_excerpt_sha256": "3931DF4BF3CE80F4B0D1A92CBDAD6389C484FF4BF1CF99EA5CFFB7D7E8F42469"
+    },
+    "static_mesh_report_path": "artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-fresh-static-mesh-report.json",
+    "static_mesh_report_sha256": "4FFCAD01ED511842BBC817391096B6A410CBD76F5CEE613FF9C61307C2DA766E",
+    "texture_report_path": "artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-fresh-texture-report.json",
+    "texture_report_sha256": "A1BFD0F00CDF0EAD7AACC2DC3B6DA9C0C6B5B60E527A4A2766902BA1AFEFCE49",
+    "recoverable_uninstall_passed": true
+  },
+  "upgrade": {
+    "previous_archive_source": "github-release:v0.9.0/UnrealAssetBatchAuditor-0.9.0-UE5.8-Win64.zip",
+    "previous_archive_sha256": "1D555A6A525A0C22436E8B3CFF6F0A1F70D7ACD0B6F7447E9E3CB9ACC7865BCC",
+    "previous_plugin_version": "0.9.0",
+    "backup_created": true,
+    "smoke": {
+      "phase": "upgrade",
+      "pid": 20256,
+      "started_at": "2026-08-31T04:26:04.9139844+00:00",
+      "finished_at": "2026-08-31T04:26:33.0524892+00:00",
+      "duration_seconds": 28.139,
+      "timed_out": false,
+      "exit_code": 0,
+      "automation_test": "UnrealAssetBatchAuditor.ReleaseInstallSmoke",
+      "automation_passed": true,
+      "log_path": "artifacts/host-runtime/release-20260830-222516/FreshProject/Saved/Logs/UABAReleaseValidation.log",
+      "log_excerpt_path": "artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-upgrade-log.txt",
+      "log_excerpt_sha256": "3625F0B100D19562A31C237CC98B87695538B8FEFF304D11E9B58A6D21B11BE5"
+    },
+    "static_mesh_report_path": "artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-upgrade-static-mesh-report.json",
+    "static_mesh_report_sha256": "B0FE170ABF13FB1CF8F7F7EFE92A7DC72D27F85D9C681A7D15D5F6598B86CEFF",
+    "texture_report_path": "artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-upgrade-texture-report.json",
+    "texture_report_sha256": "337DA70BFE4971C78B17F8D5617E8A62CBF95886A645B4A25403B861E885C33F"
+  },
+  "unattended": {
+    "wrapper_exit_code": 0,
+    "status": "passed",
+    "asset_count": 6,
+    "issue_count": 12,
+    "collection_failure_count": 0,
+    "stdout": "UABA passed: 项目预设范围通过审计；资产 6，问题 12，采集失败 0；摘要 <repo>\\artifacts\\host-runtime\\release-20260830-222516\\FreshProject\\Saved\\UnrealAssetBatchAuditor\\CI\\latest-run-summary.json",
+    "duration_seconds": 20.684,
+    "summary_path": "artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-unattended-summary.json",
+    "summary_sha256": "F949BE57B363E7A66086FBE73272AD5F2E69E3419EA16966A9F3DAC03522A10D",
+    "report_path": "artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-unattended-report.json",
+    "report_sha256": "115525880AE294E867E6C5CA5EFF9232068F35D6B3507345EBFE0A24362FFADC"
+  },
+  "uninstall": {
+    "plugin_directory_removed": true,
+    "recoverable_backup_created": true,
+    "project_descriptor_entry_removed": true
+  },
+  "report_path": "artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-upgrade-static-mesh-report.json",
+  "report_sha256": "B0FE170ABF13FB1CF8F7F7EFE92A7DC72D27F85D9C681A7D15D5F6598B86CEFF",
+  "existing_unreal_pids_before": [],
+  "created_unreal_pids": [
+    18800,
+    20256
+  ],
+  "existing_unreal_pids_after": [
+    17032
+  ],
+  "existing_processes_survived": true,
+  "residual_created_processes": [],
+  "residual_owned_processes": [],
+  "preexisting_processes_managed_by_test": false,
+  "claims_user_interaction": false,
+  "claims_visible_editor_review": false,
+  "claims_cross_version_compatibility": false
+}

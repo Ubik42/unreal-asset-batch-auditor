@@ -238,3 +238,18 @@ GPU 或全项目规模分析；自动化截图不冒充人工鼠标验收。
 
 生成素材的宿主脚本负责创建 Demo `.uasset`；生产审计接口只读。平台尺寸与 Mip 在非 NullRHI 的
 Editor 宿主采集。本轮不证明 Cook 后尺寸、运行时 residency、显存、GPU、跨平台或跨 UE 版本结果。
+
+## 2026-08-30 v0.10.0 双轨正式发布验证
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| 确定性发布 | 通过；67 个白名单 payload，相同输入双次 ZIP 一致 | `dist/UnrealAssetBatchAuditor-0.10.0-UE5.8-Win64.zip.manifest.json` |
+| 全新安装 | 通过；独立复制插件、启用 descriptor、生产中文 Tab 正常打开 | `artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-validation.json` |
+| 双轨真实采集 | 通过；Static Mesh Cube 与 Texture2D DefaultTexture 各生成 1 份真实 Report；纹理为 128×128、8 Mip、0 失败 | 同上及 `*-fresh-*-report.json` |
+| 随包无人值守 | 通过；显式 BasicShapes 范围 6 个资产、12 条非阻断问题、0 采集失败、退出码 0 | `*-unattended-summary.json` |
+| 公开版本升级 | 通过；GitHub v0.9.0 ZIP SHA-256 为 `1D555A...65BCC`，升级留下 0.9 备份，升级后双轨复验通过 | 同上及 `*-upgrade-*-report.json` |
+| 可恢复卸载 | 通过；全新安装和升级后各执行一次，插件目录移入备份并移除 `.uproject` 启用项 | 同上 |
+| GitHub Release | 通过；`v0.10.0` Beta 发布 ZIP、SHA-256 与发布清单 | `https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.10.0` |
+
+正式 ZIP SHA-256：`0D466D4779D32A8A563C387DC4A910BDBCA8F7C7AFFBACA82079C89F297F6A33`。
+本矩阵不声明 Marketplace、跨 UE 版本、人工鼠标交互或生产规模性能。

@@ -1,0 +1,14 @@
+{
+  "schema_version": "unreal-asset-audit-run@1.0.0",
+  "created_at": "2026-08-30T22:26:01.541278-06:00",
+  "preset_id": "engine-basic-shapes-ci-v1",
+  "status": "passed",
+  "exit_code": 0,
+  "message": "项目预设范围通过审计",
+  "report_path": "artifacts/host-validation/m16/v0.10.0-ue5.8.1-win64-unattended-report.json",
+  "requested_asset_count": 6,
+  "asset_count": 6,
+  "issue_count": 12,
+  "blocking_issue_count": 0,
+  "collection_failure_count": 0
+}

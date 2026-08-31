@@ -1,0 +1,40 @@
+{
+  "schema_version": "unreal-texture-audit@1.0.0",
+  "report_id": "texture-report-b5af234eedc763ab",
+  "created_at": "2026-08-31T04:25:43.806639+00:00",
+  "profile_id": "texture-review-lenient-v1",
+  "profile_version": "1.0.0",
+  "profile_schema_version": "unreal-texture-profile@1.0.0",
+  "asset_type": "texture2d",
+  "collection_mode": "unreal_editor",
+  "real_unreal_validation": true,
+  "host_engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "asset_count": 1,
+  "issue_count": 0,
+  "collection_failure_count": 0,
+  "requested_asset_count": 1,
+  "processed_asset_count": 1,
+  "cancelled_asset_count": 0,
+  "completed_batch_count": 1,
+  "batch_size": 1,
+  "assets": [
+    {
+      "asset_path": "/Engine/EngineResources/DefaultTexture.DefaultTexture",
+      "asset_name": "DefaultTexture",
+      "source_width": 128,
+      "source_height": 128,
+      "platform_width": 128,
+      "platform_height": 128,
+      "mip_count": 8,
+      "mip_gen_settings": "TMGS_Sharpen4",
+      "texture_group": "TEXTUREGROUP_World",
+      "compression_settings": "TC_Default",
+      "srgb": true,
+      "virtual_texture_streaming": false,
+      "never_stream": false
+    }
+  ],
+  "issues": [],
+  "evidence": [],
+  "collection_failures": []
+}

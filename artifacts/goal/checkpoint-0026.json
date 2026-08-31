@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "checkpointId": "checkpoint-0026",
+  "goalId": "unreal-asset-batch-auditor-productization",
+  "stateRevision": 26,
+  "completedSlice": "M16-S1",
+  "summary": "v0.10.0 模型/纹理双轨作品版本已完成确定性打包、全新安装、公开 v0.9 升级、双轨真实采集、可恢复卸载与 GitHub Beta 发布。",
+  "evidence": [
+    "UE 5.8 BuildPlugin 完成 UHT、C++ 编译、链接与打包，插件版本冻结为 0.10.0",
+    "发布包包含 67 个白名单 payload，连续两次 ZIP SHA-256 一致，payload tree SHA-256 已进入 manifest",
+    "全新临时项目以独立复制方式安装，生产中文 Tab、Static Mesh Cube 与 Texture2D DefaultTexture 真实采集通过",
+    "Texture2D 全新安装与升级烟雾均采到 128x128、8 Mip、0 采集失败的真实 UE 5.8.1 Report",
+    "随包无人值守审计 6 个 Engine Static Mesh，12 条非阻断问题、0 采集失败、退出码 0",
+    "从 GitHub 公开 v0.9.0 ZIP 安装后升级，0.9 插件备份与升级后双轨复验通过",
+    "全新安装与升级后均完成可恢复卸载，本轮创建的 UE 进程无残留",
+    "GitHub v0.10.0 Beta 已发布 ZIP、SHA-256 与发布清单"
+  ],
+  "nextSlice": "M17-S1",
+  "knownLimits": [
+    "正式发布只覆盖 Windows 11、Win64、UE 5.8.1",
+    "Engine 内置 Cube 与 DefaultTexture 是安装烟雾，不代表生产资产规模或复杂度",
+    "自动化宿主不冒充人工鼠标交互或可见资产编辑器复核",
+    "不声明 Marketplace 就绪、跨版本兼容、Cook 结果、显存或 GPU 性能",
+    "插件仍保持资产只读，不包含自动修复"
+  ]
+}

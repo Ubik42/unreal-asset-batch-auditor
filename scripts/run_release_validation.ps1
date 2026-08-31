@@ -84,7 +84,9 @@ function Invoke-ReleaseSmoke([string]$Phase) {
         'engineversion=', 'Command Line:', 'Found 1 automation', 'Test Started',
         'Test Completed', 'Automation Test Queue Empty', 'Engine exit requested'
     )
-    @(Select-String -LiteralPath $logPath -Pattern $logPatterns | ForEach-Object { $_.Line }) |
+    @(Select-String -LiteralPath $logPath -Pattern $logPatterns | ForEach-Object {
+        $_.Line.Replace($repoRoot, "<repo>")
+    }) |
         Set-Content -LiteralPath $phaseLog -Encoding utf8
     if ($timedOut -or $process.ExitCode -ne 0 -or -not $passed) {
         throw "发布包 $Phase 宿主验证失败；请检查 $logPath"
@@ -284,8 +286,12 @@ Copy-Item -LiteralPath $reportPath -Destination $committedUpgradeStaticReport -F
 Copy-Item -LiteralPath $textureReportPath -Destination $committedUpgradeTextureReport -Force
 Copy-Item -LiteralPath (Join-Path $runtime "install-log.txt") -Destination $installLogEvidence -Force
 Copy-Item -LiteralPath (Join-Path $runtime "upgrade-log.txt") -Destination $upgradeLogEvidence -Force
-Copy-Item -LiteralPath $unattendedSmoke.runtime_summary_path -Destination $unattendedSummaryEvidence -Force
 Copy-Item -LiteralPath $unattendedSmoke.runtime_report_path -Destination $unattendedReportEvidence -Force
+$unattendedSummaryPayload = Get-Content -LiteralPath $unattendedSmoke.runtime_summary_path -Raw | ConvertFrom-Json
+$unattendedSummaryPayload.report_path = [IO.Path]::GetRelativePath(
+    $repoRoot, $unattendedReportEvidence).Replace('\', '/')
+$unattendedSummaryPayload | ConvertTo-Json -Depth 8 |
+    Set-Content -LiteralPath $unattendedSummaryEvidence -Encoding utf8
 $installSmoke.log_excerpt_path = [IO.Path]::GetRelativePath($repoRoot, $installLogEvidence).Replace('\', '/')
 $installSmoke.log_excerpt_sha256 = (Get-FileHash -LiteralPath $installLogEvidence -Algorithm SHA256).Hash
 $upgradeSmoke.log_excerpt_path = [IO.Path]::GetRelativePath($repoRoot, $upgradeLogEvidence).Replace('\', '/')
@@ -318,7 +324,7 @@ $evidence = [ordered]@{
         recoverable_uninstall_passed = $freshUninstallBackups.Count -ge 1
     }
     upgrade = [ordered]@{
-        previous_archive_path = [IO.Path]::GetRelativePath($repoRoot, $previousArchive).Replace('\', '/')
+        previous_archive_source = "github-release:v0.9.0/$([IO.Path]::GetFileName($previousArchive))"
         previous_archive_sha256 = (Get-FileHash -LiteralPath $previousArchive -Algorithm SHA256).Hash
         previous_plugin_version = [string]$previousDescriptor.VersionName
         backup_created = $upgradeBackups.Count -ge 1
@@ -334,7 +340,7 @@ $evidence = [ordered]@{
         asset_count = $unattendedSmoke.asset_count
         issue_count = $unattendedSmoke.issue_count
         collection_failure_count = $unattendedSmoke.collection_failure_count
-        stdout = $unattendedSmoke.stdout
+        stdout = $unattendedSmoke.stdout.Replace($repoRoot, "<repo>")
         duration_seconds = $unattendedSmoke.duration_seconds
         summary_path = [IO.Path]::GetRelativePath($repoRoot, $unattendedSummaryEvidence).Replace('\', '/')
         summary_sha256 = (Get-FileHash -LiteralPath $unattendedSummaryEvidence -Algorithm SHA256).Hash

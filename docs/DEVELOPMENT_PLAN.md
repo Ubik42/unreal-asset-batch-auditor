@@ -233,8 +233,20 @@ M14-S1 已保存的 UE 5.8.1 Report，新增证据只证明离线交接导出。
 证据位于 `artifacts/host-validation/m15/` 与 `docs/images/workflow/v0.10-texture-audit/`。本里程碑只
 证明 Editor 元数据与 Profile 判定，不声明最终 Cook 体积、运行时显存、GPU 成本或跨版本兼容。
 
+## M16：v0.10 双轨可安装作品版本（已完成）
+
+- 版本统一为 0.10.0，确定性 ZIP 包含 67 个白名单 payload，不夹带缓存、PDB、测试或 Demo 二进制；
+- 全新临时项目完成独立复制安装、生产 Tab、Static Mesh 与 Texture2D 各一条真实 C++ 采集烟雾；
+- 随包项目预设审计 6 个 Engine Static Mesh，退出码 0、0 采集失败；
+- 从 GitHub 公开 v0.9.0 ZIP 安装后升级 v0.10.0，旧插件备份与升级后双轨复验通过；
+- 全新安装和升级场景均完成可恢复卸载，项目 descriptor 移除启用项，本轮 UE 进程无残留；
+- GitHub `v0.10.0` Beta Release 已发布 ZIP、SHA-256 与发布清单。
+
+ZIP SHA-256：`0D466D4779D32A8A563C387DC4A910BDBCA8F7C7AFFBACA82079C89F297F6A33`。
+结构化证据位于 `artifacts/host-validation/m16/`。验证只覆盖 Windows 11、Win64 与 UE 5.8.1。
+
 ## 下一条唯一路线
 
 | 里程碑 | 方向 | 边界 |
 | --- | --- | --- |
-| M16-S1 | v0.10 双轨可安装作品版本 | 收口安装包、升级、双轨烟雾、中文教程与 GitHub Beta；不新增第三种资产、AI、PCG 或自动修复 |
+| M17-S1 | 项目验收标准编辑器 | 在 Unreal 内克隆、编辑、校验、比较并保存项目自有 Profile；只写项目配置，不修改资产或内置规则 |

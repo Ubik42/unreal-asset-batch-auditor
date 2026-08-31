@@ -1,0 +1,93 @@
+{
+  "schema_version": "unreal-asset-audit@3.0.0",
+  "report_id": "report-898ee7b8a40373a5",
+  "created_at": "2026-08-31T04:25:43.805135+00:00",
+  "profile_id": "demo-desktop-balanced-v3",
+  "profile_version": "3.0.0",
+  "profile_schema_version": "unreal-static-mesh-profile@3.0.0",
+  "collection_mode": "unreal_editor",
+  "real_unreal_validation": true,
+  "host_engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "asset_count": 1,
+  "issue_count": 2,
+  "collection_failure_count": 0,
+  "requested_asset_count": 1,
+  "processed_asset_count": 1,
+  "cancelled_asset_count": 0,
+  "completed_batch_count": 1,
+  "batch_size": 1,
+  "assets": [
+    {
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "asset_name": "Cube",
+      "lods": [
+        {
+          "index": 0,
+          "triangles": 48,
+          "vertices": 54
+        }
+      ],
+      "material_slot_count": 1,
+      "nanite_enabled": false,
+      "simple_collision_primitive_count": 1,
+      "collision_complexity": "project_default",
+      "uv_channel_count": 2,
+      "lightmap_coordinate_index": 1,
+      "lightmap_resolution": 64,
+      "material_paths": [
+        "/Engine/EngineMaterials/WorldGridMaterial.WorldGridMaterial"
+      ],
+      "missing_material_slot_count": 0,
+      "unique_material_count": 1,
+      "texture_paths": [
+        "/Engine/EngineMaterials/T_Default_Material_Grid_M.T_Default_Material_Grid_M",
+        "/Engine/EngineMaterials/T_Default_Material_Grid_N.T_Default_Material_Grid_N"
+      ],
+      "texture_dependency_count": 2,
+      "max_texture_dimension": 512
+    }
+  ],
+  "issues": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-c95ed4f9bdf36f0d",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "rule_id": "static_mesh.object_name",
+      "severity": "warning",
+      "message": "Asset name 'Cube' does not satisfy prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/.",
+      "evidence_id": "ev-191177966074e5e0"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "issue_id": "issue-0d6e3e24614f4a23",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "rule_id": "static_mesh.package_path",
+      "severity": "warning",
+      "message": "Package directory '/Engine/BasicShapes' is outside allowed roots or contains forbidden segments [].",
+      "evidence_id": "ev-27669e56adb95765"
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-191177966074e5e0",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "metric": "asset_name",
+      "observed": "Cube",
+      "expected": "prefix in ['SM_UABA_'] and full-match /^SM_UABA_[0-9]{2}_[A-Za-z0-9_]+$/",
+      "profile_pointer": "/rules/object_name",
+      "collector": "unreal_editor"
+    },
+    {
+      "schema_version": "unreal-asset-audit@1.0.0",
+      "evidence_id": "ev-27669e56adb95765",
+      "asset_path": "/Engine/BasicShapes/Cube.Cube",
+      "metric": "package_directory",
+      "observed": "/Engine/BasicShapes",
+      "expected": "root in ['/Game/UABADemo']; forbidden segments absent ['Developers', 'Temp']",
+      "profile_pointer": "/rules/package_path",
+      "collector": "unreal_editor"
+    }
+  ],
+  "collection_failures": []
+}

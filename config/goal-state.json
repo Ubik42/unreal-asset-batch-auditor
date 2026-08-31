@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@1.0.0",
   "goalId": "unreal-asset-batch-auditor-productization",
-  "stateRevision": 25,
+  "stateRevision": 26,
   "status": "active",
-  "currentMilestone": "M16",
+  "currentMilestone": "M17",
   "milestones": [
     { "id": "M0", "title": "Scope and repository baseline", "status": "completed", "dependsOn": [] },
     { "id": "M1", "title": "Read-only Static Mesh audit MVP", "status": "completed", "dependsOn": ["M0"] },
@@ -21,25 +21,27 @@
     { "id": "M13", "title": "Review decisions and ownership handoff", "status": "completed", "dependsOn": ["M12"] },
     { "id": "M14", "title": "Delivery hotspot and asset-group overview", "status": "completed", "dependsOn": ["M13"] },
     { "id": "M15", "title": "Texture2D delivery audit", "status": "completed", "dependsOn": ["M14"] },
-    { "id": "M16", "title": "v0.10 dual-track installable portfolio release", "status": "in_progress", "dependsOn": ["M15"] }
+    { "id": "M16", "title": "v0.10 dual-track installable portfolio release", "status": "completed", "dependsOn": ["M15"] },
+    { "id": "M17", "title": "Project audit standard editor", "status": "in_progress", "dependsOn": ["M16"] }
   ],
   "nextSlice": {
-    "id": "M16-S1",
-    "milestoneId": "M16",
-    "title": "v0.10 双轨可安装作品版本",
+    "id": "M17-S1",
+    "milestoneId": "M17",
+    "title": "项目验收标准编辑器 MVP",
     "scope": [
-      "冻结 v0.10 模型交付与纹理交付双轨能力，清理 dev 标识、过时文档和发布白名单",
-      "生成包含 C++/Python、两类 Profile/Report 合同、内置规则与中文说明的确定性 Win64 插件包",
-      "在独立 UE 5.8.1 临时项目验证全新安装、生产 Tab、Static Mesh 与 Texture2D 两条真实采集烟雾",
-      "从公开 v0.9 包验证升级，再验证可恢复卸载，不复用用户已有 Unreal 会话",
-      "收口 README、安装教程、录屏脚本、截图索引、Release Notes 与准确能力边界，并发布 GitHub Beta"
+      "在原生 Slate 中增加项目验收标准工作区，明确区分内置只读模板与项目自有 Profile",
+      "支持当前模型 v3 与纹理 v1 Profile 的克隆、规则启停、阈值、严重度、标识和版本编辑",
+      "所有编辑结果由 Python 合同层校验，错误以字段级中文状态返回，不在 Slate 重写规则语义",
+      "保存前展示相对来源 Profile 的结构化差异，保存到项目 Config/AssetAudit/Profiles 且不覆盖内置模板",
+      "保存后的项目 Profile 可重新发现、加载并直接进入对应资产轨道审计",
+      "提供模型与纹理各一套真实项目标准示例、中文教程和可录制截图"
     ],
     "nonGoals": [
-      "不新增第三种资产类型、规则体系或大型 UI 重构",
-      "不引入 AI 对话、PCG、云服务、自动修复或资产写回",
-      "不执行 UE 5.8.1 以外的跨版本兼容矩阵",
-      "不把小样本烟雾宣称成生产规模性能、Cook、显存或 GPU 验证",
-      "不为了发布重复重跑与本切片无关的全部历史宿主场景"
+      "不提供任意 JSON Schema 编辑器或未知 Profile 版本的可视化改写",
+      "不修改、保存、重命名、移动或自动修复 Unreal 资产",
+      "不引入 AI 生成规则、云同步、账号权限或多人并发编辑",
+      "不修改项目预设、CI 阻断语义或发布安装矩阵",
+      "不新增第三种资产轨道"
     ],
     "allowedPaths": [
       "Content/Python",
@@ -55,27 +57,24 @@
       "Resources",
       "contracts",
       "README.md",
-      "AGENTS.md",
-      "release",
-      "dist",
-      "LICENSE"
+      "AGENTS.md"
     ],
-    "evidenceCeiling": "本切片最多证明 v0.10 插件包可在 Windows 11 + UE 5.8.1 Win64 中安装、升级、卸载，并真实运行 Static Mesh 与 Texture2D 两条只读烟雾；不等同于 Marketplace 审核、跨版本兼容、生产规模性能或运行时成本验证。",
+    "evidenceCeiling": "本切片最多证明 UE 5.8.1 中模型 v3 与纹理 v1 Profile 可以通过原生 UI 克隆、编辑、校验、比较、保存和重新用于审计；不等同于任意 Schema 编辑、多人配置治理、资产修复或跨版本兼容。",
     "realHostRequired": true,
     "acceptanceCriteria": [
-      "版本统一为 v0.10.0，发布白名单包含双轨运行所需二进制、Python、Profile、Schema 与中文文档且不夹带缓存",
-      "相同输入连续两次生成相同 ZIP SHA-256，并保存逐文件清单与源修订",
-      "全新安装后生产 Tab 可打开，Static Mesh 与 Texture2D 均由真实 C++ collector 生成合法 Report",
-      "从 v0.9 升级后双轨烟雾继续通过，卸载保留可恢复备份并恢复项目描述文件",
-      "README 第一屏、安装教程和录屏脚本使用当前双轨截图与准确验证边界",
-      "提交、标签、GitHub Beta Release 与发布资产一致，仓库结束时无意外未提交文件"
+      "内置模板保持只读，项目 Profile 使用独立目录、稳定文件名与原子写入",
+      "模型 v3 与纹理 v1 的可编辑字段、默认值、枚举和组合约束与现有合同一致",
+      "无效阈值、标识、版本、枚举和压缩/色彩组合不能保存，并显示可定位的中文错误",
+      "差异视图稳定显示新增、修改、禁用和未改变规则，不把顺序变化误报成政策变化",
+      "保存后重新发现并选择项目 Profile，实际审计 Report 记录该 profile_id 与 profile_version",
+      "UE 5.8 BuildPlugin、独立宿主、模型/纹理示例、当前 Slate 截图、README 与教程同步通过"
     ],
     "validationCommands": [
       ".\\.venv\\Scripts\\python.exe -m pytest -q",
       ".\\.venv\\Scripts\\python.exe -m ruff check Content/Python Demo/Scripts tests scripts"
     ]
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0025.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0026.json",
   "currentBlocker": null,
   "manualTracks": [
     {
@@ -131,6 +130,12 @@
       "status": "completed",
       "blocking": false,
       "reason": "v0.10-dev4 完成独立 Texture 合同、七类 Profile 规则、C++ 批量采集和双轨 Slate；88 项测试、UE 5.8 BuildPlugin、真实 3 纹理宿主与 13 张截图通过。"
+    },
+    {
+      "id": "m16s1-v0.10-release",
+      "status": "completed",
+      "blocking": false,
+      "reason": "v0.10.0 完成 67 文件确定性发布、全新双轨安装烟雾、公开 v0.9 升级、两次可恢复卸载与 GitHub Beta Release。"
     }
   ]
 }

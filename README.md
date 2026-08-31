@@ -2,8 +2,8 @@
 
 面向 Unreal 美术团队的只读资产交付验收台。当前提供“模型交付 / 纹理交付”两条明确轨道：项目 Profile 定义预算和预期，Editor-only C++ 批量采集宿主事实，Python 负责规则编排与可追溯报告。插件不保存、重建或自动修复资产。
 
-> **当前源码：v0.10.0 / 公开版本：v0.9.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
-> [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.9.0) ·
+> **当前源码与公开版本：v0.10.0 Beta** · Windows 11 / Unreal Engine 5.8.1 已验证<br>
+> [下载已编译插件](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.10.0) ·
 > [5 分钟安装说明](docs/RELEASE_INSTALL.md) · [完整录屏脚本](docs/demo/VIDEO_RECORDING_SCRIPT.md)
 
 ![资产交付验收台：Texture2D 交付轨道](docs/images/workflow/v0.10-texture-audit/02-asset-overview.png)
@@ -252,8 +252,8 @@ Demo Profile 是为了形成清晰对比而模拟的项目数据，不代表行�
 
 ### 推荐：直接使用发布包
 
-从 [GitHub Releases](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.9.0)
-下载 `UnrealAssetBatchAuditor-0.9.0-UE5.8-Win64.zip`，解压后执行：
+从 [GitHub Releases](https://github.com/Ubik42/unreal-asset-batch-auditor/releases/tag/v0.10.0)
+下载 `UnrealAssetBatchAuditor-0.10.0-UE5.8-Win64.zip`，解压后执行：
 
 ```powershell
 .\install-plugin.ps1 -Action Install -ProjectPath "<项目目录或 .uproject 路径>"
@@ -306,7 +306,8 @@ report = run(
 - v0.10-dev1/2 完成资产定位、Evidence 摘要和独立 Review Ledger；人工决定不会改写规则事实或源 Report；
 - v0.10-dev3 已通过 83 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主使用 24 个 Demo Static Mesh 与 2 个采集失败验证 6 个交付目录组、Heavy 组下钻和清除恢复，并生成 17 张生产 Slate 图；
 - v0.10-dev4 已通过 88 项 Python 测试、Ruff 与 UE 5.8.1 BuildPlugin；独立宿主真实导入并采集 3 张 Texture2D，得到 1 个通过对象、2 个待处理对象与 7 条问题，并生成 13 张纹理轨道 Slate 图；
-- 下一切片收口 v0.10 双轨可安装作品版本，不加入泛 AI 对话、PCG、自动修复或未经测量的性能评分；
+- v0.10.0 发布包含 67 个白名单文件；ZIP SHA-256 为 `0D466D4779D32A8A563C387DC4A910BDBCA8F7C7AFFBACA82079C89F297F6A33`；全新安装、真实双轨采集、随包无人值守、从公开 v0.9 升级和两次可恢复卸载均已通过；
+- 下一切片建设项目验收标准编辑器，让 TA 能在 Unreal 内克隆、调整、校验和比较项目 Profile；不引入泛 AI 对话或资产自动修复；
 - 不声明 Marketplace 就绪、其他 UE 版本兼容或生产规模绝对无卡顿。
 
 ## 许可证与演示素材
